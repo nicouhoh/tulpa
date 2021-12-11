@@ -1,28 +1,14 @@
 class Clipping{
   
-  PImage image;
-  String filename;
-  int xpos;
-  int ypos;
-  int clipSize = 30;
-  int padding = 5;
-  int wide;
-  int tall;
-  
+  PImage img;
   
   Clipping(String imagePath){
-    image = loadImage(imagePath);
-    print("INCUBATING: " + imagePath + ".... \n");
-    filename = imagePath;
-    //wide = image.width;
+    print(imagePath);
+    img = loadImage(imagePath);
   }
   
-  void display(int wide, int tall){
-    image(image, xpos, ypos, wide, tall);
+  void display(){
+   image(img, 0, 0); 
   }
-  
-  void setPos(int x, int y){
-   xpos = x;
-   ypos = y;
-  }
+
 }

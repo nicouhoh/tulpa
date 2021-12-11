@@ -1,16 +1,13 @@
 class Wranglist{
   
- Clipping[] library;
- int clipSize;
- int pillow;
- 
- Wranglist(){
-  String[] filenames = listFileNames(path);
-  library = BirthingPool(filenames);
-  clipSize = 200;
-  pillow = 5;
-
- }
+  Clipping[] library;
+  String path;
+  int clipSize;
+  
+  Wranglist(){
+    path = sketchPath() + "/data/";
+    library = BirthingPool();
+  }
  
 
   String[] listFileNames(String dir){
@@ -23,40 +20,26 @@ class Wranglist{
     }
   }
   
-  Clipping[] BirthingPool(String[] filenames){
-    Clipping[] horde = new Clipping[0];
+  Clipping[] BirthingPool(){
+    String[] filenames = listFileNames(path);
+    Clipping[] brood = new Clipping[0];
     for (int i = 0; i < filenames.length; i++){
       if (filenames[i].contains(".jpg")){
-      Clipping spawn = new Clipping(filenames[i]);
-      horde = (Clipping[])append(horde, spawn);
+        Clipping spawn = new Clipping(filenames[i]);
+        print(spawn.img);
+        brood = (Clipping[])append(brood, spawn);
       }
     }
-    return horde;
+    return brood;
   }
   
-  void FussMenagerie(){
+  //void FussMenagerie(){
     
-    print("ASSUMING FORMATION... JUST LIKE WE PRACTICED, BIG SMILES....");
-    int x = pillow;
-    int y = pillow;
-    int columns = width / (clipSize + pillow) + pillow;
-    
-    for (int i = 0; i < library.length; i++){
-      library[i].setPos(x, y);
-      if (x + clipSize + pillow < width){
-        x += clipSize + pillow;
-      } else {
-        x = pillow;
-        y += clipSize + pillow;
-      }
-    }
-  }
+  //}
   
-  void PresentMenagerie(){
-    //library[40].display(200, 200);
-    for (int i = 0; i < library.length; i++){
-      library[i].display(clipSize, clipSize);
-    }
-  }
+  //void PresentMenagerie(){
+
+  //  }
+  //}
   
 }

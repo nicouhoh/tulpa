@@ -1,15 +1,11 @@
-int pillow = 5;
-String path;
 Wranglist wranglist;
 
 void setup(){
-  size(400, 400);
+  surface.setSize(500, 500);
   surface.setResizable(true);
-  path = sketchPath();
   wranglist = new Wranglist();
-  wranglist.FussMenagerie();
 }
 
 void draw(){
-    wranglist.PresentMenagerie();
-  }
+  wranglist.library[19].display();
+}
