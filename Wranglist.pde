@@ -41,17 +41,18 @@ class Wranglist{
     int x = pillow;
     int y = pillow;
     for (int i = 0; i < library.length; i++){
-      println("USHERING: " + library[i].img);
+      library[i].setPos(x, y);
       if (x + clipSize <= width){
-        library[i].setPos(x, y);
         x += clipSize + pillow;
       } else {
         x = pillow;
         y += clipSize + pillow;
-        library[i].setPos(x, y);
       }
     }
   }
+  
+  // Wait how is this actually going to work
+  
   
   void Showtime(){
     for (int i = 0; i < library.length; i++){
