@@ -30,7 +30,9 @@ class Wranglist{
     for (int i = 0; i < filenames.length; i++){
       if (filenames[i].contains(".jpg")){
         Clipping spawn = new Clipping(filenames[i]);
-        println(spawn.img);
+        if (spawn.img == null){
+           println("ERROR ERROR HELP ME");
+        }
         brood = (Clipping[])append(brood, spawn);
       }
     }
@@ -41,22 +43,19 @@ class Wranglist{
     int x = pillow;
     int y = pillow;
     for (int i = 0; i < library.length; i++){
-      library[i].setPos(x, y);
-      if (x + clipSize <= width){
-        x += clipSize + pillow;
-      } else {
+      library[i].setSize(clipSize, clipSize);
+      if (x + clipSize >= field.size){
         x = pillow;
         y += clipSize + pillow;
       }
+        library[i].setPos(x, y);
+        x += clipSize + pillow;
     }
-  }
-  
-  // Wait how is this actually going to work
-  
+  }  
   
   void Showtime(){
     for (int i = 0; i < library.length; i++){
-      library[i].display(clipSize, clipSize);
+      library[i].display();
     }
   }
   
