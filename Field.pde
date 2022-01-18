@@ -1,17 +1,18 @@
 class Field{
 
-  int size;
+  int fieldW;
   Scroller scroller;
-  int longitude;
+  int latitude;
   
   Clipping[] library;
   String path;
   int clipSize;
   int pillow;
+  int foot;
   
   Field(){
     scroller = new Scroller();
-    
+    latitude = 0;
     path = sketchPath() + "/data/";
     library = BirthingPool();
     pillow = 10;
@@ -20,17 +21,17 @@ class Field{
   }
   
   void initializeField(){
-    size = width - scroller.scrollWidth;
-    longitude = 0;
+    fieldW = width - scroller.scrollW;
   }
   
   void updateField(){
-    size = width - scroller.scrollWidth;
+    fieldW = width - scroller.scrollW;
     if (resized){
       FussMenagerie();
     }
+    scroller.updateScroller(foot);
     Showtime();
-    scroller.drawScroller();
+
   }
   
   String[] listFileNames(String dir){
@@ -63,19 +64,27 @@ class Field{
     int y = pillow;
     for (int i = 0; i < library.length; i++){
       library[i].setSize(clipSize, clipSize);
-      if (x + clipSize >= size){
+      if (x + clipSize >= fieldW){
         x = pillow;
         y += clipSize + pillow;
       }
         library[i].setPos(x, y);
         x += clipSize + pillow;
     }
+    foot = y + clipSize + pillow;
+    
   }  
 
   void Showtime(){
+    push();
+    background(50);
+    translate(0, latitude);
     for (int i = 0; i < library.length; i++){
       library[i].display();
     }
+    pop();
+    
+    scroller.drawScroller();
   }
   
 }

@@ -25,12 +25,10 @@ void draw(){
 void keyPressed(){
   if (key == CODED){
     if (keyCode == UP){
-      println("translate up");
-      
+      field.scroller.moveScroller(20);
     }
     else if (keyCode == DOWN){
-      println("translate down");
-       //<>//
+      field.scroller.moveScroller(-20);
     }
-  }
+  } //<>//
 }
