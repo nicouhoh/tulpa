@@ -1,7 +1,7 @@
 class Scroller{
   
   
-  // I would love to instead use the OS's native scrollbar. How??
+  // I mean REALLY I want to just use the OS's native scrolling. HOW? HOW???
   
   int xpos;
   int scrollWidth;
@@ -18,9 +18,6 @@ class Scroller{
     nubHeight = 40;
     barColor = color(0, 0, 0, 50);
     nubColor = color(200, 200, 200, 255);
-  }
-  
-  void mouseInput(){
   }
     
   void drawScroller(){

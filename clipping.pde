@@ -36,5 +36,5 @@ class Clipping{
     }
     displayW = w;
     displayH = h;
-  }
+  }s
 }

@@ -1,4 +1,3 @@
-Wranglist wranglist;
 Field field;
 Scroller scroller;
 int w, h;
@@ -16,8 +15,22 @@ void draw(){
     w = width;
     h = height;
     resized = true;
+    
   }
   
   field.updateField();
   resized = false;
+}
+
+void keyPressed(){
+  if (key == CODED){
+    if (keyCode == UP){
+      println("translate up");
+      
+    }
+    else if (keyCode == DOWN){
+      println("translate down");
+       //<>//
+    }
+  }
 }
