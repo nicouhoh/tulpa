@@ -37,7 +37,6 @@ void checkResize(){
 
 void mousePressed(){
   if (mouseX > field.fieldW){
-    println("scrollbar");
     field.scroller.grabScroller();
   }
 }

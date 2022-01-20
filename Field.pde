@@ -31,7 +31,7 @@ class Field{
     if (resized){
       FussMenagerie(); //<>//
     }
-    scroller.updateScroller(foot, latitude);
+    scroller.updateScroller(foot);
     followScroller();
     Showtime();
   }
@@ -93,7 +93,6 @@ class Field{
     float old = latitude;
      latitude = -(scroller.gripY / height) * foot;
     if (old != latitude){
-      println("latitude: " + latitude);
     }
   }
  
