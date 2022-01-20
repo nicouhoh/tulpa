@@ -13,8 +13,11 @@ class Clipping{
     img = loadImage(imagePath);
   }
   
-  void display(){
-    image(img, xpos + airW, ypos + airH , displayW, displayH);
+  void display(float latitude){
+    if(ypos > -latitude - height/2 && ypos < -latitude + height * 1.5){
+      image(img, xpos + airW, ypos + airH , displayW, displayH);
+    }
+    text(str(ypos), xpos, ypos);
   }
   
   void setPos(int x, int y){

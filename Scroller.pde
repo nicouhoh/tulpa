@@ -18,11 +18,11 @@ class Scroller{
     scrollW = 10;
     scrollC = #97E582;
     gripC = #86036E;
-    scrollDist = 5;
+    scrollDist = 3;
     grabbed = false;
   }
   
-  void updateScroller(float contentH, float latitude){
+  void updateScroller(float contentH){
     gripH = height / contentH * height;
     if(grabbed){
       gripY = mouseY - grabY;

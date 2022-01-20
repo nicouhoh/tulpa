@@ -82,7 +82,7 @@ class Field{
     background(50);
     translate(0, latitude);
     for (int i = 0; i < library.length; i++){
-      library[i].display();
+      library[i].display(latitude);
     }
     pop();
     
@@ -90,7 +90,11 @@ class Field{
   }
   
   void followScroller(){
+    float old = latitude;
      latitude = -(scroller.gripY / height) * foot;
+    if (old != latitude){
+      println("latitude: " + latitude);
+    }
   }
  
   
