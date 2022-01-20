@@ -11,13 +11,7 @@ void setup(){
 }
 
 void draw(){
-  if (w != width || h != height){
-    w = width;
-    h = height;
-    resized = true;
-    
-  }
-  
+  checkResize();
   field.updateField();
   resized = false;
 }
@@ -25,10 +19,36 @@ void draw(){
 void keyPressed(){
   if (key == CODED){
     if (keyCode == UP){
-      field.scroller.moveScroller(20);
+      println("scroll up");
     }
     else if (keyCode == DOWN){
-      field.scroller.moveScroller(-20);
+      println("scroll down");
     }
-  } //<>//
+  }
 }
+  
+void checkResize(){
+    if (w != width || h != height){
+    w = width;
+    h = height; //<>//
+    resized = true;
+  }
+}
+
+void mousePressed(){
+  if (mouseX > field.fieldW){
+    println("scrollbar");
+    field.scroller.grabScroller();
+  }
+}
+
+void mouseReleased(){
+  if (field.scroller.grabbed){
+    field.scroller.grabbed = false;
+  }
+}
+
+void mouseWheel(MouseEvent event){
+  field.scroller.moveScroller(event.getCount());
+}
+  

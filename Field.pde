@@ -2,17 +2,19 @@ class Field{
 
   int fieldW;
   Scroller scroller;
-  int latitude;
+  float latitude;
   
   Clipping[] library;
   String path;
   int clipSize;
   int pillow;
-  int foot;
+  float foot;
+  int scrollDist;
   
   Field(){
     scroller = new Scroller();
     latitude = 0;
+    scrollDist = 50;
     path = sketchPath() + "/data/";
     library = BirthingPool();
     pillow = 10;
@@ -27,11 +29,11 @@ class Field{
   void updateField(){
     fieldW = width - scroller.scrollW;
     if (resized){
-      FussMenagerie();
+      FussMenagerie(); //<>//
     }
-    scroller.updateScroller(foot);
+    scroller.updateScroller(foot, latitude);
+    followScroller();
     Showtime();
-
   }
   
   String[] listFileNames(String dir){
@@ -86,5 +88,10 @@ class Field{
     
     scroller.drawScroller();
   }
+  
+  void followScroller(){
+     latitude = -(scroller.gripY / height) * foot;
+  }
+ 
   
 }
