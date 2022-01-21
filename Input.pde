@@ -33,8 +33,15 @@ class Input{
     }
   }
   
-  void wheelInput(MouseEvent event){
+  void wheel(MouseEvent event){
     scroller.moveScroller(event.getCount());
+  }
+  
+  void dropInput(DropEvent drop){
+    if (drop.isImage()){
+      field.importClipping(drop.toString());
+    }
+    field.fussMenagerie();
   }
   
 }

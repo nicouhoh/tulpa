@@ -1,3 +1,8 @@
+import drop.*;
+import test.*;
+
+SDrop sdrop;
+
 Field field;
 Scroller scroller;
 Input input;
@@ -7,6 +12,7 @@ boolean resized = false;
 void setup(){
   surface.setSize(500, 500);
   surface.setResizable(true);
+  sdrop = new SDrop(this);
   field = new Field();
   field.initializeField();
   input = new Input(field);
@@ -43,6 +49,10 @@ void mouseReleased(){
 }
 
 void mouseWheel(MouseEvent event){
-  input.wheelInput(event);
+  input.wheel(event);
+}
+
+void dropEvent(DropEvent dropEvent){
+  input.dropInput(dropEvent);
 }
   
