@@ -1,5 +1,6 @@
 Field field;
 Scroller scroller;
+Input input;
 int w, h;
 boolean resized = false;
 
@@ -8,23 +9,14 @@ void setup(){
   surface.setResizable(true);
   field = new Field();
   field.initializeField();
+  input = new Input(field);
+  
 }
 
 void draw(){
   checkResize();
   field.updateField();
   resized = false;
-}
-
-void keyPressed(){
-  if (key == CODED){
-    if (keyCode == UP){
-      println("scroll up");
-    }
-    else if (keyCode == DOWN){
-      println("scroll down");
-    }
-  }
 }
   
 void checkResize(){
@@ -35,19 +27,22 @@ void checkResize(){
   }
 }
 
+
+// INPUT--------------------------------------
+
+void keyPressed(){
+  input.keyInput();
+}
+
 void mousePressed(){
-  if (mouseX > field.fieldW){
-    field.scroller.grabScroller();
-  }
+  input.mouseDown();
 }
 
 void mouseReleased(){
-  if (field.scroller.grabbed){
-    field.scroller.grabbed = false;
-  }
+  input.mouseUp();
 }
 
 void mouseWheel(MouseEvent event){
-  field.scroller.moveScroller(event.getCount());
+  input.wheelInput(event);
 }
   

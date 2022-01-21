@@ -29,12 +29,10 @@ class Clipping{
     float h = img.height;
     if (img.width >= img.height){      
       w = clipW;
-      println("1");
       h = img.height / (img.width / clipW);
       airH = (clipH - h) / 2;
     } else {
       h = clipH;
-      println("2");
       w = img.width / (img.height / clipH);
       airW = (clipW - w) / 2;
     }

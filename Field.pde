@@ -1,6 +1,6 @@
 class Field{
 
-  float fieldW;
+  float w;
   int columns;
   Scroller scroller;
   float latitude;
@@ -24,11 +24,11 @@ class Field{
   }
   
   void initializeField(){
-    fieldW = width - scroller.scrollW;
+    w = width - scroller.scrollW;
   }
   
   void updateField(){
-    fieldW = width - scroller.scrollW;
+    w = width - scroller.scrollW;
     if (resized){
       fussMenagerie();
     }
@@ -67,7 +67,7 @@ class Field{
     float y = pillow;
     for (int i = 0; i < library.length; i++){
       library[i].setSize(clipSize, clipSize);
-      if (x + clipSize >= fieldW){
+      if (x + clipSize >= w){
         x = pillow;
         y += clipSize + pillow;
       }
@@ -79,7 +79,7 @@ class Field{
   }  
   
   void fussMenagerie(){
-    clipSize = constrain((fieldW - (pillow * (columns + 1))) / columns, 10, 9999999);
+    clipSize = constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
     float x = pillow;
     float y = pillow;
     for (int i = 0; i < library.length; i++){
