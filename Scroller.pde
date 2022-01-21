@@ -18,7 +18,7 @@ class Scroller{
     scrollW = 10;
     scrollC = #97E582;
     gripC = #86036E;
-    scrollDist = 3;
+    scrollDist = 1;
     grabbed = false;
   }
   
@@ -27,7 +27,7 @@ class Scroller{
     if(grabbed){
       gripY = mouseY - grabY;
     }
-    gripY = constrain(gripY, 0, height - gripH); //<>//
+    gripY = constrain(gripY, 0, height - gripH);
   }
   
   void drawScroller(){

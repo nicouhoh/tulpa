@@ -1,25 +1,26 @@
 class Field{
 
-  int fieldW;
+  float fieldW;
+  int columns;
   Scroller scroller;
   float latitude;
   
   Clipping[] library;
   String path;
-  int clipSize;
-  int pillow;
+  float clipSize;
+  float pillow;
   float foot;
-  int scrollDist;
+  float scrollDist;
   
   Field(){
     scroller = new Scroller();
     latitude = 0;
-    scrollDist = 50;
+    columns = 5;
     path = sketchPath() + "/data/";
     library = BirthingPool();
     pillow = 10;
     clipSize = 200;
-    FussMenagerie();
+    fussMenagerie();
   }
   
   void initializeField(){
@@ -29,7 +30,7 @@ class Field{
   void updateField(){
     fieldW = width - scroller.scrollW;
     if (resized){
-      FussMenagerie(); //<>//
+      fussMenagerie();
     }
     scroller.updateScroller(foot);
     followScroller();
@@ -61,9 +62,9 @@ class Field{
     return brood;
   }
   
-  void FussMenagerie(){
-    int x = pillow;
-    int y = pillow;
+  void oldFuss(){
+    float x = pillow;
+    float y = pillow;
     for (int i = 0; i < library.length; i++){
       library[i].setSize(clipSize, clipSize);
       if (x + clipSize >= fieldW){
@@ -76,6 +77,19 @@ class Field{
     foot = y + clipSize + pillow;
     
   }  
+  
+  void fussMenagerie(){
+    clipSize = constrain((fieldW - (pillow * (columns + 1))) / columns, 10, 9999999);
+    float x = pillow;
+    float y = pillow;
+    for (int i = 0; i < library.length; i++){
+      x = pillow + (i % columns) * (pillow + clipSize);
+      y = pillow + (i / columns) * (pillow + clipSize);
+      library[i].setSize(clipSize, clipSize);
+      library[i].setPos(x, y);
+    }
+    foot = y + clipSize + pillow;
+  }
 
   void Showtime(){
     push();
@@ -90,10 +104,7 @@ class Field{
   }
   
   void followScroller(){
-    float old = latitude;
      latitude = -(scroller.gripY / height) * foot;
-    if (old != latitude){
-    }
   }
  
   

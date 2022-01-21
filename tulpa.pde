@@ -30,7 +30,7 @@ void keyPressed(){
 void checkResize(){
     if (w != width || h != height){
     w = width;
-    h = height; //<>//
+    h = height;
     resized = true;
   }
 }

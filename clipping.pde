@@ -1,12 +1,12 @@
 class Clipping{
   
   PImage img;
-  int xpos;
-  int ypos;
-  int displayW;
-  int displayH;
-  int airW;
-  int airH;
+  float xpos;
+  float ypos;
+  float displayW;
+  float displayH;
+  float airW;
+  float airH;
   
   Clipping(String imagePath){
     println(imagePath);
@@ -19,20 +19,22 @@ class Clipping{
     }
   }
   
-  void setPos(int x, int y){
+  void setPos(float x, float y){
     xpos = x;
     ypos = y;
   }
   
-  void setSize(int clipW, int clipH){
-    int w = img.width;
-    int h = img.height;
+  void setSize(float clipW, float clipH){
+    float w = img.width;
+    float h = img.height;
     if (img.width >= img.height){      
       w = clipW;
+      println("1");
       h = img.height / (img.width / clipW);
       airH = (clipH - h) / 2;
     } else {
       h = clipH;
+      println("2");
       w = img.width / (img.height / clipH);
       airW = (clipW - w) / 2;
     }
