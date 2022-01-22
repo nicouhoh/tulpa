@@ -1,6 +1,6 @@
 class Clipping{
   
-  PImage img;
+  PImage img; //<>//
   float xpos;
   float ypos;
   float displayW;

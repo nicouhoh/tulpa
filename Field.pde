@@ -17,7 +17,7 @@ class Field{
     latitude = 0;
     columns = 5;
     path = sketchPath() + "/data/";
-    library = birthingPool(path);
+    library = incubateDir(path);
     pillow = 10;
     clipSize = 200;
     fussMenagerie();
@@ -47,43 +47,31 @@ class Field{
     }
   }
   
-  void importClipping(String filename){
-    Clipping clip = incubateClipping(filename);
-    addToLibrary(clip);
-  }
-  
   void addToLibrary(Clipping clip){
     library = (Clipping[])append(library, clip);
   }
   
-  // SAY: How could these next two be combined. can we do the overload thing here?
-  
-  Clipping[] birthingPool(String filepath){
-    
-     // Takes in a path, gives you a list of clippings
-     
-    String[] filenames = listFileNames(filepath);
-    Clipping[] brood = new Clipping[0];
-    for (int i = 0; i < filenames.length; i++){
-      if (filenames[i].contains(".jpg")){
-        Clipping spawn = incubateClipping(filenames[i]);
-        brood = (Clipping[])append(brood, spawn);
-      }
-    }
-    return brood;
+  void addToLibrary(Clipping[] clips){
+    library = (Clipping[])concat(library, clips);
   }
-  
-  Clipping incubateClipping(String filename){
     
-    // takes in a file path, gives you a clipping
-    
-        Clipping spawn = new Clipping(filename);
-        if (spawn.img == null){
-           println("ERROR ERROR HELP ME");
-        }
-        return spawn; // Gives you a clippinng
+    Clipping incubateFile(String filename){
+      if (filename.contains(".jpg")){
+        Clipping clipping = new Clipping(filename);
+        return clipping;
+      }else{ return null; }
     }
-  
+    
+    Clipping[] incubateDir(String filename){
+      String[] files = listFileNames(filename);
+      Clipping[] brood = new Clipping[0];
+      for (int i = 0; i < files.length; i++){
+        if (files[i].contains(".jpg")){
+          brood = (Clipping[])append(brood, incubateFile(files[i]));
+        }
+      }
+      return brood;
+    } //<>//
   
   void fussMenagerie(){
     clipSize = constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
@@ -92,6 +80,7 @@ class Field{
     for (int i = 0; i < library.length; i++){
       x = pillow + (i % columns) * (pillow + clipSize);
       y = pillow + (i / columns) * (pillow + clipSize);
+      println("WORKING ON: " + library[i]);
       library[i].setSize(clipSize, clipSize);
       library[i].setPos(x, y);
     }
@@ -114,7 +103,7 @@ class Field{
      latitude = -(scroller.gripY / height) * foot;
   }
   
-  //void oldFuss(){
+  //void oldFussMenagerie(){
   //  float x = pillow;
   //  float y = pillow;
   //  for (int i = 0; i < library.length; i++){

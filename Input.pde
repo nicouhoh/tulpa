@@ -38,8 +38,17 @@ class Input{
   }
   
   void dropInput(DropEvent drop){
+    println("dropInput"); //<>//
     if (drop.isImage()){
-      field.importClipping(drop.toString());
+      Clipping clipping = field.incubateFile(drop.toString());
+      field.addToLibrary(clipping);
+    }else if(drop.isFile()){
+      println("drop.isFile");
+      File file = new File(drop.toString());
+      if (file.isDirectory()){
+        Clipping[] clippings = field.incubateDir(drop.toString());
+        field.addToLibrary(clippings);
+      }
     }
     field.fussMenagerie();
   }
