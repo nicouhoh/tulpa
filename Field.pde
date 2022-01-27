@@ -17,7 +17,7 @@ class Field{
     latitude = 0;
     columns = 5;
     path = sketchPath() + "/data/";
-    library = incubateDir(path);
+    library = incubateDir(new File(path));
     pillow = 10;
     clipSize = 200;
     fussMenagerie();
@@ -37,16 +37,6 @@ class Field{
     Showtime();
   }
   
-  String[] listFileNames(String dir){
-    File file = new File(dir);
-    if (file.isDirectory()) {
-      String names[] = file.list();
-      return names;
-    } else {
-      return null;
-    }
-  }
-  
   void addToLibrary(Clipping clip){
     library = (Clipping[])append(library, clip);
   }
@@ -54,24 +44,31 @@ class Field{
   void addToLibrary(Clipping[] clips){
     library = (Clipping[])concat(library, clips);
   }
+  
+  
     
-    Clipping incubateFile(String filename){
-      if (filename.contains(".jpg")){
-        Clipping clipping = new Clipping(filename);
-        return clipping;
-      }else{ return null; }
-    }
-    
-    Clipping[] incubateDir(String filename){
-      String[] files = listFileNames(filename);
-      Clipping[] brood = new Clipping[0];
-      for (int i = 0; i < files.length; i++){
-        if (files[i].contains(".jpg")){
-          brood = (Clipping[])append(brood, incubateFile(files[i]));
-        }
+  Clipping incubateFile(File file){
+    println("INCUBATE FILE: " + file.getName());
+    if (file.getName().contains(".jpg")){
+      Clipping clipping = new Clipping(file);
+      return clipping;
+    }else{ return null; }
+  }
+  
+  Clipping[] incubateDir(File dir){
+    println("INCUBATE DIR");
+    File[] files = listFiles(dir);
+    Clipping[] brood = new Clipping[0];
+    for (int i = 0; i < files.length; i++){ //<>//
+      if (files[i].getName().contains(".jpg")){
+        brood = (Clipping[])append(brood, incubateFile(files[i]));
+      } else if(files[i].isDirectory()){
+        brood = (Clipping[])concat(brood, incubateDir(files[i]));
       }
-      return brood;
-    } //<>//
+    }
+    println("BROOD: " + brood);
+    return brood; //<>//
+  }
   
   void fussMenagerie(){
     clipSize = constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
@@ -80,7 +77,6 @@ class Field{
     for (int i = 0; i < library.length; i++){
       x = pillow + (i % columns) * (pillow + clipSize);
       y = pillow + (i / columns) * (pillow + clipSize);
-      println("WORKING ON: " + library[i]);
       library[i].setSize(clipSize, clipSize);
       library[i].setPos(x, y);
     }
@@ -102,22 +98,5 @@ class Field{
   void followScroller(){
      latitude = -(scroller.gripY / height) * foot;
   }
-  
-  //void oldFussMenagerie(){
-  //  float x = pillow;
-  //  float y = pillow;
-  //  for (int i = 0; i < library.length; i++){
-  //    library[i].setSize(clipSize, clipSize);
-  //    if (x + clipSize >= w){
-  //      x = pillow;
-  //      y += clipSize + pillow;
-  //    }
-  //      library[i].setPos(x, y);
-  //      x += clipSize + pillow;
-  //  }
-  //  foot = y + clipSize + pillow;
-    
-  //}  
- 
   
 }

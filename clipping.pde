@@ -1,6 +1,8 @@
 class Clipping{
   
+  
   PImage img; //<>//
+  String path;
   float xpos;
   float ypos;
   float displayW;
@@ -11,6 +13,11 @@ class Clipping{
   Clipping(String imagePath){
     println(imagePath);
     img = loadImage(imagePath);
+  }
+  
+  Clipping(File file){
+    path = file.getAbsolutePath();
+    img = loadImage(path);
   }
   
   void display(float latitude){

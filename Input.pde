@@ -40,13 +40,15 @@ class Input{
   void dropInput(DropEvent drop){
     println("dropInput"); //<>//
     if (drop.isImage()){
-      Clipping clipping = field.incubateFile(drop.toString());
+      Clipping clipping = field.incubateFile(drop.file());
+      //print("ABSOLUTE PATH: " + drop.file().path);
       field.addToLibrary(clipping);
     }else if(drop.isFile()){
-      println("drop.isFile");
+      println("drop.isFile"); //<>//
       File file = new File(drop.toString());
+      print("ABSOLUTE PATH: " + file.getAbsolutePath());
       if (file.isDirectory()){
-        Clipping[] clippings = field.incubateDir(drop.toString());
+        Clipping[] clippings = field.incubateDir(file);
         field.addToLibrary(clippings);
       }
     }
