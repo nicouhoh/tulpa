@@ -1,8 +1,9 @@
 import drop.*;
 import test.*;
 
-SDrop sdrop;
+SDrop sdrop; //<>//
 
+Library library;
 Field field;
 Scroller scroller;
 Input input;
@@ -13,9 +14,10 @@ void setup(){
   surface.setSize(500, 500);
   surface.setResizable(true);
   sdrop = new SDrop(this);
-  field = new Field();
+  library = new Library();
+  field = new Field(library); //<>//
   field.initializeField();
-  input = new Input(field);
+  input = new Input(library, field);
   
 }
 

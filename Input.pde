@@ -2,10 +2,12 @@ class Input{
   
   Field field;
   Scroller scroller;
+  Library library;
   
-  Input(Field fieldIn){
+  Input(Library libraryIn, Field fieldIn){
     field = fieldIn;
     scroller = field.scroller;
+    library = libraryIn;
   }
   
   void keyInput(){
@@ -40,16 +42,16 @@ class Input{
   void dropInput(DropEvent drop){
     println("dropInput"); //<>//
     if (drop.isImage()){
-      Clipping clipping = field.incubateFile(drop.file());
+      Clipping clipping = library.incubateFile(drop.file());
       //print("ABSOLUTE PATH: " + drop.file().path);
-      field.addToLibrary(clipping);
+      library.addToLibrary(clipping);
     }else if(drop.isFile()){
       println("drop.isFile"); //<>//
       File file = new File(drop.toString());
       print("ABSOLUTE PATH: " + file.getAbsolutePath());
       if (file.isDirectory()){
-        Clipping[] clippings = field.incubateDir(file);
-        field.addToLibrary(clippings);
+        Clipping[] clippings = library.incubateDir(file);
+        library.addToLibrary(clippings);
       }
     }
     field.fussMenagerie();

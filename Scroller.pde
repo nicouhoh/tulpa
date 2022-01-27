@@ -16,8 +16,8 @@ class Scroller{
   Scroller(){
     gripY = 0;
     scrollW = 10;
-    scrollC = #97E582;
-    gripC = #86036E;
+    scrollC = #1A1A1A;
+    gripC = #6C6C6C;
     scrollDist = 1;
     grabbed = false;
   }
