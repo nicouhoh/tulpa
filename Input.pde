@@ -4,10 +4,16 @@ class Input{
   Scroller scroller;
   Library library;
   
+  boolean click;
+  
   Input(Library libraryIn, Field fieldIn){
     field = fieldIn;
     scroller = field.scroller;
     library = libraryIn;
+  }
+  
+  void update(){
+    click = false;
   }
   
   void keyInput(){
@@ -21,6 +27,23 @@ class Input{
           break;
       }
     }
+    else{
+      println(key);
+      switch(key){
+        case '-':
+          field.columns += 1; //<>//
+          field.fussMenagerie();
+          break;
+        case '=':
+          field.columns -= 1;
+          field.fussMenagerie();
+          break;
+      }
+    }
+  }
+  
+  void mouseClick(){
+    click = true;
   }
   
   void mouseDown(){
@@ -40,13 +63,13 @@ class Input{
   }
   
   void dropInput(DropEvent drop){
-    println("dropInput"); //<>//
+    println("dropInput");
     if (drop.isImage()){
       Clipping clipping = library.incubateFile(drop.file());
       //print("ABSOLUTE PATH: " + drop.file().path);
       library.addToLibrary(clipping);
     }else if(drop.isFile()){
-      println("drop.isFile"); //<>//
+      println("drop.isFile");
       File file = new File(drop.toString());
       print("ABSOLUTE PATH: " + file.getAbsolutePath());
       if (file.isDirectory()){

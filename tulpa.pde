@@ -1,7 +1,7 @@
 import drop.*;
 import test.*;
 
-SDrop sdrop; //<>//
+SDrop sdrop;
 
 Library library;
 Field field;
@@ -15,7 +15,7 @@ void setup(){
   surface.setResizable(true);
   sdrop = new SDrop(this);
   library = new Library();
-  field = new Field(library); //<>//
+  field = new Field(library);
   field.initializeField();
   input = new Input(library, field);
   
@@ -24,6 +24,7 @@ void setup(){
 void draw(){
   checkResize();
   field.updateField();
+  input.update();
   resized = false;
 }
   
@@ -40,6 +41,10 @@ void checkResize(){
 
 void keyPressed(){
   input.keyInput();
+}
+
+void mouseClicked(){
+  input.mouseClick();
 }
 
 void mousePressed(){

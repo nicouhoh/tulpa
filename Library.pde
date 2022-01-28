@@ -2,8 +2,10 @@ class Library{
   
   Clipping[] clippings;
   String path;
+  int nextid;
   
   Library(){
+    nextid = 0; //<>//
     path = sketchPath() + "/data/";
     clippings = incubateDir(new File(path));
   }
@@ -16,12 +18,10 @@ class Library{
     clippings = (Clipping[])concat(clippings, clips);
   }
   
-  
-    
   Clipping incubateFile(File file){
     println("INCUBATE FILE: " + file.getName());
     if (file.getName().contains(".jpg")){
-      Clipping clipping = new Clipping(file);
+      Clipping clipping = new Clipping(this, file);
       return clipping;
     }else{ return null; }
   }
@@ -39,5 +39,12 @@ class Library{
     }
     println("BROOD: " + brood);
     return brood;
+  }
+  
+  String getid(){
+    String date = str(year()) + nf(month(), 2) + nf(day(), 2);
+    String id = date + nf(nextid, 3);
+    nextid++;
+    return id;
   }
 }

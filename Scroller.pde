@@ -1,5 +1,7 @@
 class Scroller{
   // I mean REALLY I want to just use the OS's native scrolling. HOW? HOW???
+  // would be nice to see an indication on the scrollbar of offscreen selected clippings
+
   
   color scrollC;
   color gripC;
