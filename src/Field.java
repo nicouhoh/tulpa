@@ -1,3 +1,8 @@
+
+import processing.core.PApplet;
+import processing.core.PGraphics;
+
+
 public class Field{
 
   Library library;
@@ -23,21 +28,21 @@ public class Field{
   }
   
   public void initializeField(){
-    w = width - scroller.scrollW;
+    w = tulpa.SOLE.width - scroller.scrollW;
   }
   
-  public void updateField(){
-    w = width - scroller.scrollW;
-    if (resized){
+  public void updateField(PGraphics g){
+    w = tulpa.SOLE.width - scroller.scrollW;
+    if (tulpa.SOLE.resized){
       fussMenagerie();
     }
     scroller.updateScroller(foot);
     followScroller();
-    Showtime();
+    Showtime(g);
   }
   
   public void fussMenagerie(){
-    clipSize = constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
+    clipSize = PApplet.constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
     float x = pillow;
     float y = pillow;
     for (int i = 0; i < library.clippings.length; i++){
@@ -49,19 +54,19 @@ public class Field{
     foot = y + clipSize + pillow;
   }
 
-  public void Showtime(){
-    push();
-    background(50);
-    translate(0, latitude);
+  public void Showtime(PGraphics g){
+    g.push();
+    g.background(50);
+    g.translate(0, latitude);
     for (int i = 0; i < library.clippings.length; i++){
-      library.clippings[i].update(latitude);
+      library.clippings[i].update(g, latitude);
     }
-    pop();
+    g.pop();
     
-    scroller.drawScroller();
+    scroller.drawScroller(g);
   }
   
   public void followScroller(){
-     latitude = -(scroller.gripY / height) * foot;
+     latitude = -(scroller.gripY / tulpa.SOLE.height) * foot;
   }
 }

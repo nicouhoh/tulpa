@@ -1,6 +1,11 @@
 
+import processing.core.PApplet;
 import processing.event.MouseEvent;
-import Field;
+
+import java.io.File;
+
+import drop.DropEvent;
+
 
 public class Input{
   
@@ -21,19 +26,19 @@ public class Input{
   }
   
   public void keyInput(){
-    if (key == CODED){
-      switch(keyCode){
-        case UP:
-          println("scroll up");
+    if (tulpa.SOLE.key == tulpa.SOLE.CODED){
+      switch(tulpa.SOLE.keyCode){
+        case PApplet.UP:
+          System.out.println("scroll up");
           break;
-        case DOWN:
-          println("scroll down");
+        case PApplet.DOWN:
+          System.out.println("scroll down");
           break;
       }
     }
     else{
-      println(key);
-      switch(key){
+      System.out.println(tulpa.SOLE.key);
+      switch(tulpa.SOLE.key){
         case '-':
           field.columns += 1; //<>//
           field.fussMenagerie();
@@ -51,7 +56,7 @@ public class Input{
   }
   
   public void mouseDown(){
-    if (mouseX > field.w){
+    if (tulpa.SOLE.mouseX > field.w){
       scroller.grabScroller();
     }
   }
@@ -67,15 +72,15 @@ public class Input{
   }
   
   public void dropInput(DropEvent drop){
-    println("dropInput");
+    System.out.println("dropInput");
     if (drop.isImage()){
       Clipping clipping = library.incubateFile(drop.file());
       //print("ABSOLUTE PATH: " + drop.file().path);
       library.addToLibrary(clipping);
     }else if(drop.isFile()){
-      println("drop.isFile");
+      System.out.println("drop.isFile");
       File file = new File(drop.toString());
-      print("ABSOLUTE PATH: " + file.getAbsolutePath());
+      System.out.print("ABSOLUTE PATH: " + file.getAbsolutePath());
       if (file.isDirectory()){
         Clipping[] clippings = library.incubateDir(file);
         library.addToLibrary(clippings);

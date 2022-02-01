@@ -1,3 +1,10 @@
+
+import processing.core.PGraphics;
+import processing.core.PImage;
+
+import java.io.File;
+
+
 public class Clipping{
   
   Library library;
@@ -20,28 +27,28 @@ public class Clipping{
     library = libraryIn;
     id = library.getid();
     path = file.getAbsolutePath();
-    img = loadImage(path);
+    img = tulpa.SOLE.loadImage(path);
   }
   
-  public void update(float latitude){
-    if(ypos > -latitude - height/2 && ypos < -latitude + height * 1.5){
-      display();
-      displaySelect();
+  public void update(PGraphics g, float latitude){
+    if(ypos > -latitude - tulpa.SOLE.height/2 && ypos < -latitude + tulpa.SOLE.height * 1.5){
+      display(g);
+      displaySelect(g);
       mouseOver();
       clickSelect();
     }
   }
   
-  public void display(){
-      image(img, xpos + airW, ypos + airH , displayW, displayH);
+  public void display(PGraphics g){
+      g.image(img, xpos + airW, ypos + airH , displayW, displayH);
     } //<>//
     
   
-  public void displaySelect(){
+  public void displaySelect(PGraphics g){
     if(selected){
-      stroke(color(255));
-      noFill();
-      rect(xpos +airW, ypos + airH, displayW, displayH);
+      g.stroke(tulpa.SOLE.color(255));
+      g.noFill();
+      g.rect(xpos +airW, ypos + airH, displayW, displayH);
     }
   }
   
@@ -67,8 +74,9 @@ public class Clipping{
   }
   
   public void mouseOver(){
-    if (mouseX >= xpos + airW && mouseX <= xpos + airW + displayW &&
-        mouseY >= ypos + airH + field.latitude && mouseY <= ypos + airH + displayH + field.latitude){
+    if (tulpa.SOLE.mouseX >= xpos + airW && tulpa.SOLE.mouseX <= xpos + airW + displayW &&
+        tulpa.SOLE.mouseY >= ypos + airH + tulpa.SOLE.field.latitude
+        && tulpa.SOLE.mouseY <= ypos + airH + displayH + tulpa.SOLE.field.latitude){
           hover = true;
      }else{
        hover = false;
@@ -76,9 +84,9 @@ public class Clipping{
   }
   
   public void clickSelect(){
-    if (input.click && hover){
+    if (tulpa.SOLE.input.click && hover){
       selected = true;
-    }else if (input.click && !hover){
+    }else if (tulpa.SOLE.input.click && !hover){
       selected = false;
     }
   }

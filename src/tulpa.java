@@ -1,19 +1,28 @@
+
 import drop.*;
 import test.*;
 
 import processing.core.PApplet;
+import processing.event.MouseEvent;
+
+import drop.DropEvent;
+
 
 public class tulpa  extends PApplet  {
 SDrop sdrop;
 
-Library library;
-Field field;
-Scroller scroller;
-Input input;
+public Library library;
+public Field field;
+public Scroller scroller;
+public Input input;
 int w, h;
-boolean resized = false;
+public boolean resized = false;
+
+public static tulpa SOLE = null;
 
 public void setup(){
+  SOLE = this;
+
   surface.setSize(500, 500);
   surface.setResizable(true);
   sdrop = new SDrop(this);
@@ -21,12 +30,11 @@ public void setup(){
   field = new Field(library);
   field.initializeField();
   input = new Input(library, field);
-  
 }
 
 public void draw(){
   checkResize();
-  field.updateField();
+  field.updateField(this.g);
   input.update();
   resized = false;
 }
@@ -66,4 +74,7 @@ public void dropEvent(DropEvent dropEvent){
   input.dropInput(dropEvent);
 }
 
+    // STARTING (YER) ENGINES
+public static void main (String av[])
+  { PApplet.main ("tulpa"); }
 }
