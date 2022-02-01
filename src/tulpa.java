@@ -27,8 +27,10 @@ public void setup(){
   surface.setResizable(true);
   sdrop = new SDrop(this);
   library = new Library();
+  registerMethod ("keyEvent", library);
   field = new Field(library);
   field.initializeField();
+  registerMethod ("mouseEvent", field);
   input = new Input(library, field);
 }
 

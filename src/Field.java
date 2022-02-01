@@ -2,6 +2,8 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
+import processing.event.MouseEvent;
+
 
 public class Field{
 
@@ -69,4 +71,11 @@ public class Field{
   public void followScroller(){
      latitude = -(scroller.gripY / tulpa.SOLE.height) * foot;
   }
+
+  public void mouseEvent (MouseEvent e)
+    { if (e . getAction ()  !=  MouseEvent.MOVE)
+        return;
+      System.out.println ("Z'alors: mouse move event at "  +  e . getX ()
+                          +  ", "  +  e . getY ());
+    }
 }

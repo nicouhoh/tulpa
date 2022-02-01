@@ -1,6 +1,8 @@
 
 import processing.core.PApplet;
 
+import processing.event.KeyEvent;
+
 import java.io.File;
 
 
@@ -54,4 +56,12 @@ public class Library{
     nextid++;
     return id;
   }
+
+  public void keyEvent (KeyEvent e)
+    { int tion = e . getAction ();
+      if (tion  !=  KeyEvent.TYPE)
+        System.out.println ("Zounds! key '"  +  e . getKey ()
+                            +  ((tion == KeyEvent.PRESS) ? "' pressed..."
+                                : "' released..."));
+    }
 }
