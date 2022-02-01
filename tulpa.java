@@ -1,6 +1,9 @@
 import drop.*;
 import test.*;
 
+import processing.core.PApplet;
+
+public class tulpa  extends PApplet  {
 SDrop sdrop;
 
 Library library;
@@ -10,7 +13,7 @@ Input input;
 int w, h;
 boolean resized = false;
 
-void setup(){
+public void setup(){
   surface.setSize(500, 500);
   surface.setResizable(true);
   sdrop = new SDrop(this);
@@ -21,14 +24,14 @@ void setup(){
   
 }
 
-void draw(){
+public void draw(){
   checkResize();
   field.updateField();
   input.update();
   resized = false;
 }
   
-void checkResize(){
+public void checkResize(){
     if (w != width || h != height){
     w = width;
     h = height;
@@ -39,27 +42,28 @@ void checkResize(){
 
 // INPUT--------------------------------------
 
-void keyPressed(){
+public void keyPressed(){
   input.keyInput();
 }
 
-void mouseClicked(){
+public void mouseClicked(){
   input.mouseClick();
 }
 
-void mousePressed(){
+public void mousePressed(){
   input.mouseDown();
 }
 
-void mouseReleased(){
+public void mouseReleased(){
   input.mouseUp();
 }
 
-void mouseWheel(MouseEvent event){
+public void mouseWheel(MouseEvent event){
   input.wheel(event);
 }
 
-void dropEvent(DropEvent dropEvent){
+public void dropEvent(DropEvent dropEvent){
   input.dropInput(dropEvent);
 }
-  
+
+}

@@ -1,4 +1,8 @@
-class Input{
+
+import processing.event.MouseEvent;
+import Field;
+
+public class Input{
   
   Field field;
   Scroller scroller;
@@ -6,17 +10,17 @@ class Input{
   
   boolean click;
   
-  Input(Library libraryIn, Field fieldIn){
+  public Input(Library libraryIn, Field fieldIn){
     field = fieldIn;
     scroller = field.scroller;
     library = libraryIn;
   }
   
-  void update(){
+  public void update(){
     click = false;
   }
   
-  void keyInput(){
+  public void keyInput(){
     if (key == CODED){
       switch(keyCode){
         case UP:
@@ -42,27 +46,27 @@ class Input{
     }
   }
   
-  void mouseClick(){
+  public void mouseClick(){
     click = true;
   }
   
-  void mouseDown(){
+  public void mouseDown(){
     if (mouseX > field.w){
       scroller.grabScroller();
     }
   }
   
-  void mouseUp(){
+  public void mouseUp(){
     if (scroller.grabbed){
       scroller.grabbed = false;
     }
   }
   
-  void wheel(MouseEvent event){
+  public void wheel(MouseEvent event){
     scroller.moveScroller(event.getCount());
   }
   
-  void dropInput(DropEvent drop){
+  public void dropInput(DropEvent drop){
     println("dropInput");
     if (drop.isImage()){
       Clipping clipping = library.incubateFile(drop.file());

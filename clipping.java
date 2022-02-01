@@ -1,4 +1,4 @@
-class Clipping{
+public class Clipping{
   
   Library library;
   PImage img;
@@ -16,14 +16,14 @@ class Clipping{
   boolean hover;
   
   
-  Clipping(Library libraryIn, File file){
+  public Clipping(Library libraryIn, File file){
     library = libraryIn;
     id = library.getid();
     path = file.getAbsolutePath();
     img = loadImage(path);
   }
   
-  void update(float latitude){
+  public void update(float latitude){
     if(ypos > -latitude - height/2 && ypos < -latitude + height * 1.5){
       display();
       displaySelect();
@@ -32,12 +32,12 @@ class Clipping{
     }
   }
   
-  void display(){
+  public void display(){
       image(img, xpos + airW, ypos + airH , displayW, displayH);
     } //<>//
     
   
-  void displaySelect(){
+  public void displaySelect(){
     if(selected){
       stroke(color(255));
       noFill();
@@ -45,12 +45,12 @@ class Clipping{
     }
   }
   
-  void setPos(float x, float y){
+  public void setPos(float x, float y){
     xpos = x;
     ypos = y;
   }
   
-  void setSize(float clipW, float clipH){
+  public void setSize(float clipW, float clipH){
     float w = img.width;
     float h = img.height;
     if (img.width >= img.height){
@@ -66,7 +66,7 @@ class Clipping{
     displayH = h;
   }
   
-  void mouseOver(){
+  public void mouseOver(){
     if (mouseX >= xpos + airW && mouseX <= xpos + airW + displayW &&
         mouseY >= ypos + airH + field.latitude && mouseY <= ypos + airH + displayH + field.latitude){
           hover = true;
@@ -75,7 +75,7 @@ class Clipping{
      }
   }
   
-  void clickSelect(){
+  public void clickSelect(){
     if (input.click && hover){
       selected = true;
     }else if (input.click && !hover){

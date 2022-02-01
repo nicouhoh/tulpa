@@ -1,24 +1,24 @@
-class Library{
+public class Library{
   
   Clipping[] clippings;
   String path;
   int nextid;
   
-  Library(){
+  public Library(){
     nextid = 0; //<>//
     path = sketchPath() + "/data/";
     clippings = incubateDir(new File(path));
   }
   
-    void addToLibrary(Clipping clip){
+  public void addToLibrary(Clipping clip){
     clippings = (Clipping[])append(clippings, clip);
   }
   
-  void addToLibrary(Clipping[] clips){
+  public void addToLibrary(Clipping[] clips){
     clippings = (Clipping[])concat(clippings, clips);
   }
   
-  Clipping incubateFile(File file){
+  public Clipping incubateFile(File file){
     println("INCUBATE FILE: " + file.getName());
     if (file.getName().contains(".jpg")){
       Clipping clipping = new Clipping(this, file);
@@ -26,7 +26,7 @@ class Library{
     }else{ return null; }
   }
   
-  Clipping[] incubateDir(File dir){
+  public Clipping[] incubateDir(File dir){
     println("INCUBATE DIR");
     File[] files = listFiles(dir);
     Clipping[] brood = new Clipping[0];
@@ -41,7 +41,7 @@ class Library{
     return brood;
   }
   
-  String getid(){
+  public String getid(){
     String date = str(year()) + nf(month(), 2) + nf(day(), 2);
     String id = date + nf(nextid, 3);
     nextid++;

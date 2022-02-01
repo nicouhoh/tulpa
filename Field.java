@@ -1,4 +1,4 @@
-class Field{
+public class Field{
 
   Library library;
     
@@ -12,7 +12,7 @@ class Field{
   float scrollDist;
   
   
-  Field(Library libraryIn){
+  public Field(Library libraryIn){
     library = libraryIn; //<>//
     scroller = new Scroller();
     latitude = 0;
@@ -22,11 +22,11 @@ class Field{
     fussMenagerie();
   }
   
-  void initializeField(){
+  public void initializeField(){
     w = width - scroller.scrollW;
   }
   
-  void updateField(){
+  public void updateField(){
     w = width - scroller.scrollW;
     if (resized){
       fussMenagerie();
@@ -36,7 +36,7 @@ class Field{
     Showtime();
   }
   
-  void fussMenagerie(){
+  public void fussMenagerie(){
     clipSize = constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
     float x = pillow;
     float y = pillow;
@@ -49,7 +49,7 @@ class Field{
     foot = y + clipSize + pillow;
   }
 
-  void Showtime(){
+  public void Showtime(){
     push();
     background(50);
     translate(0, latitude);
@@ -61,7 +61,7 @@ class Field{
     scroller.drawScroller();
   }
   
-  void followScroller(){
+  public void followScroller(){
      latitude = -(scroller.gripY / height) * foot;
   }
 }

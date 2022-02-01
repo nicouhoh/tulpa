@@ -1,4 +1,4 @@
-class Scroller{
+public class Scroller{
   // I mean REALLY I want to just use the OS's native scrolling. HOW? HOW???
   // would be nice to see an indication on the scrollbar of offscreen selected clippings
 
@@ -15,7 +15,7 @@ class Scroller{
   boolean grabbed;
   float grabY;
   
-  Scroller(){
+  public Scroller(){
     gripY = 0;
     scrollW = 10;
     scrollC = #1A1A1A;
@@ -24,7 +24,7 @@ class Scroller{
     grabbed = false;
   }
   
-  void updateScroller(float contentH){
+  public void updateScroller(float contentH){
     gripH = height / contentH * height;
     if(grabbed){
       gripY = mouseY - grabY;
@@ -32,7 +32,7 @@ class Scroller{
     gripY = constrain(gripY, 0, height - gripH);
   }
   
-  void drawScroller(){
+  public void drawScroller(){
     noStroke();
     fill(scrollC);
     rect(width - scrollW, 0, scrollW, height);
@@ -40,7 +40,7 @@ class Scroller{
     rect(width - scrollW, gripY, scrollW, gripH);
   }
   
-  void grabScroller(){
+  public void grabScroller(){
     if (mouseY > gripY && mouseY < gripY + gripH){
       grabbed = true;
       println("grabbed");
@@ -48,9 +48,7 @@ class Scroller{
     }
   }
   
-  void moveScroller(int direction){
+  public void moveScroller(int direction){
     gripY += direction * scrollDist;
   }
-
- 
 }
