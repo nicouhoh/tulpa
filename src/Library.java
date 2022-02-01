@@ -36,13 +36,14 @@ public class Library{
     System.out.println("INCUBATE DIR");
     File[] files = tulpa.SOLE.listFiles(dir);
     Clipping[] brood = new Clipping[0];
-    for (int i = 0; i < files.length; i++){
-      if (files[i].getName().contains(".jpg")){
-        brood = (Clipping[])PApplet.append(brood, incubateFile(files[i]));
-      } else if(files[i].isDirectory()){
-        brood = (Clipping[])PApplet.concat(brood, incubateDir(files[i]));
+    if (files != null)
+      for (int i = 0; i < files.length; i++){
+        if (files[i].getName().contains(".jpg")){
+          brood = (Clipping[])PApplet.append(brood, incubateFile(files[i]));
+        } else if(files[i].isDirectory()){
+          brood = (Clipping[])PApplet.concat(brood, incubateDir(files[i]));
+        }
       }
-    }
     System.out.println("BROOD: " + brood);
     return brood;
   }
