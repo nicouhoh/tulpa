@@ -3,6 +3,7 @@ import processing.core.PApplet;
 import processing.event.MouseEvent;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import drop.DropEvent;
 
@@ -21,10 +22,6 @@ public class Input{
     library = libraryIn;
   }
   
-  public void update(){
-    click = false;
-  }
-  
   public void keyInput(){
     if (tulpa.SOLE.key == tulpa.SOLE.CODED){
       switch(tulpa.SOLE.keyCode){
@@ -40,7 +37,7 @@ public class Input{
       System.out.println(tulpa.SOLE.key);
       switch(tulpa.SOLE.key){
         case '-':
-          field.columns += 1; //<>//
+          field.columns += 1;
           field.fussMenagerie();
           break;
         case '=':
@@ -50,11 +47,7 @@ public class Input{
       }
     }
   }
-  
-  public void mouseClick(){
-    click = true;
-  }
-  
+
   public void mouseDown(){
     if (tulpa.SOLE.mouseX > field.w){
       scroller.grabScroller();
@@ -82,7 +75,7 @@ public class Input{
       File file = new File(drop.toString());
       System.out.print("ABSOLUTE PATH: " + file.getAbsolutePath());
       if (file.isDirectory()){
-        Clipping[] clippings = library.incubateDir(file);
+        ArrayList<Clipping> clippings = library.incubateDir(file);
         library.addToLibrary(clippings);
       }
     }

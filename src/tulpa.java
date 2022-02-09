@@ -30,14 +30,13 @@ public void setup(){
   registerMethod ("keyEvent", library);
   field = new Field(library);
   field.initializeField();
-  registerMethod ("mouseEvent", field);
+  registerMethod ("mouseEvent", library);
   input = new Input(library, field);
 }
 
 public void draw(){
   checkResize();
   field.updateField(this.g);
-  input.update();
   resized = false;
 }
   
@@ -54,10 +53,6 @@ public void checkResize(){
 
 public void keyPressed(){
   input.keyInput();
-}
-
-public void mouseClicked(){
-  input.mouseClick();
 }
 
 public void mousePressed(){

@@ -17,6 +17,8 @@ public class Field{
   float pillow;
   float foot;
   float scrollDist;
+
+  boolean sardine;
   
   
   public Field(Library libraryIn){
@@ -26,6 +28,7 @@ public class Field{
     columns = 5;
     pillow = 10;
     clipSize = 200;
+    sardine = true;
     fussMenagerie();
   }
   
@@ -47,21 +50,25 @@ public class Field{
     clipSize = PApplet.constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
     float x = pillow;
     float y = pillow;
-    for (int i = 0; i < library.clippings.length; i++){
+    for (int i = 0; i < library.clippings.size(); i++){
       x = pillow + (i % columns) * (pillow + clipSize);
       y = pillow + (i / columns) * (pillow + clipSize);
-      library.clippings[i].setSize(clipSize, clipSize);
-      library.clippings[i].setPos(x, y);
+      library.clippings.get(i).setSize(clipSize, clipSize);
+      library.clippings.get(i).setPos(x, y);
     }
     foot = y + clipSize + pillow;
+  }
+
+  public void packSardines(){
+
   }
 
   public void Showtime(PGraphics g){
     g.push();
     g.background(50);
     g.translate(0, latitude);
-    for (int i = 0; i < library.clippings.length; i++){
-      library.clippings[i].update(g, latitude);
+    for (int i = 0; i < library.clippings.size(); i++){
+      library.clippings.get(i).update(g, latitude);
     }
     g.pop();
     
@@ -72,10 +79,5 @@ public class Field{
      latitude = -(scroller.gripY / tulpa.SOLE.height) * foot;
   }
 
-  public void mouseEvent (MouseEvent e)
-    { if (e . getAction ()  !=  MouseEvent.MOVE)
-        return;
-      System.out.println ("Z'alors: mouse move event at "  +  e . getX ()
-                          +  ", "  +  e . getY ());
-    }
+
 }

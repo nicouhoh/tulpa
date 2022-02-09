@@ -6,8 +6,7 @@ import java.io.File;
 
 
 public class Clipping{
-  
-  Library library;
+
   PImage img;
   String path;
   String id;
@@ -20,23 +19,21 @@ public class Clipping{
   float airH;
   
   boolean selected;
-  boolean hover;
+  boolean onscreen;
   
-  
-  public Clipping(Library libraryIn, File file){
-    library = libraryIn;
-    id = library.getid();
+  public Clipping(File file, String idIn){
+    id = idIn;
     path = file.getAbsolutePath();
     img = tulpa.SOLE.loadImage(path);
   }
   
   public void update(PGraphics g, float latitude){
     if(ypos > -latitude - tulpa.SOLE.height/2 && ypos < -latitude + tulpa.SOLE.height * 1.5){
+      onscreen = true;
       display(g);
       displaySelect(g);
-      mouseOver();
-      clickSelect();
     }
+    else onscreen = false;
   }
   
   public void display(PGraphics g){
@@ -72,22 +69,21 @@ public class Clipping{
     displayW = w;
     displayH = h;
   }
+
+  public void setSizeSardine(float clipH){
+    float w = img.width;
+    w = img.width / (img.height / clipH);
+    displayW = w;
+    displayH = clipH;
+  }
   
-  public void mouseOver(){
+  public boolean clicked(){
     if (tulpa.SOLE.mouseX >= xpos + airW && tulpa.SOLE.mouseX <= xpos + airW + displayW &&
         tulpa.SOLE.mouseY >= ypos + airH + tulpa.SOLE.field.latitude
         && tulpa.SOLE.mouseY <= ypos + airH + displayH + tulpa.SOLE.field.latitude){
-          hover = true;
+          return true;
      }else{
-       hover = false;
+       return false;
      }
-  }
-  
-  public void clickSelect(){
-    if (tulpa.SOLE.input.click && hover){
-      selected = true;
-    }else if (tulpa.SOLE.input.click && !hover){
-      selected = false;
-    }
   }
 }
