@@ -115,6 +115,10 @@ public class Field{
       sardine = !sardine;
       fussMenagerie();
     }
+    if(e.getKey() == java.awt.event.KeyEvent.VK_BACK_SPACE){
+      library.whackClipping();
+      fussMenagerie();
+    }
   }
 
 }

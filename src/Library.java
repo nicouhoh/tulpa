@@ -80,6 +80,10 @@ public class Library {
     selected.clear();
   }
 
+  public void whackClipping() {
+    clippings.removeAll(selected);
+  }
+
   public void mouseEvent(MouseEvent e) {
     if (e.getAction() != MouseEvent.RELEASE) return;
     for (Clipping clip : clippings) {
@@ -100,6 +104,9 @@ public class Library {
       System.out.println("Zounds! key '" + e.getKey()
               + ((tion == KeyEvent.PRESS) ? "' pressed..."
               : "' released..."));
+    }
+    if (e.getKey() == java.awt.event.KeyEvent.VK_BACK_SPACE) {
+
     }
   }
 }
