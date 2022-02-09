@@ -1,4 +1,3 @@
-
 import drop.*;
 import test.*;
 
@@ -31,6 +30,7 @@ public void setup(){
   field = new Field(library);
   field.initializeField();
   registerMethod ("mouseEvent", library);
+  registerMethod ("keyEvent", field);
   input = new Input(library, field);
 }
 

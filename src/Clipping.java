@@ -1,4 +1,3 @@
-
 import processing.core.PGraphics;
 import processing.core.PImage;
 

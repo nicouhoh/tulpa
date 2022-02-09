@@ -1,8 +1,12 @@
-
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
+import processing.event.KeyEvent;
+import java.awt.event.KeyEvent.*;
 import processing.event.MouseEvent;
+
+import java.util.ArrayList;
+import java.util.function.Predicate;
 
 
 public class Field{
@@ -15,8 +19,8 @@ public class Field{
   float latitude;
   float clipSize;
   float pillow;
+  float sPillow;
   float foot;
-  float scrollDist;
 
   boolean sardine;
   
@@ -27,6 +31,7 @@ public class Field{
     latitude = 0;
     columns = 5;
     pillow = 10;
+    sPillow = 1;
     clipSize = 200;
     sardine = true;
     fussMenagerie();
@@ -47,6 +52,10 @@ public class Field{
   }
   
   public void fussMenagerie(){
+    if(sardine){
+      packSardines();
+      return;
+    }
     clipSize = PApplet.constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
     float x = pillow;
     float y = pillow;
@@ -59,8 +68,29 @@ public class Field{
     foot = y + clipSize + pillow;
   }
 
-  public void packSardines(){
+  public void packSardines() {
+    ArrayList<Clipping> row = new ArrayList<Clipping>();
+    float rowWidth = sPillow;
+    float rowHeight = sPillow;
+    float rowX = sPillow;
+    float rowY = sPillow;
 
+    for (Clipping clip : library.clippings) {
+      float clipW = clip.img.width;
+      float clipH = clip.img.height;
+      float newWidth = (clipW / clipH) * clipSize;
+      if (rowWidth + newWidth > w + sPillow) {
+        // TODO: resize the row to fill in the space
+        rowX = sPillow;
+        rowY += clipSize + sPillow;
+        rowWidth = sPillow;
+      }
+      rowWidth += newWidth;
+      clip.setSize(newWidth, clipSize);
+      clip.setPos(rowX, rowY);
+      rowX += newWidth + sPillow;
+    }
+    foot = rowY + clipSize + sPillow;
   }
 
   public void Showtime(PGraphics g){
@@ -79,5 +109,12 @@ public class Field{
      latitude = -(scroller.gripY / tulpa.SOLE.height) * foot;
   }
 
+  public void keyEvent (KeyEvent e)
+  {
+    if (e.getKey() == java.awt.event.KeyEvent.VK_0){
+      sardine = !sardine;
+      fussMenagerie();
+    }
+  }
 
 }
