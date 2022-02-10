@@ -26,14 +26,14 @@ public class Field{
   
   
   public Field(Library libraryIn){
-    library = libraryIn; //<>//
+    library = libraryIn;
     scroller = new Scroller();
     latitude = 0;
     columns = 5;
     pillow = 10;
-    sPillow = 1;
+    sPillow = 2;
     clipSize = 200;
-    sardine = true;
+    sardine = false;
     fussMenagerie();
   }
   
@@ -72,25 +72,34 @@ public class Field{
     ArrayList<Clipping> row = new ArrayList<Clipping>();
     float rowWidth = sPillow;
     float rowHeight = sPillow;
-    float rowX = sPillow;
-    float rowY = sPillow;
+    float x = sPillow;
+    float y = sPillow;
 
     for (Clipping clip : library.clippings) {
       float clipW = clip.img.width;
       float clipH = clip.img.height;
       float newWidth = (clipW / clipH) * clipSize;
-      if (rowWidth + newWidth > w + sPillow) {
-        // TODO: resize the row to fill in the space
-        rowX = sPillow;
-        rowY += clipSize + sPillow;
+      float nextY = clipSize;
+      if (rowWidth + newWidth > w + sPillow) {    // if it dont fit
+        //  TODO resize the row to fit the window
+        float ratio = (w - sPillow) / rowWidth;
+        for (Clipping c : row){
+          c.setSize(c.displayW * ratio, c.displayH * ratio);
+          c.setPos(c.xpos * ratio, c.ypos);
+          nextY = c.displayH;
+        }
+        x = sPillow;
+        y += nextY + sPillow;
         rowWidth = sPillow;
+        row.clear();
       }
       rowWidth += newWidth;
       clip.setSize(newWidth, clipSize);
-      clip.setPos(rowX, rowY);
-      rowX += newWidth + sPillow;
+      clip.setPos(x, y);
+      x += newWidth + sPillow;
+      row.add(clip);
     }
-    foot = rowY + clipSize + sPillow;
+    foot = y + clipSize + sPillow;
   }
 
   public void Showtime(PGraphics g){
