@@ -12,9 +12,7 @@ public class Input{
   Field field;
   Scroller scroller;
   Library library;
-  
-  boolean click;
-  
+
   public Input(Library libraryIn, Field fieldIn){
     field = fieldIn;
     scroller = field.scroller;
@@ -23,13 +21,9 @@ public class Input{
   
   public void keyInput(){
     if (tulpa.SOLE.key == tulpa.SOLE.CODED){
-      switch(tulpa.SOLE.keyCode){
-        case PApplet.UP:
-          System.out.println("scroll up");
-          break;
-        case PApplet.DOWN:
-          System.out.println("scroll down");
-          break;
+      switch (tulpa.SOLE.keyCode) {
+        case PApplet.UP -> System.out.println("scroll up");
+        case PApplet.DOWN -> System.out.println("scroll down");
       }
     }
     else{

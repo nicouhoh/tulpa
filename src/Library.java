@@ -86,6 +86,7 @@ public class Library {
 
   public void mouseEvent(MouseEvent e) {
     if (e.getAction() != MouseEvent.RELEASE) return;
+    boolean bromp = false;
     for (Clipping clip : clippings) {
       if (!clip.onscreen || !clip.clicked()) continue;
       if (!e.isMetaDown()) {
@@ -95,6 +96,10 @@ public class Library {
         return;
       }
       select(clip);
+      bromp = true;
+    }
+    if (!bromp){
+      clearSelection();
     }
   }
 
@@ -104,9 +109,6 @@ public class Library {
       System.out.println("Zounds! key '" + e.getKey()
               + ((tion == KeyEvent.PRESS) ? "' pressed..."
               : "' released..."));
-    }
-    if (e.getKey() == java.awt.event.KeyEvent.VK_BACK_SPACE) {
-
     }
   }
 }

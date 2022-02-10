@@ -6,9 +6,12 @@ import java.io.File;
 
 public class Clipping{
 
-  PImage img;
-  String path;
   String id;
+
+  PImage img;
+  String imgPath;
+
+  String bodyText;
   
   float xpos;
   float ypos;
@@ -22,8 +25,8 @@ public class Clipping{
   
   public Clipping(File file, String idIn){
     id = idIn;
-    path = file.getAbsolutePath();
-    img = tulpa.SOLE.loadImage(path);
+    imgPath = file.getAbsolutePath();
+    img = tulpa.SOLE.loadImage(imgPath);
   }
   
   public void update(PGraphics g, float latitude){
@@ -33,6 +36,7 @@ public class Clipping{
       displaySelect(g);
     }
     else onscreen = false;
+
   }
   
   public void display(PGraphics g){

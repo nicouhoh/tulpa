@@ -81,7 +81,7 @@ public class Field{
       float newWidth = (clipW / clipH) * clipSize;
       float nextY = clipSize;
       if (rowWidth + newWidth > w + sPillow) {    // if it dont fit
-        //  TODO resize the row to fit the window
+        // resize the row to fit the window
         float ratio = (w - sPillow) / rowWidth;
         for (Clipping c : row){
           c.setSize(c.displayW * ratio, c.displayH * ratio);
