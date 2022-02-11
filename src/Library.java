@@ -1,8 +1,6 @@
 import processing.core.PApplet;
 
 import processing.event.MouseEvent;
-import processing.event.KeyEvent;
-import java.awt.event.KeyEvent.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ public class Library {
 
 
   public Library() {
-    nextid = 0; //<>//
+    nextid = 0;
     path = tulpa.SOLE.sketchPath() + "/data/";
     clippings = new ArrayList<Clipping>();
     selected = new ArrayList<Clipping>();
@@ -103,10 +101,14 @@ public class Library {
     }
   }
 
-  public void keyEvent(KeyEvent e) {
-    int tion = e.getAction();
-    if (e.getKey() == java.awt.event.KeyEvent.VK_SPACE && selected.size() == 1) {
-
+  public void zoom(){
+    if (selected.size() == 1){
+      System.out.println("blowing up one clipping.");
+      selected.get(0).zoom();
     }
+  }
+
+  public void unZoom(){
+    if (selected.size() > 0) { selected.get(0).unZoom(); }
   }
 }

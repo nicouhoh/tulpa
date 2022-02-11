@@ -1,3 +1,4 @@
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
@@ -28,6 +29,7 @@ public class Clipping{
     id = idIn;
     imgPath = file.getAbsolutePath();
     img = tulpa.SOLE.loadImage(imgPath);
+    zoom = false;
   }
   
   public void update(PGraphics g, float latitude){
@@ -48,8 +50,20 @@ public class Clipping{
     g.image(img, x, y, w, h);
   }
 
-  public void zoomDisplay(PGraphics g, float fieldW, float fieldH){
-    g.image(img, fieldW / 2 - img.width / 2, fieldH / 2 - img.height / 2, img.width, img.height);
+  public void zoomDisplay(PGraphics g, float w, float h, float p){
+    float zoomW = 0;
+    float zoomH = 0;
+    boolean zoomByH;
+
+    if(img.height >= img.width){
+      zoomH = PApplet.constrain(img.height, 10, h - p);
+      zoomW = (zoomH / img.height) * img.width;
+    }
+    if(img.width > img.height || zoomW > w - p * 2) {
+      zoomW = PApplet.constrain(img.width, 10, w - p);
+      zoomH = (zoomW / img.width) * img.height;
+    }
+    g.image(img, w / 2 - zoomW / 2, h / 2 - zoomH / 2, zoomW, zoomH);
   }
 
   public void displaySelect(PGraphics g){
@@ -89,5 +103,13 @@ public class Clipping{
      }else{
        return false;
      }
+  }
+
+  public void zoom(){
+    zoom = true;
+  }
+
+  public void unZoom(){
+    zoom = false;
   }
 }

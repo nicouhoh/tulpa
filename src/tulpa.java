@@ -48,7 +48,7 @@ public void checkResize(){
 }
 
 
-// INPUT-------------------------------------- TODO it's days are numbered, vs. Input.java
+// INPUT TODO it's days are numbered, vs. Input.java
 
 public void mouseWheel(MouseEvent event){
   input.wheel(event);

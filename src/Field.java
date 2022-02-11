@@ -1,8 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-import processing.event.KeyEvent;
-
 import java.util.ArrayList;
 
 
@@ -11,7 +9,8 @@ public class Field{
   Library library;
     
   float w;
-  int columns;
+  float h;
+  int sheetZoom;
   Scroller scroller;
   float latitude;
   float clipSize;
@@ -20,17 +19,20 @@ public class Field{
   float foot;
 
   boolean sardine;
+
+  float zoomPillow;
   
   
   public Field(Library libraryIn){
     library = libraryIn;
     scroller = new Scroller();
     latitude = 0;
-    columns = 5;
+    sheetZoom = 5;
     pillow = 10;
     sPillow = 2;
     clipSize = 200;
     sardine = false;
+    zoomPillow = 30;
     fussMenagerie();
   }
   
@@ -40,6 +42,7 @@ public class Field{
   
   public void updateField(PGraphics g){
     w = tulpa.SOLE.width - scroller.scrollW;
+    h = tulpa.SOLE.height;
     if (tulpa.SOLE.resized){
       fussMenagerie();
     }
@@ -53,20 +56,20 @@ public class Field{
       packSardines();
       return;
     }
-    clipSize = PApplet.constrain((w - (pillow * (columns + 1))) / columns, 10, 9999999);
+    clipSize = PApplet.constrain((w - (pillow * (sheetZoom + 1))) / sheetZoom, 10, 9999999);
     float x = pillow;
     float y = pillow;
     for (int i = 0; i < library.clippings.size(); i++){
-      x = pillow + (i % columns) * (pillow + clipSize);
-      y = pillow + (i / columns) * (pillow + clipSize);
+      x = pillow + (i % sheetZoom) * (pillow + clipSize);
+      y = pillow + (i / sheetZoom) * (pillow + clipSize);
       library.clippings.get(i).setSize(clipSize, clipSize);
       library.clippings.get(i).setPos(x, y);
     }
     foot = y + clipSize + pillow;
   }
 
-  public void zoom(int z){
-    columns -= z;
+  public void sheetZoom(int z){
+    sheetZoom -= z;
     fussMenagerie();
   }
 
@@ -76,6 +79,7 @@ public class Field{
   }
 
   public void packSardines() {
+    clipSize = PApplet.constrain(h / sheetZoom, 10, 9999999);
     ArrayList<Clipping> row = new ArrayList<Clipping>();
     float rowWidth = sPillow;
     float rowHeight = sPillow;
@@ -113,12 +117,21 @@ public class Field{
     g.push();
     g.background(50);
     g.translate(0, latitude);
+    Clipping zoomClip = null;
     for (int i = 0; i < library.clippings.size(); i++){
       library.clippings.get(i).update(g, latitude);
+      if(library.clippings.get(i).zoom) {
+        zoomClip = library.clippings.get(i);
+      }
     }
     g.pop();
     
     scroller.drawScroller(g);
+    if(zoomClip != null) {
+      g.fill(0, 230);
+      g.rect(0, 0, w, h);
+      zoomClip.zoomDisplay(g, w, h, zoomPillow);
+    }
   }
 
   public void followScroller(){

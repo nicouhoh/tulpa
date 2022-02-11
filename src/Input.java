@@ -1,10 +1,5 @@
-import processing.core.PApplet;
-
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
-import java.awt.event.KeyEvent.*;
-import java.awt.event.MouseEvent.*;
-import java.awt.event.MouseWheelEvent.*;
 
 import java.awt.event.MouseWheelEvent;
 import java.io.File;
@@ -37,11 +32,28 @@ public class Input{
           library.whackClipping();
           field.fussMenagerie();
         }
+        case 32 -> {                                  // SPACE
+          state = State.ZOOM;
+          library.zoom();
+        }
         case 38 -> System.out.println("scroll up");   // TODO UP ARROW
         case 40 -> System.out.println("scroll down"); // TODO DOWN ARROW
         case 48 -> field.switchView();                // 0
-        case 45 -> field.zoom(-1);                 // -
-        case 61 -> field.zoom(1);                  // =
+        case 45 -> field.sheetZoom(-1);                 // -
+        case 61 -> field.sheetZoom(1);                  // =
+      }
+    }
+
+    else if (state == State.ZOOM){
+      if (library.selected.size() < 1) {
+        state = State.LIBRARY;
+        return;
+      }
+      switch(e.getKeyCode()){
+        case 32 -> {
+          library.unZoom();
+          state = State.LIBRARY;
+        }
       }
     }
   }
@@ -66,6 +78,12 @@ public class Input{
         }
       }
     }
+    else if (state == State.ZOOM){
+      if (library.selected.size() < 1) {
+        state = State.LIBRARY;
+        return;
+      }
+    }
   }
 
   public void mouseWheelEvent(MouseWheelEvent e){
@@ -75,10 +93,12 @@ public class Input{
   }
 
   public void wheel(MouseEvent event){
+    if (state != State.LIBRARY) return;
     scroller.moveScroller(event.getCount());
   }
   
   public void dropInput(DropEvent drop){
+    if(state != State.LIBRARY) return;
     System.out.println("dropInput");
     if (drop.isImage()){
       Clipping clipping = library.incubateFile(drop.file());
