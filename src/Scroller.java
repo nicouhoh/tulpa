@@ -22,8 +22,8 @@ public class Scroller{
   public Scroller(){
     gripY = 0;
     scrollW = 10;
-    scrollC = 0x1A1A1A;
-    gripC = 0x6C6C6C;
+    scrollC = 0xff1A1A1A;;
+    gripC = 0xff6C6C6C;
     scrollDist = 1;
     grabbed = false;
   }

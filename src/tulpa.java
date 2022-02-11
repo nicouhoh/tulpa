@@ -1,8 +1,7 @@
 import drop.*;
-import test.*;
 
 import processing.core.PApplet;
-import processing.event.MouseEvent;
+import processing.event.MouseEvent; // TODO eventually get rid of these when we figure out mouse wheel stuff for real.
 
 import drop.DropEvent;
 
@@ -26,12 +25,12 @@ public void setup(){
   surface.setResizable(true);
   sdrop = new SDrop(this);
   library = new Library();
-  registerMethod ("keyEvent", library);
   field = new Field(library);
   field.initializeField();
-  registerMethod ("mouseEvent", library);
-  registerMethod ("keyEvent", field);
   input = new Input(library, field);
+  registerMethod("keyEvent", input);
+  registerMethod("mouseEvent", input);
+//  registerMethod("mouseWheelEvent", input);
 }
 
 public void draw(){
@@ -49,19 +48,7 @@ public void checkResize(){
 }
 
 
-// INPUT--------------------------------------
-
-public void keyPressed(){
-  input.keyInput();
-}
-
-public void mousePressed(){
-  input.mouseDown();
-}
-
-public void mouseReleased(){
-  input.mouseUp();
-}
+// INPUT-------------------------------------- TODO it's days are numbered, vs. Input.java
 
 public void mouseWheel(MouseEvent event){
   input.wheel(event);

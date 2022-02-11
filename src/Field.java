@@ -2,11 +2,8 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 
 import processing.event.KeyEvent;
-import java.awt.event.KeyEvent.*;
-import processing.event.MouseEvent;
 
 import java.util.ArrayList;
-import java.util.function.Predicate;
 
 
 public class Field{
@@ -48,7 +45,7 @@ public class Field{
     }
     scroller.updateScroller(foot);
     followScroller();
-    Showtime(g);
+    showtime(g);
   }
   
   public void fussMenagerie(){
@@ -66,6 +63,16 @@ public class Field{
       library.clippings.get(i).setPos(x, y);
     }
     foot = y + clipSize + pillow;
+  }
+
+  public void zoom(int z){
+    columns -= z;
+    fussMenagerie();
+  }
+
+  public void switchView(){
+    sardine = !sardine;
+    fussMenagerie();
   }
 
   public void packSardines() {
@@ -102,7 +109,7 @@ public class Field{
     foot = y + clipSize + sPillow;
   }
 
-  public void Showtime(PGraphics g){
+  public void showtime(PGraphics g){
     g.push();
     g.background(50);
     g.translate(0, latitude);
@@ -113,21 +120,8 @@ public class Field{
     
     scroller.drawScroller(g);
   }
-  
+
   public void followScroller(){
      latitude = -(scroller.gripY / tulpa.SOLE.height) * foot;
   }
-
-  public void keyEvent (KeyEvent e)
-  {
-    if (e.getKey() == java.awt.event.KeyEvent.VK_0){
-      sardine = !sardine;
-      fussMenagerie();
-    }
-    if(e.getKey() == java.awt.event.KeyEvent.VK_BACK_SPACE){
-      library.whackClipping();
-      fussMenagerie();
-    }
-  }
-
 }

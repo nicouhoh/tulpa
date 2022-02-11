@@ -16,6 +16,7 @@ public class Library {
 
   ArrayList<Clipping> selected;
 
+
   public Library() {
     nextid = 0; //<>//
     path = tulpa.SOLE.sketchPath() + "/data/";
@@ -33,7 +34,7 @@ public class Library {
 
   public Clipping incubateFile(File file) {
     System.out.println("INCUBATE FILE: " + file.getName());
-    if (file.getName().contains(".jpg")) {
+    if (file.getName().contains(".jpg") || file.getName().contains(".png")) {
       return new Clipping(file, getid());
     } else {
       return null;
@@ -46,7 +47,7 @@ public class Library {
     ArrayList<Clipping> brood = new ArrayList<Clipping>();
     if (files != null)
       for (File file : files) {
-        if (file.getName().contains(".jpg")) {
+        if (file.getName().contains(".jpg") || file.getName().contains(".png")) {
           brood.add(incubateFile(file));
         } else if (file.isDirectory()) {
           brood.addAll(incubateDir(file));
@@ -84,8 +85,7 @@ public class Library {
     clippings.removeAll(selected);
   }
 
-  public void mouseEvent(MouseEvent e) {
-    if (e.getAction() != MouseEvent.RELEASE) return;
+  public void clickSelect(MouseEvent e) {
     boolean bromp = false;
     for (Clipping clip : clippings) {
       if (!clip.onscreen || !clip.clicked()) continue;
@@ -98,17 +98,15 @@ public class Library {
       select(clip);
       bromp = true;
     }
-    if (!bromp){
+    if (!bromp) {
       clearSelection();
     }
   }
 
   public void keyEvent(KeyEvent e) {
     int tion = e.getAction();
-    if (tion != KeyEvent.TYPE) {
-      System.out.println("Zounds! key '" + e.getKey()
-              + ((tion == KeyEvent.PRESS) ? "' pressed..."
-              : "' released..."));
+    if (e.getKey() == java.awt.event.KeyEvent.VK_SPACE && selected.size() == 1) {
+
     }
   }
 }

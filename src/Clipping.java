@@ -22,6 +22,7 @@ public class Clipping{
   
   boolean selected;
   boolean onscreen;
+  boolean zoom;
   
   public Clipping(File file, String idIn){
     id = idIn;
@@ -40,10 +41,17 @@ public class Clipping{
   }
   
   public void display(PGraphics g){
-      g.image(img, xpos + airW, ypos + airH , displayW, displayH);
-    } //<>//
-    
-  
+    g.image(img, xpos + airW, ypos + airH , displayW, displayH);
+  }
+
+  public void display(PGraphics g, int x, int y, int w, int h){
+    g.image(img, x, y, w, h);
+  }
+
+  public void zoomDisplay(PGraphics g, float fieldW, float fieldH){
+    g.image(img, fieldW / 2 - img.width / 2, fieldH / 2 - img.height / 2, img.width, img.height);
+  }
+
   public void displaySelect(PGraphics g){
     if(selected){
       g.stroke(tulpa.SOLE.color(255));
@@ -71,13 +79,6 @@ public class Clipping{
     }
     displayW = w;
     displayH = h;
-  }
-
-  public void setSizeSardine(float clipH){
-    float w = img.width;
-    w = img.width / (img.height / clipH);
-    displayW = w;
-    displayH = clipH;
   }
   
   public boolean clicked(){
