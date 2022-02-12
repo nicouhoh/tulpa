@@ -23,13 +23,11 @@ public class Clipping{
   
   boolean selected;
   boolean onscreen;
-  boolean zoom;
-  
+
   public Clipping(File file, String idIn){
     id = idIn;
     imgPath = file.getAbsolutePath();
     img = tulpa.SOLE.loadImage(imgPath);
-    zoom = false;
   }
   
   public void update(PGraphics g, float latitude){
@@ -53,7 +51,6 @@ public class Clipping{
   public void zoomDisplay(PGraphics g, float w, float h, float p){
     float zoomW = 0;
     float zoomH = 0;
-    boolean zoomByH;
 
     if(img.height >= img.width){
       zoomH = PApplet.constrain(img.height, 10, h - p);
@@ -103,13 +100,5 @@ public class Clipping{
      }else{
        return false;
      }
-  }
-
-  public void zoom(){
-    zoom = true;
-  }
-
-  public void unZoom(){
-    zoom = false;
   }
 }

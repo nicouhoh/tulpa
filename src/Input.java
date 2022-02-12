@@ -26,34 +26,40 @@ public class Input{
     if (e.getAction() != 1) return;
     System.out.print(e.getKeyCode());
 
-    if (state == State.LIBRARY){
+    if (state == State.LIBRARY){                      // LIBRARY -----------------------
       switch (e.getKeyCode()) {
-        case 8 -> {                                   // BACKSPACE
+        case 8 -> {                                       // BACKSPACE
           library.whackClipping();
           field.fussMenagerie();
         }
-        case 32 -> {                                  // SPACE
+        case 32 -> {                                      // SPACE
           state = State.ZOOM;
           library.zoom();
         }
-        case 38 -> System.out.println("scroll up");   // TODO UP ARROW
-        case 40 -> System.out.println("scroll down"); // TODO DOWN ARROW
-        case 48 -> field.switchView();                // 0
-        case 45 -> field.sheetZoom(-1);                 // -
-        case 61 -> field.sheetZoom(1);                  // =
+        case 37 -> library.selectLeftRight(-1);         // LEFT ARROW
+        //case 38 -> library.selectDownUp(-field.sheetZoom);       // UP ARROW TODO Make it do stuff
+        case 38 -> library.selectUpDownSardine(-1);
+        case 39 -> library.selectLeftRight(1);        // RIGHT ARROW
+        //case 40 -> library.selectDownUp(field.sheetZoom);     // DOWN ARROW TODO Make it do stuff
+        case 40 -> library.selectUpDownSardine(1);
+        case 48 -> field.switchView();                    // 0
+        case 45 -> field.sheetZoom(-1);                // -
+        case 61 -> field.sheetZoom(1);                 // =
       }
     }
 
-    else if (state == State.ZOOM){
+    else if (state == State.ZOOM){                    // ZOOM -------------------------
       if (library.selected.size() < 1) {
         state = State.LIBRARY;
         return;
       }
       switch(e.getKeyCode()){
-        case 32 -> {
+        case 32 -> {                                      // SPACE
           library.unZoom();
           state = State.LIBRARY;
         }
+        case 37 -> library.selectLeftRight(-1);        // LEFT ARROW
+        case 39 -> library.selectLeftRight(1);         // RIGHT ARROW
       }
     }
   }

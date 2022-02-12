@@ -120,17 +120,14 @@ public class Field{
     Clipping zoomClip = null;
     for (int i = 0; i < library.clippings.size(); i++){
       library.clippings.get(i).update(g, latitude);
-      if(library.clippings.get(i).zoom) {
-        zoomClip = library.clippings.get(i);
-      }
     }
     g.pop();
     
     scroller.drawScroller(g);
-    if(zoomClip != null) {
+    if(library.zoom) {
       g.fill(0, 230);
       g.rect(0, 0, w, h);
-      zoomClip.zoomDisplay(g, w, h, zoomPillow);
+      library.selected.get(0).zoomDisplay(g, w, h, zoomPillow);
     }
   }
 
