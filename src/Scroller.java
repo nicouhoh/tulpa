@@ -3,8 +3,8 @@ import processing.core.PGraphics;
 
 
 public class Scroller{
-  // I mean REALLY I want to just use the OS's native scrolling. HOW? HOW???
-  // would be nice to see an indication on the scrollbar of offscreen selected clippings
+  // TODO I mean REALLY I want to just use the OS's native scrolling. HOW? HOW???
+  // TODO would be nice to see an indication on the scrollbar of offscreen selected clippings
 
   
   int scrollC;
@@ -22,14 +22,14 @@ public class Scroller{
   public Scroller(){
     gripY = 0;
     scrollW = 10;
-    scrollC = 0xff1A1A1A;;
+    scrollC = 0xff1A1A1A;
     gripC = 0xff6C6C6C;
     scrollDist = 1;
     grabbed = false;
   }
   
   public void updateScroller(float contentH){
-    gripH = tulpa.SOLE.height / contentH * tulpa.SOLE.height;
+    gripH = PApplet.constrain(tulpa.SOLE.height / contentH * tulpa.SOLE.height, 0, tulpa.SOLE.height);
     if(grabbed){
       gripY = tulpa.SOLE.mouseY - grabY;
     }

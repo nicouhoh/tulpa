@@ -106,7 +106,7 @@ public class Input{
   public void dropInput(DropEvent drop){
     if(state != State.LIBRARY) return;
     System.out.println("dropInput");
-    if (drop.isImage()){
+    if (drop.isImage() && drop.file().getName().contains(".jpg")){ //TODO Take out .jpg clause when memory isn't an issue anymore
       Clipping clipping = library.incubateFile(drop.file());
       library.addToLibrary(clipping);
     }else if(drop.isFile()){
@@ -120,5 +120,4 @@ public class Input{
     }
     field.fussMenagerie();
   }
-  
 }
