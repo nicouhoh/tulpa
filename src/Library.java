@@ -92,43 +92,79 @@ public class Library {
     }
   }
 
-  public void selectUpDown(int columns){
+  public void selectUpDown(int input){
+
+  }
+
+  public void selectUpDownGrid(int columns){
     if(selected.size() == 1) {
       int index = clippings.indexOf(selected.get(0));
-      Clipping c = clippings.get(index + columns);
+      Clipping c = clippings.get(PApplet.constrain(index + columns, 0, clippings.size()));
       deselect(selected.get(0));
       select(c);
     }
   }
 
-  public void selectUpDownSardine(int direction){ // TODO idea for making this better: pick the clipping with the longest section of shared edge w/ current clipping
-    Clipping selClip = selected.get(0);
-    System.out.println(selClip.imgPath);
-    int i = clippings.indexOf(selClip);
-    Clipping best = selClip;
-    float dif = 9999;
-    Clipping currentClipping = selClip;
+//  public void selectUpDownSardine(int direction){ // TODO idea for making this better: pick the clipping with the longest section of shared edge w/ current clipping
+//    Clipping selClip = selected.get(0);
+//    System.out.println(selClip.imgPath);
+//    int i = clippings.indexOf(selClip);
+//    Clipping best = selClip;
+//    float dif = 9999;
+//    Clipping currentClipping = selClip;
+//
+//    while(true){
+//      if(i < 0 || i >= clippings.size()){
+//        deselect(selClip);
+//        select(best);
+//        return;
+//      }
+//      currentClipping = clippings.get(i);
+//      System.out.println("Current clipping: " + currentClipping.imgPath);
+//      if (currentClipping == null) return;
+//      if (currentClipping.ypos != selClip.ypos) {
+//        if (abs(currentClipping.xpos - selClip.xpos) < dif) {
+//          dif = (abs(currentClipping.xpos - selClip.xpos));
+//          best = currentClipping;
+//        } else{
+//          deselect(selClip);
+//          select(best);
+//          return;
+//        }
+//      }
+//      i += direction;
+//    }
+//  }
 
-    while(true){
-      if(i < 0 || i >= clippings.size()){
-        deselect(selClip);
-        select(best);
-        return;
+  public void selectUpDownSardine(int direction){
+    Clipping selClip = selected.get(0);
+    float bestScore = 0;
+    Clipping best = selClip;
+
+    for (Clipping c : clippings){
+      if (c == selClip) continue;
+      if (c.ypos < selClip.ypos - c.displayH * 1.2 || c.ypos > selClip.ypos + selClip.displayH * 1.2) continue;
+      if (findOverlap(selClip, c) > bestScore && (selClip.ypos - c.ypos) * direction < 0){
+        bestScore = findOverlap(selClip, c);
+        best = c;
       }
-      currentClipping = clippings.get(i);
-      System.out.println("Current clipping: " + currentClipping.imgPath);
-      if (currentClipping == null) return;
-      if (currentClipping.ypos != selClip.ypos) {
-        if (abs(currentClipping.xpos - selClip.xpos) < dif) {
-          dif = (abs(currentClipping.xpos - selClip.xpos));
-          best = currentClipping;
-        } else{
-          deselect(selClip);
-          select(best);
-          return;
-        }
-      }
-      i += direction;
+    }
+    clearSelection();
+    select(best);
+  }
+
+  public float findOverlap(Clipping clip1, Clipping clip2){
+    if (clip1.xpos > clip2.xpos + clip2.displayW || clip1.xpos + clip1.displayW <= clip2.xpos) return 0;
+    float left = PApplet.max(clip1.xpos, clip2.xpos);
+    float right = PApplet.min(clip1.xpos + clip1.displayW, clip2.xpos + clip2.displayW);
+    float ans = PApplet.max(left, right) - PApplet.min(left, right);
+    return ans;
+  }
+
+  public void overlapDebug(){
+    if (selected.size() == 2){
+      float ans = findOverlap(selected.get(0), selected.get(1));
+      System.out.println("Overlap between " + selected.get(0).imgPath + " and " + selected.get(1).imgPath + ": " + ans);
     }
   }
 
@@ -140,7 +176,7 @@ public class Library {
     boolean bromp = false;
     for (Clipping clip : clippings) {
       if (!clip.onscreen || !clip.clicked()) continue;
-      if (!e.isMetaDown()) {
+      if (!e.isMetaDown() && !e.isControlDown()) {
         clearSelection();
       } else if (clip.selected) {
         deselect(clip);
