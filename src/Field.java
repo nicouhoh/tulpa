@@ -22,7 +22,6 @@ public class Field{
 
   float zoomPillow;
   
-  
   public Field(Library libraryIn){
     library = libraryIn;
     scroller = new Scroller();
@@ -132,6 +131,19 @@ public class Field{
   }
 
   public void followScroller(){
-     latitude = -(scroller.gripY / tulpa.SOLE.height) * foot;
+     goTo(-(scroller.gripY / tulpa.SOLE.height) * foot, 0);
+  }
+
+  public void goTo(float y, float where){
+    latitude = y - where;
+  }
+
+  public void arrowFollow(){
+    if(library.selected.size() != 1) return;
+
+    Clipping clip = library.selected.get(0);
+    if (clip.ypos < -latitude - h){
+      goTo(clip.ypos, h);
+    }
   }
 }

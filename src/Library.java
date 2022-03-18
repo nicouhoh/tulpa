@@ -92,10 +92,6 @@ public class Library {
     }
   }
 
-  public void selectUpDown(int input){
-
-  }
-
   public void selectUpDownGrid(int columns){
     if(selected.size() == 1) {
       int index = clippings.indexOf(selected.get(0));

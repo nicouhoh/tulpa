@@ -37,16 +37,17 @@ public class Input{
           library.zoom();
         }
         case 37 -> library.selectLeftRight(-1);         // LEFT ARROW
-        //case 38 -> library.selectDownUp(-field.sheetZoom);       // UP ARROW TODO Make it do stuff
+        //case 38 -> library.selectDownUp(-field.sheetZoom);       // UP ARROW
         case 38 -> {
           if (field.sardine) library.selectUpDownSardine(-1);
           else library.selectUpDownGrid(-field.sheetZoom);
         }
         case 39 -> library.selectLeftRight(1);        // RIGHT ARROW
-        //case 40 -> library.selectDownUp(field.sheetZoom);     // DOWN ARROW TODO Make it do stuff
+        //case 40 -> library.selectDownUp(field.sheetZoom);     // DOWN ARROW
         case 40 -> {
           if (field.sardine) library.selectUpDownSardine(1);
           else library.selectUpDownGrid(field.sheetZoom);
+          field.arrowFollow();
         }
         case 48 -> field.switchView();                    // 0
         case 45 -> field.sheetZoom(-1);                // -
