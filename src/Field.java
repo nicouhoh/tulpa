@@ -40,14 +40,15 @@ public class Field{
   }
   
   public void updateField(PGraphics g){
+    float latCheck = latitude;
     w = tulpa.SOLE.width - scroller.scrollW;
     h = tulpa.SOLE.height;
     if (tulpa.SOLE.resized){
       fussMenagerie();
     }
-    scroller.updateScroller(foot);
-    followScroller();
+//    followScroller();
     showtime(g);
+    if (latCheck != latitude) System.out.println(latitude);
   }
   
   public void fussMenagerie(){
@@ -65,6 +66,7 @@ public class Field{
       library.clippings.get(i).setPos(x, y);
     }
     foot = y + clipSize + pillow;
+    updateScroller();
   }
 
   public void sheetZoom(int z){
@@ -110,12 +112,13 @@ public class Field{
       row.add(clip);
     }
     foot = y + clipSize + sPillow;
+    updateScroller();
   }
 
   public void showtime(PGraphics g){
     g.push();
     g.background(50);
-    g.translate(0, latitude);
+    g.translate(0, -latitude);
     Clipping zoomClip = null;
     for (int i = 0; i < library.clippings.size(); i++){
       library.clippings.get(i).update(g, latitude);
@@ -130,11 +133,36 @@ public class Field{
     }
   }
 
+// SCROLLING ---------------------------------------
+
   public void followScroller(){
-     goTo(-(scroller.gripY / tulpa.SOLE.height) * foot, 0);
+     goTo((scroller.gripY / tulpa.SOLE.height) * foot, 0);
   }
 
-  public void goTo(float y, float where){
+  public void moveScroller(int direction){
+    scroller.gripY += direction * scroller.scrollDist;
+    updateScroller();
+  }
+
+  public void updateScroller(){
+    scroller.update(foot);
+    followScroller();
+  }
+
+  public void grabScroller(){
+    if (tulpa.SOLE.mouseY > scroller.gripY && tulpa.SOLE.mouseY < scroller.gripY + scroller.gripH){
+      scroller.grab();
+    }
+  }
+
+  public void dragScroller(float contentH){
+    if(scroller.grabbed){
+      scroller.gripY = tulpa.SOLE.mouseY - scroller.grabY;
+      updateScroller();
+    }
+  }
+
+  public void goTo(float y, float where){ // pick a point, where on screen do you want it
     latitude = y - where;
   }
 
@@ -142,8 +170,9 @@ public class Field{
     if(library.selected.size() != 1) return;
 
     Clipping clip = library.selected.get(0);
-    if (clip.ypos < -latitude - h){
-      goTo(clip.ypos, h);
+    if (clip.ypos > latitude + h){
+      goTo(clip.ypos, 0);
     }
   }
+  // END SCROLLING --------------------------------------------
 }

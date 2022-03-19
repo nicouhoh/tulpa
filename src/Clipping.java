@@ -31,13 +31,12 @@ public class Clipping{
   }
   
   public void update(PGraphics g, float latitude){
-    if(ypos > -latitude - tulpa.SOLE.height/2 && ypos < -latitude + tulpa.SOLE.height * 1.5){
+    if(ypos < latitude + tulpa.SOLE.height && ypos >= latitude - displayH * 1.5){
       onscreen = true;
       display(g);
       displaySelect(g);
     }
     else onscreen = false;
-
   }
   
   public void display(PGraphics g){
@@ -94,8 +93,8 @@ public class Clipping{
   
   public boolean clicked(){
     if (tulpa.SOLE.mouseX >= xpos + airW && tulpa.SOLE.mouseX <= xpos + airW + displayW &&
-        tulpa.SOLE.mouseY >= ypos + airH + tulpa.SOLE.field.latitude
-        && tulpa.SOLE.mouseY <= ypos + airH + displayH + tulpa.SOLE.field.latitude){
+        tulpa.SOLE.mouseY >= ypos + airH - tulpa.SOLE.field.latitude
+        && tulpa.SOLE.mouseY <= ypos + airH + displayH - tulpa.SOLE.field.latitude){
           return true;
      }else{
        return false;

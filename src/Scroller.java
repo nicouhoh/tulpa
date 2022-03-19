@@ -28,11 +28,8 @@ public class Scroller{
     grabbed = false;
   }
   
-  public void updateScroller(float contentH){
+  public void update(float contentH){
     gripH = PApplet.constrain(tulpa.SOLE.height / contentH * tulpa.SOLE.height, 0, tulpa.SOLE.height);
-    if(grabbed){
-      gripY = tulpa.SOLE.mouseY - grabY;
-    }
     gripY = PApplet.constrain(gripY, 0, tulpa.SOLE.height - gripH);
   }
   
@@ -43,16 +40,13 @@ public class Scroller{
     g.fill(gripC);
     g.rect(tulpa.SOLE.width - scrollW, gripY, scrollW, gripH);
   }
-  
-  public void grabScroller(){
-    if (tulpa.SOLE.mouseY > gripY && tulpa.SOLE.mouseY < gripY + gripH){
-      grabbed = true;
-      System.out.println("grabbed");
-      grabY = tulpa.SOLE.mouseY - gripY;
-    }
+
+  public void grab(){
+    grabbed = true;
+    System.out.println("grabbed");
+    grabY = tulpa.SOLE.mouseY - gripY;
   }
-  
-  public void moveScroller(int direction){
-    gripY += direction * scrollDist;
-  }
+
+
+
 }

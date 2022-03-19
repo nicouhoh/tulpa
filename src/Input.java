@@ -78,10 +78,13 @@ public class Input{
         switch(e.getButton()){
           case 37 -> {                           // TODO Left mouse button. Why the heck is this 37
             if(e.getX() > field.w){
-              scroller.grabScroller();
+              field.grabScroller();
             }
           }
         }
+      }
+      if(e.getAction() == MouseEvent.DRAG){
+        field.dragScroller(field.foot);
       }
       else if (e.getAction() == MouseEvent.RELEASE) {
         switch(e.getButton()){
@@ -108,7 +111,7 @@ public class Input{
 
   public void wheel(MouseEvent event){
     if (state != State.LIBRARY) return;
-    scroller.moveScroller(event.getCount());
+    field.moveScroller(event.getCount());
   }
   
   public void dropInput(DropEvent drop){
