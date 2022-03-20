@@ -95,42 +95,11 @@ public class Library {
   public void selectUpDownGrid(int columns){
     if(selected.size() == 1) {
       int index = clippings.indexOf(selected.get(0));
-      Clipping c = clippings.get(PApplet.constrain(index + columns, 0, clippings.size()));
+      Clipping c = clippings.get(PApplet.constrain(index + columns, 0, clippings.size() - 1));
       deselect(selected.get(0));
       select(c);
     }
   }
-
-//  public void selectUpDownSardine(int direction){ // TODO idea for making this better: pick the clipping with the longest section of shared edge w/ current clipping
-//    Clipping selClip = selected.get(0);
-//    System.out.println(selClip.imgPath);
-//    int i = clippings.indexOf(selClip);
-//    Clipping best = selClip;
-//    float dif = 9999;
-//    Clipping currentClipping = selClip;
-//
-//    while(true){
-//      if(i < 0 || i >= clippings.size()){
-//        deselect(selClip);
-//        select(best);
-//        return;
-//      }
-//      currentClipping = clippings.get(i);
-//      System.out.println("Current clipping: " + currentClipping.imgPath);
-//      if (currentClipping == null) return;
-//      if (currentClipping.ypos != selClip.ypos) {
-//        if (abs(currentClipping.xpos - selClip.xpos) < dif) {
-//          dif = (abs(currentClipping.xpos - selClip.xpos));
-//          best = currentClipping;
-//        } else{
-//          deselect(selClip);
-//          select(best);
-//          return;
-//        }
-//      }
-//      i += direction;
-//    }
-//  }
 
   public void selectUpDownSardine(int direction){
     Clipping selClip = selected.get(0);

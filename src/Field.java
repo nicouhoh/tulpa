@@ -74,7 +74,33 @@ public class Field{
     fussMenagerie();
   }
 
+  public Clipping getClippingAtScreenPoint(float x, float y) {
+
+    Clipping victor = null;
+    float best = 99999999;
+    for (Clipping clip : library.clippings) {
+      if (!clip.onscreen) continue;
+      float dist = PApplet.dist(x, y, clip.xpos + clip.displayW/2, clip.ypos + clip.displayH/2);
+      if (dist < best) victor = clip;
+    }
+    return victor;
+  }
+
   public void switchView(){
+    float y = 0;
+    Clipping target;
+    if (library.selected.size() == 1 && library.selected.get(0).onscreen){
+      target = library.selected.get(0);
+      y = target.ypos - latitude;
+      sardine = !sardine;
+      fussMenagerie();
+
+      goTo(target.ypos, y);
+      return;
+    }
+
+    //TODO: Figure out no or multiple selections
+
     sardine = !sardine;
     fussMenagerie();
   }
@@ -136,16 +162,16 @@ public class Field{
 // SCROLLING ---------------------------------------
 
   public void followScroller(){
-     goTo((scroller.gripY / tulpa.SOLE.height) * foot, 0);
-  }
-
-  public void moveScroller(int direction){
-    scroller.gripY += direction * scroller.scrollDist;
-    updateScroller();
+     latitude = scroller.gripY / tulpa.SOLE.height * foot;
   }
 
   public void updateScroller(){
     scroller.update(foot);
+    followScroller();
+  }
+
+  public void goTo(float lat, float where){          // pick a latitude and where on screen you want to put it
+    scroller.goTo(lat - where, h, foot);
     followScroller();
   }
 
@@ -162,17 +188,17 @@ public class Field{
     }
   }
 
-  public void goTo(float y, float where){ // pick a point, where on screen do you want it
-    latitude = y - where;
-  }
-
   public void arrowFollow(){
     if(library.selected.size() != 1) return;
 
-    Clipping clip = library.selected.get(0);
-    if (clip.ypos > latitude + h){
-      goTo(clip.ypos, 0);
+    Clipping clip = library.selected.get(0);                  // below screen
+    if (clip.ypos + pillow + clip.displayH/2 > latitude + h){
+      goTo(clip.ypos, h - pillow - clip.displayH);
     }
+    else if(clip.ypos + clip.displayH/2 < latitude){   // above screen
+      goTo(clip.ypos, pillow);
+    }
+    updateScroller();
   }
   // END SCROLLING --------------------------------------------
 }

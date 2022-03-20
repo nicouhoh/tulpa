@@ -47,6 +47,9 @@ public class Scroller{
     grabY = tulpa.SOLE.mouseY - gripY;
   }
 
+  public void goTo(float latitude, float height, float contentH){
+    gripY = (latitude * height) / contentH;
+  }
 
 
 }

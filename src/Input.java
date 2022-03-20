@@ -26,7 +26,7 @@ public class Input{
     if (e.getAction() != 1) return;
     System.out.print(e.getKeyCode());
 
-    if (state == State.LIBRARY){                      // LIBRARY -----------------------
+    if (state == State.LIBRARY){                // LIBRARY -----------------------
       switch (e.getKeyCode()) {
         case 8 -> {                                       // BACKSPACE
           library.whackClipping();
@@ -36,13 +36,20 @@ public class Input{
           state = State.ZOOM;
           library.zoom();
         }
-        case 37 -> library.selectLeftRight(-1);         // LEFT ARROW
+        case 37 -> {                                      // LEFT ARROW
+          library.selectLeftRight(-1);
+          field.arrowFollow();
+        }
         //case 38 -> library.selectDownUp(-field.sheetZoom);       // UP ARROW
         case 38 -> {
           if (field.sardine) library.selectUpDownSardine(-1);
           else library.selectUpDownGrid(-field.sheetZoom);
+          field.arrowFollow();
         }
-        case 39 -> library.selectLeftRight(1);        // RIGHT ARROW
+        case 39 -> {                                      // RIGHT ARROW
+          library.selectLeftRight(1);
+          field.arrowFollow();
+        }
         //case 40 -> library.selectDownUp(field.sheetZoom);     // DOWN ARROW
         case 40 -> {
           if (field.sardine) library.selectUpDownSardine(1);
@@ -111,7 +118,7 @@ public class Input{
 
   public void wheel(MouseEvent event){
     if (state != State.LIBRARY) return;
-    field.moveScroller(event.getCount());
+      field.goTo(field.latitude + event.getCount(), 0);
   }
   
   public void dropInput(DropEvent drop){
