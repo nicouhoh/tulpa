@@ -4,110 +4,72 @@ import processing.core.PImage;
 
 import java.io.File;
 
+public class Clipping extends Monad{
 
-public class Clipping {
+    String id;
 
-  String id;
+    PImage img;
+    String imgPath;
 
-  PImage img;
-  String imgPath;
+    String bodyText;
 
-  String bodyText;
+    float displayW;
+    float displayH;
+    float airW;
+    float airH;
 
-  float xpos;
-  float ypos;
-  float displayW;
-  float displayH;
-  float airW;
-  float airH;
+    boolean selected;
 
-  boolean selected;
-  boolean onscreen;
-
-  public Clipping(File file, String idIn) {
-    id = idIn;
-    imgPath = file.getAbsolutePath();
-    img = tulpa.SOLE.loadImage(imgPath);
-  }
-
-  public void update(PGraphics g, float latitude) {
-    if (ypos < latitude + tulpa.SOLE.height && ypos >= latitude - displayH * 1.5) {
-      onscreen = true;
-      display(g);
-      displaySelect(g);
-    } else onscreen = false;
-  }
-
-  public void display(PGraphics g) {
-    g.image(img, xpos + airW, ypos + airH, displayW, displayH);
-  }
-
-  public void display(PGraphics g, int x, int y, int w, int h) {
-    g.image(img, x, y, w, h);
-  }
-
-  public void zoomDisplay(PGraphics g, float w, float h, float p) {
-    float zoomW = 0;
-    float zoomH = 0;
-
-    if (img.height >= img.width) {
-      zoomH = PApplet.constrain(img.height, 10, h - p);
-      zoomW = (zoomH / img.height) * img.width;
+    public Clipping(File file, String idIn) {
+        id = idIn;
+        imgPath = file.getAbsolutePath();
+        img = tulpa.SOLE.loadImage(imgPath);
     }
-    if (img.width > img.height || zoomW > w - p * 2) {
-      zoomW = PApplet.constrain(img.width, 10, w - p);
-      zoomH = (zoomW / img.width) * img.height;
+
+    public void draw(PGraphics g){
+        g.image(img, x + airW, y + airH, displayW, displayH);
+        drawSelection(g);
     }
-    g.image(img, w / 2 - zoomW / 2, h / 2 - zoomH / 2, zoomW, zoomH);
-  }
 
-  public void displaySelect(PGraphics g) {
-    if (selected) {
-      g.stroke(tulpa.SOLE.color(255));
-      g.noFill();
-      g.rect(xpos + airW, ypos + airH, displayW, displayH);
+    public void zoomClipping(PGraphics g, float w, float h, float p){
+        float zoomW = 0;
+        float zoomH = 0;
+
+        if (img.height >= img.width){
+            zoomH = PApplet.constrain(img.height, 10, h - p);
+            zoomW = (zoomH / img.height) * img.width;
+        }
+        else if (img.width > img.height || zoomW > w - p * 2){
+            zoomW = PApplet.constrain(img.width, 10, w - p);
+            zoomH = (zoomW / img.width) * img.height;
+        }
+        g.image(img, w / 2 - zoomW / 2, h / 2 - zoomH / 2, zoomW, zoomH);
     }
-  }
 
-  public void setPos(float x, float y) {
-    xpos = x;
-    ypos = y;
-  }
-
-  public void setSize(float clipW, float clipH) {
-    float w = img.width;
-    float h = img.height;
-    if (img.width >= img.height) {
-      w = clipW;
-      h = img.height / (img.width / clipW);
-      airH = (clipH - h) / 2;
-    } else {
-      h = clipH;
-      w = img.width / (img.height / clipH);
-      airW = (clipW - w) / 2;
+    public void drawSelection(PGraphics g){
+        if (selected) {
+            g.stroke(tulpa.SOLE.color(255));
+            g.noFill();
+            g.rect(x + airW, y + airH, displayW, displayH);
+        }
     }
-    displayW = w;
-    displayH = h;
-  }
 
-  public boolean clicked() {
-    return checkLocation(tulpa.SOLE.mouseX, tulpa.SOLE.mouseY);
-//    if (tulpa.SOLE.mouseX >= xpos + airW && tulpa.SOLE.mouseX <= xpos + airW + displayW &&
-//            tulpa.SOLE.mouseY >= ypos + airH - tulpa.SOLE.field.latitude
-//            && tulpa.SOLE.mouseY <= ypos + airH + displayH - tulpa.SOLE.field.latitude) {
-//      return true;
-//    } else {
-//      return false;
-//    }
-  }
-
-  public boolean checkLocation(float x, float y) {
-    if (x >= xpos + airW && x <= xpos + airW + displayW &&
-            y >= ypos + airH - tulpa.SOLE.field.latitude
-            && y <= ypos + airH + displayH - tulpa.SOLE.field.latitude) {
-      return true;
-    } else {
-      return false;
+    public void setSize(float clipW, float clipH) {
+        float wid = img.width;
+        float hei = img.height;
+        if (img.width >= img.height) {
+            wid = clipW;
+            hei = img.height / (img.width / clipW);
+            airH = (clipH - hei) / 2;
+        } else {
+            hei = clipH;
+            wid = img.width / (img.height / clipH);
+            airW = (clipW - wid) / 2;
+        }
+        displayW = wid;
+        w = wid;
+        displayH = hei;
+        h = hei;
     }
-  }
+
 }

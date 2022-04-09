@@ -108,8 +108,8 @@ public class Library {
 
     for (Clipping c : clippings){
       if (c == selClip) continue;
-      if (c.ypos < selClip.ypos - c.displayH * 1.2 || c.ypos > selClip.ypos + selClip.displayH * 1.2) continue;
-      if (findOverlap(selClip, c) > bestScore && (selClip.ypos - c.ypos) * direction < 0){
+      if (c.y < selClip.y - c.displayH * 1.2 || c.y > selClip.y + selClip.displayH * 1.2) continue;
+      if (findOverlap(selClip, c) > bestScore && (selClip.y - c.y) * direction < 0){
         bestScore = findOverlap(selClip, c);
         best = c;
       }
@@ -119,9 +119,9 @@ public class Library {
   }
 
   public float findOverlap(Clipping clip1, Clipping clip2){
-    if (clip1.xpos > clip2.xpos + clip2.displayW || clip1.xpos + clip1.displayW <= clip2.xpos) return 0;
-    float left = PApplet.max(clip1.xpos, clip2.xpos);
-    float right = PApplet.min(clip1.xpos + clip1.displayW, clip2.xpos + clip2.displayW);
+    if (clip1.x > clip2.x + clip2.displayW || clip1.x + clip1.displayW <= clip2.x) return 0;
+    float left = PApplet.max(clip1.x, clip2.x);
+    float right = PApplet.min(clip1.x + clip1.displayW, clip2.x + clip2.displayW);
     float ans = PApplet.max(left, right) - PApplet.min(left, right);
     return ans;
   }
@@ -140,7 +140,7 @@ public class Library {
   public void clickSelect(MouseEvent e) {
     boolean bromp = false;
     for (Clipping clip : clippings) {
-      if (!clip.onscreen || !clip.clicked()) continue;
+//      if (!clip.onscreen || !clip.clicked()) continue;
       if (!e.isMetaDown() && !e.isControlDown()) {
         clearSelection();
       } else if (clip.selected) {

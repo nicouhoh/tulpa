@@ -80,7 +80,7 @@ public class Field{
     float best = 99999999;
     for (Clipping clip : library.clippings) {
       if (!clip.onscreen) continue;
-      float dist = PApplet.dist(x, y, clip.xpos + clip.displayW/2, clip.ypos + clip.displayH/2);
+      float dist = PApplet.dist(x, y, clip.x + clip.displayW/2, clip.y + clip.displayH/2);
       if (dist < best) victor = clip;
     }
     return victor;
@@ -91,11 +91,11 @@ public class Field{
     Clipping target;
     if (library.selected.size() == 1 && library.selected.get(0).onscreen){
       target = library.selected.get(0);
-      y = target.ypos - latitude;
+      y = target.y - latitude;
       sardine = !sardine;
       fussMenagerie();
 
-      goTo(target.ypos, y);
+      goTo(target.y, y);
       return;
     }
 
@@ -123,7 +123,7 @@ public class Field{
         float ratio = (w - sPillow) / rowWidth;
         for (Clipping c : row){
           c.setSize(c.displayW * ratio, c.displayH * ratio);
-          c.setPos(c.xpos * ratio, c.ypos);
+          c.setPos(c.x * ratio, c.y);
           nextY = c.displayH;
         }
         x = sPillow;
@@ -155,7 +155,7 @@ public class Field{
     if(library.zoom) {
       g.fill(0, 230);
       g.rect(0, 0, w, h);
-      library.selected.get(0).zoomDisplay(g, w, h, zoomPillow);
+      library.selected.get(0).zoomClipping(g, w, h, zoomPillow);
     }
   }
 
@@ -192,11 +192,11 @@ public class Field{
     if(library.selected.size() != 1) return;
 
     Clipping clip = library.selected.get(0);                  // below screen
-    if (clip.ypos + pillow + clip.displayH/2 > latitude + h){
-      goTo(clip.ypos, h - pillow - clip.displayH);
+    if (clip.y + pillow + clip.displayH/2 > latitude + h){
+      goTo(clip.y, h - pillow - clip.displayH);
     }
-    else if(clip.ypos + clip.displayH/2 < latitude){   // above screen
-      goTo(clip.ypos, pillow);
+    else if(clip.y + clip.displayH/2 < latitude){   // above screen
+      goTo(clip.y, pillow);
     }
     updateScroller();
   }
