@@ -31,6 +31,10 @@ public class Clipping extends Monad{
         drawSelection(g);
     }
 
+    public void mouseOver(){
+        System.out.println(this);
+    }
+
     public void zoomClipping(PGraphics g, float w, float h, float p){
         float zoomW = 0;
         float zoomH = 0;
@@ -39,7 +43,8 @@ public class Clipping extends Monad{
             zoomH = PApplet.constrain(img.height, 10, h - p);
             zoomW = (zoomH / img.height) * img.width;
         }
-        else if (img.width > img.height || zoomW > w - p * 2){
+//        else if (img.width > img.height || zoomW > w - p * 2)
+          else {
             zoomW = PApplet.constrain(img.width, 10, w - p);
             zoomH = (zoomW / img.width) * img.height;
         }
