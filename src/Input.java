@@ -9,15 +9,15 @@ import drop.DropEvent;
 
 public class Input{
   
-  Field field;
+  Cockpit cockpit;
   Scroller scroller;
   Library library;
 
   State state;
 
-  public Input(Library libraryIn, Field fieldIn){
-    field = fieldIn;
-    scroller = field.scroller;
+  public Input(Library libraryIn, Cockpit cockpitIn){
+    cockpit = cockpitIn;
+    scroller = cockpit.scroller;
     library = libraryIn;
     state = State.LIBRARY;
   }
@@ -30,7 +30,7 @@ public class Input{
       switch (e.getKeyCode()) {
         case 8 -> {                                       // BACKSPACE
           library.whackClipping();
-          field.fussMenagerie();
+//          cockpit.field.fussMenagerie(library);
         }
         case 32 -> {                                      // SPACE
           state = State.ZOOM;
@@ -38,28 +38,28 @@ public class Input{
         }
         case 37 -> {                                      // LEFT ARROW
           library.selectLeftRight(-1);
-          field.arrowFollow();
+//          cockpit.arrowFollow();
         }
-        //case 38 -> library.selectDownUp(-field.sheetZoom);       // UP ARROW
+        //case 38 -> library.selectDownUp(-cockpit.sheetZoom);       // UP ARROW
         case 38 -> {
-          if (field.sardine) library.selectUpDownSardine(-1);
-          else library.selectUpDownGrid(-field.sheetZoom);
-          field.arrowFollow();
+//          if (cockpit.sardine) library.selectUpDownSardine(-1);
+//          else library.selectUpDownGrid(-cockpit.field.sheetZoom);
+//          cockpit.arrowFollow();
         }
         case 39 -> {                                      // RIGHT ARROW
           library.selectLeftRight(1);
-          field.arrowFollow();
+//          cockpit.arrowFollow();
         }
-        //case 40 -> library.selectDownUp(field.sheetZoom);     // DOWN ARROW
+        //case 40 -> library.selectDownUp(cockpit.sheetZoom);     // DOWN ARROW
         case 40 -> {
-          if (field.sardine) library.selectUpDownSardine(1);
-          else library.selectUpDownGrid(field.sheetZoom);
-          field.arrowFollow();
+//          if (cockpit.sardine) library.selectUpDownSardine(1);
+//          else library.selectUpDownGrid(cockpit.field.sheetZoom);
+//          cockpit.arrowFollow();
         }
-        case 48 -> field.switchView();                    // 0
-        case 45 -> field.sheetZoom(-1);                // -
-        case 61 -> field.sheetZoom(1);                 // =
-        case 79 -> library.overlapDebug();               // Letter O
+//        case 48 -> cockpit.switchView();                    // 0
+        case 45 -> cockpit.field.zoom(-1);                // -
+        case 61 -> cockpit.field.zoom(1);                 // =
+//        case 79 -> library.overlapDebug();               // Letter O
       }
     }
 
@@ -79,47 +79,41 @@ public class Input{
     }
   }
 
-  public void mouseEvent(MouseEvent e){
-    if (state == State.LIBRARY){
-      if (e.getAction() == MouseEvent.PRESS){
-        switch(e.getButton()){
-          case 37 -> {                           // TODO Left mouse button. Why the heck is this 37
-            if(e.getX() > field.w){
-              field.grabScroller();
-            }
-          }
-        }
-      }
-      if(e.getAction() == MouseEvent.DRAG){
-        field.dragScroller(field.foot);
-      }
-      else if (e.getAction() == MouseEvent.RELEASE) {
-        switch(e.getButton()){
-          case 37 -> {                           // TODO Left mouse button. Why the heck is this 37
-              scroller.grabbed = false;
-              library.clickSelect(e);
-          }
-        }
-      }
-    }
-    else if (state == State.ZOOM){
-      if (library.selected.size() < 1) {
-        state = State.LIBRARY;
-        return;
-      }
-    }
-  }
-
-  public void mouseWheelEvent(MouseWheelEvent e){
+//  public void mouseEvent(MouseEvent e){
 //    if (state == State.LIBRARY){
-//      if (e.get) // TODO This seems like a more complex topic that I don't feel like figuring out right now. PERHAPS LATER
+//      if (e.getAction() == MouseEvent.PRESS){
+//        switch(e.getButton()){
+//          case 37 -> {                           // TODO Left mouse button. Why the heck is this 37
+//            if(e.getX() > cockpit.w){
+////              cockpit.grabScroller();
+//            }
+//          }
+//        }
+//      }
+//      if(e.getAction() == MouseEvent.DRAG){
+////        cockpit.dragScroller(cockpit.foot);
+//      }
+//      else if (e.getAction() == MouseEvent.RELEASE) {
+//        switch(e.getButton()){
+//          case 37 -> {                           // TODO Left mouse button. Why the heck is this 37
+//              scroller.grip.grabbed = false;
+//              library.clickSelect(e);
+//          }
+//        }
+//      }
 //    }
-  }
-
-  public void wheel(MouseEvent event){
-    if (state != State.LIBRARY) return;
-      field.goTo(field.latitude + event.getCount(), 0);
-  }
+//    else if (state == State.ZOOM){
+//      if (library.selected.size() < 1) {
+//        state = State.LIBRARY;
+//        return;
+//      }
+//    }
+//  }
+//
+//  public void wheel(MouseEvent event){
+//    if (state != State.LIBRARY) return;
+////      cockpit.goTo(cockpit.latitude + event.getCount(), 0);
+//  }
   
   public void dropInput(DropEvent drop){
     if(state != State.LIBRARY) return;
@@ -136,6 +130,6 @@ public class Input{
         library.addToLibrary(clippings);
       }
     }
-    field.fussMenagerie();
+//    cockpit.field.fussMenagerie(library);
   }
 }

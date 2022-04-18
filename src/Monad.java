@@ -1,4 +1,5 @@
 import processing.core.PGraphics;
+import java.util.ArrayList;
 
 public abstract class Monad {
 
@@ -9,16 +10,19 @@ public abstract class Monad {
 
     boolean onscreen;
 
-    public abstract void draw(PGraphics g);
+    ArrayList<Monad> children = new ArrayList<Monad>();
+    Monad parent;
+
+    public void draw(PGraphics g){};
+    public void update(){};
     public void mouseOver(){}
 
 
-    public void update(PGraphics g, float latitude) {
-        if (isOnscreen(latitude)) {
-            draw(g);
-            if (checkMouseOver(tulpa.SOLE.mouseX, tulpa.SOLE.mouseY, latitude)) {
-                mouseOver();
-            }
+    public void cascadeUpdate(){
+        update();
+        if (children == null) return;
+        for (Monad c : children){
+            c.cascadeUpdate();
         }
     }
 
@@ -41,10 +45,45 @@ public abstract class Monad {
     }
 
 
-    public boolean checkMouseOver(float mouseX, float mouseY, float latitude) {
-        if (mouseX >= x && mouseX <= x + w &&
-                mouseY >= y - latitude
-                && mouseY <= y + h - latitude) {
+    public Monad spearMonad(float spearX, float spearY, float latitude) {
+        if (children.size() == 0) return this;
+        for (Monad school : children) {
+            if (!school.isOnscreen(latitude)) continue;
+            if (!school.bullseye(school, spearX, spearY, latitude)) continue;
+            return school.spearMonad(spearX, spearY, latitude);
+        }
+        return null;
+    }
+
+
+
+//        for (Monad school : children) {
+//            if (!school.isOnscreen(latitude)) continue;
+//            if (!school.bullseye(school, spearX, spearY, latitude)) continue;
+//            if (school.children.size() > 0) {
+//                return school.spearMonad(spearX, spearY, latitude);
+//            }
+//            return school;
+//        }
+//        return null;
+//    }
+
+//    public Monad spearMonad(float spearX, float spearY, float latitude) {
+//        for (Monad school : children) {
+//            if (!school.isOnscreen(latitude)) continue;
+//            if (!school.bullseye(school, spearX, spearY, latitude)) continue;
+//            if (school.children.size() > 0) {
+//                return school.spearMonad(spearX, spearY, latitude);
+//            }
+//            return school;
+//        }
+//        return null;
+//    }
+
+    public boolean bullseye(Monad monad, float x, float y, float latitude) {
+        if (x >= monad.x && x <= monad.x + monad.w &&
+                y >= monad.y - latitude
+                && y <= monad.y + monad.h - latitude) {
             return true;
         } else {
             return false;

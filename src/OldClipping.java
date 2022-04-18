@@ -93,8 +93,8 @@ public class OldClipping {
   public boolean clicked() {
     return checkLocation(tulpa.SOLE.mouseX, tulpa.SOLE.mouseY);
 //    if (tulpa.SOLE.mouseX >= xpos + airW && tulpa.SOLE.mouseX <= xpos + airW + displayW &&
-//            tulpa.SOLE.mouseY >= ypos + airH - tulpa.SOLE.field.latitude
-//            && tulpa.SOLE.mouseY <= ypos + airH + displayH - tulpa.SOLE.field.latitude) {
+//            tulpa.SOLE.mouseY >= ypos + airH - tulpa.SOLE.cockpit.latitude
+//            && tulpa.SOLE.mouseY <= ypos + airH + displayH - tulpa.SOLE.cockpit.latitude) {
 //      return true;
 //    } else {
 //      return false;
@@ -103,8 +103,8 @@ public class OldClipping {
 
   public boolean checkLocation(float x, float y) {
     if (x >= xpos + airW && x <= xpos + airW + displayW &&
-            y >= ypos + airH - tulpa.SOLE.field.latitude
-            && y <= ypos + airH + displayH - tulpa.SOLE.field.latitude) {
+            y >= ypos + airH - tulpa.SOLE.cockpit.latitude
+            && y <= ypos + airH + displayH - tulpa.SOLE.cockpit.latitude) {
       return true;
     } else {
       return false;

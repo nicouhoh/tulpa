@@ -26,6 +26,12 @@ public class Library {
     selected = new ArrayList<Clipping>();
   }
 
+  public void debugInit(){
+    File data = new File(path);
+    ArrayList<Clipping> dataClippings = incubateDir(data);
+    addToLibrary(dataClippings);
+  }
+
   public void addToLibrary(Clipping clip) {
     clippings.add(clip);
   }
@@ -92,46 +98,46 @@ public class Library {
     }
   }
 
-  public void selectUpDownGrid(int columns){
-    if(selected.size() == 1) {
-      int index = clippings.indexOf(selected.get(0));
-      Clipping c = clippings.get(PApplet.constrain(index + columns, 0, clippings.size() - 1));
-      deselect(selected.get(0));
-      select(c);
-    }
-  }
-
-  public void selectUpDownSardine(int direction){
-    Clipping selClip = selected.get(0);
-    float bestScore = 0;
-    Clipping best = selClip;
-
-    for (Clipping c : clippings){
-      if (c == selClip) continue;
-      if (c.y < selClip.y - c.displayH * 1.2 || c.y > selClip.y + selClip.displayH * 1.2) continue;
-      if (findOverlap(selClip, c) > bestScore && (selClip.y - c.y) * direction < 0){
-        bestScore = findOverlap(selClip, c);
-        best = c;
-      }
-    }
-    clearSelection();
-    select(best);
-  }
-
-  public float findOverlap(Clipping clip1, Clipping clip2){
-    if (clip1.x > clip2.x + clip2.displayW || clip1.x + clip1.displayW <= clip2.x) return 0;
-    float left = PApplet.max(clip1.x, clip2.x);
-    float right = PApplet.min(clip1.x + clip1.displayW, clip2.x + clip2.displayW);
-    float ans = PApplet.max(left, right) - PApplet.min(left, right);
-    return ans;
-  }
-
-  public void overlapDebug(){
-    if (selected.size() == 2){
-      float ans = findOverlap(selected.get(0), selected.get(1));
-      System.out.println("Overlap between " + selected.get(0).imgPath + " and " + selected.get(1).imgPath + ": " + ans);
-    }
-  }
+//  public void selectUpDownGrid(int columns){
+//    if(selected.size() == 1) {
+//      int index = clippings.indexOf(selected.get(0));
+//      Clipping c = clippings.get(PApplet.constrain(index + columns, 0, clippings.size() - 1));
+//      deselect(selected.get(0));
+//      select(c);
+//    }
+//  }
+//
+//  public void selectUpDownSardine(int direction){
+//    Clipping selClip = selected.get(0);
+//    float bestScore = 0;
+//    Clipping best = selClip;
+//
+//    for (Clipping c : clippings){
+//      if (c == selClip) continue;
+//      if (c.y < selClip.y - c.displayH * 1.2 || c.y > selClip.y + selClip.displayH * 1.2) continue;
+//      if (findOverlap(selClip, c) > bestScore && (selClip.y - c.y) * direction < 0){
+//        bestScore = findOverlap(selClip, c);
+//        best = c;
+//      }
+//    }
+//    clearSelection();
+//    select(best);
+//  }
+//
+//  public float findOverlap(Clipping clip1, Clipping clip2){
+//    if (clip1.x > clip2.x + clip2.displayW || clip1.x + clip1.displayW <= clip2.x) return 0;
+//    float left = PApplet.max(clip1.x, clip2.x);
+//    float right = PApplet.min(clip1.x + clip1.displayW, clip2.x + clip2.displayW);
+//    float ans = PApplet.max(left, right) - PApplet.min(left, right);
+//    return ans;
+//  }
+//
+//  public void overlapDebug(){
+//    if (selected.size() == 2){
+//      float ans = findOverlap(selected.get(0), selected.get(1));
+//      System.out.println("Overlap between " + selected.get(0).imgPath + " and " + selected.get(1).imgPath + ": " + ans);
+//    }
+//  }
 
   public void whackClipping() {
     clippings.removeAll(selected);

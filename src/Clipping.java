@@ -2,9 +2,12 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
+import javax.swing.event.MouseInputListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.lang.annotation.Documented;
 
-public class Clipping extends Monad{
+public class Clipping {
 
     String id;
 
@@ -12,11 +15,6 @@ public class Clipping extends Monad{
     String imgPath;
 
     String bodyText;
-
-    float displayW;
-    float displayH;
-    float airW;
-    float airH;
 
     boolean selected;
 
@@ -26,14 +24,6 @@ public class Clipping extends Monad{
         img = tulpa.SOLE.loadImage(imgPath);
     }
 
-    public void draw(PGraphics g){
-        g.image(img, x + airW, y + airH, displayW, displayH);
-        drawSelection(g);
-    }
-
-    public void mouseOver(){
-        System.out.println(this);
-    }
 
     public void zoomClipping(PGraphics g, float w, float h, float p){
         float zoomW = 0;
@@ -51,30 +41,8 @@ public class Clipping extends Monad{
         g.image(img, w / 2 - zoomW / 2, h / 2 - zoomH / 2, zoomW, zoomH);
     }
 
-    public void drawSelection(PGraphics g){
-        if (selected) {
-            g.stroke(tulpa.SOLE.color(255));
-            g.noFill();
-            g.rect(x + airW, y + airH, displayW, displayH);
-        }
-    }
 
-    public void setSize(float clipW, float clipH) {
-        float wid = img.width;
-        float hei = img.height;
-        if (img.width >= img.height) {
-            wid = clipW;
-            hei = img.height / (img.width / clipW);
-            airH = (clipH - hei) / 2;
-        } else {
-            hei = clipH;
-            wid = img.width / (img.height / clipH);
-            airW = (clipW - wid) / 2;
-        }
-        displayW = wid;
-        w = wid;
-        displayH = hei;
-        h = hei;
-    }
+
+
 
 }

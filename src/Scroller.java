@@ -1,55 +1,50 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
+import java.util.ArrayList;
 
-public class Scroller{
-  // TODO I mean REALLY I want to just use the OS's native scrolling. HOW? HOW???
+
+public class Scroller extends Monad{
   // TODO would be nice to see an indication on the scrollbar of offscreen selected clippings
 
-  
-  int scrollC;
-  int gripC;
-  
-  float gripY;
-  float gripH;
-  
-  int scrollW;
+  Field parent;
+  Grip grip;
+  int color;
   int scrollDist;
-  
-  boolean grabbed;
-  float grabY;
-  
-  public Scroller(){
-    gripY = 0;
-    scrollW = 10;
-    scrollC = 0xff1A1A1A;
-    gripC = 0xff6C6C6C;
+
+  public Scroller(Field parent){
+    this.parent = parent;
+    this.parent.children.add(this);
+    setPos(parent.x + parent.w - parent.scrollerW, parent.y);
+    setSize(parent.scrollerW, parent.h);
+    color = 0xff1A1A1A;
     scrollDist = 1;
-    grabbed = false;
-  }
-  
-  public void update(float contentH){
-    gripH = PApplet.constrain(tulpa.SOLE.height / contentH * tulpa.SOLE.height, 0, tulpa.SOLE.height);
-    gripY = PApplet.constrain(gripY, 0, tulpa.SOLE.height - gripH);
-  }
-  
-  public void drawScroller(PGraphics g){
-    g.noStroke();
-    g.fill(scrollC);
-    g.rect(tulpa.SOLE.width - scrollW, 0, scrollW, tulpa.SOLE.height);
-    g.fill(gripC);
-    g.rect(tulpa.SOLE.width - scrollW, gripY, scrollW, gripH);
+    grip = new Grip(this);
   }
 
-  public void grab(){
-    grabbed = true;
-    System.out.println("grabbed");
-    grabY = tulpa.SOLE.mouseY - gripY;
+  @Override
+  public void draw(PGraphics g){
+    g.noStroke();
+    g.fill(color);
+//    g.rect(tulpa.SOLE.width - w, 0, w, tulpa.SOLE.height);
+    g.rect(x, y, w, h);
+    grip.draw(g);
+  }
+
+  @Override
+  public void update(){
+    setPos(parent.x + parent.w - parent.scrollerW, parent.y);
+    setSize(parent.scrollerW, parent.h);
   }
 
   public void goTo(float latitude, float height, float contentH){
-    gripY = (latitude * height) / contentH;
+    grip.y = (latitude * height) / contentH;
   }
 
+  public void grabGrip(){
+    grip.grabbed = true;
+    System.out.println("grabbed");
+    grip.grabY = tulpa.SOLE.mouseY - y;
+  }
 
 }
