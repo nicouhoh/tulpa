@@ -14,18 +14,24 @@ public class ContactSheet extends Monad{
        setSize(parent.w - parent.scrollerW, parent.h);
     }
 
-    public void draw(PGraphics g, float latitude) {
-        g.push();
-        g.translate(0, -latitude);
-        for (Spegel spegel : children) {
-            spegel.draw(g);
+    // we make our translation here in Contact Sheet so nothing else needs to worry about it.
+    @Override
+    public void cascadeDraw(PGraphics g, float latitude) {
+        if(isOnscreen(latitude)) {
+            draw(g);
+            if (children == null) return;
+            g.push();
+            g.translate(0, latitude);
+            for (Spegel s : children) {
+                s.cascadeDraw(g, latitude);
+            }
+            g.pop();
         }
-        g.pop();
     }
 
     @Override
     public void update(){
-        setPos(parent.y, parent.y);
+        setPos(parent.x, parent.y);
         setSize(parent.w - parent.scrollerW, parent.h);
     }
 }

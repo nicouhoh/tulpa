@@ -6,7 +6,6 @@ public class Cockpit extends Monad{
 
   Field field;
   Scroller scroller;
-  float latitude;
 
   boolean sardine;
 
@@ -16,23 +15,26 @@ public class Cockpit extends Monad{
     setPos(0, 0);
     setSize(tulpa.SOLE.width, tulpa.SOLE.height);
     field = new Field(this);
-    latitude = 0;
     sardine = false;
     zoomPillow = 30;
-  }
-
-  @Override
-  public void draw(PGraphics g){
-    field.draw(g);
-    field.scroller.draw(g);
-    field.sheet.draw(g, latitude);
   }
 
   @Override
   public void update(){
     setSize(tulpa.SOLE.width, tulpa.SOLE.height);
   }
-//
+
+  @Override
+  public boolean isOnscreen(float latitude) {
+    if (y < latitude + tulpa.SOLE.h && y >= latitude - h * 1.5) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  //
 //  public void switchView(){
 //    float y = 0;
 //    Clipping target;

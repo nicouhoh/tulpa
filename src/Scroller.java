@@ -26,9 +26,7 @@ public class Scroller extends Monad{
   public void draw(PGraphics g){
     g.noStroke();
     g.fill(color);
-//    g.rect(tulpa.SOLE.width - w, 0, w, tulpa.SOLE.height);
     g.rect(x, y, w, h);
-    grip.draw(g);
   }
 
   @Override

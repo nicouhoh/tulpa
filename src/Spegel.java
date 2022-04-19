@@ -23,11 +23,6 @@ public class Spegel extends Monad {
     }
 
     @Override
-    public void update(){
-
-    }
-
-    @Override
     public void setSize(float clipW, float clipH) {
         float wid = clipping.img.width;
         float hei = clipping.img.height;

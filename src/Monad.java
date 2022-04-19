@@ -26,6 +26,17 @@ public abstract class Monad {
         }
     }
 
+    // Generally we call this on Cockpit, and it tumbles down from there.
+    public void cascadeDraw(PGraphics g, float latitude){
+        if(isOnscreen(latitude)) {
+            draw(g);
+            if (children == null) return;
+            for (Monad c : children) {
+                c.cascadeDraw(g, latitude);
+            }
+        }
+    }
+
     public void setPos(float x, float y) {
         this.x = x;
         this.y = y;
@@ -37,48 +48,24 @@ public abstract class Monad {
     }
 
     public boolean isOnscreen(float latitude) {
-        if (y < latitude + tulpa.SOLE.height && y >= latitude - h * 1.5) {
+        if (y < latitude + parent.h && y >= latitude - h * 1.5) {
             return true;
         } else {
             return false;
         }
     }
 
-
-    public Monad spearMonad(float spearX, float spearY, float latitude) {
-        if (children.size() == 0) return this;
-        for (Monad school : children) {
-            if (!school.isOnscreen(latitude)) continue;
-            if (!school.bullseye(school, spearX, spearY, latitude)) continue;
-            return school.spearMonad(spearX, spearY, latitude);
-        }
-        return null;
-    }
-
-
-
-//        for (Monad school : children) {
-//            if (!school.isOnscreen(latitude)) continue;
-//            if (!school.bullseye(school, spearX, spearY, latitude)) continue;
-//            if (school.children.size() > 0) {
-//                return school.spearMonad(spearX, spearY, latitude);
-//            }
-//            return school;
-//        }
-//        return null;
-//    }
-
+//    TODO REEXAMINE THIS.
 //    public Monad spearMonad(float spearX, float spearY, float latitude) {
+//        if (children.size() == 0) return this;
 //        for (Monad school : children) {
-//            if (!school.isOnscreen(latitude)) continue;
+//            if (!school.isOnscreen()) continue;
 //            if (!school.bullseye(school, spearX, spearY, latitude)) continue;
-//            if (school.children.size() > 0) {
-//                return school.spearMonad(spearX, spearY, latitude);
-//            }
-//            return school;
+//            return school.spearMonad(spearX, spearY, latitude);
 //        }
 //        return null;
 //    }
+
 
     public boolean bullseye(Monad monad, float x, float y, float latitude) {
         if (x >= monad.x && x <= monad.x + monad.w &&

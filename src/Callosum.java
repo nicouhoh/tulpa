@@ -1,7 +1,5 @@
-import processing.core.PApplet;
 import processing.core.PGraphics;
 
-import java.util.ArrayList;
 import java.io.File;
 
 public class Callosum {
@@ -23,9 +21,11 @@ public class Callosum {
     }
 
     // we kick it all off here
+
     public void showtime(PGraphics g){
-        ducksInRow();
-        cockpit.draw(g);
+        arrangeLovingly();
+        update();
+        cockpit.cascadeDraw(g, field.latitude);
     }
 
     public void addClipping(File file){
@@ -33,7 +33,7 @@ public class Callosum {
         library.addToLibrary(clip);
     }
 
-    public void ducksInRow(){
+    public void arrangeLovingly(){
         field.updateSize();
 //        if(field.sardine){
 //            packSardines(library);

@@ -29,7 +29,7 @@ public class EventEar {
         }
         else if(whisper == MouseEvent.RELEASE){
             // find out what we released on. have we been dragging?
-            System.out.println(tulpa.SOLE.cockpit.spearMonad(eventX, eventY, tulpa.SOLE.cockpit.latitude));
+        //    System.out.println(tulpa.SOLE.cockpit.spearMonad(eventX, eventY, tulpa.SOLE.cockpit.field.latitude));
         }
         else if(whisper == MouseEvent.ENTER){
             // mouseover. On what?

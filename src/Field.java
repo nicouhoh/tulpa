@@ -22,8 +22,7 @@ public class Field extends Monad{
 
 
     public Field(Cockpit parent){
-        this.parent = parent;
-        this.parent.children.add(this);
+        super(parent);
         setPos(parent.x, parent.y);
         setSize(parent.w, parent.h);
         latitude = 0;
@@ -63,6 +62,14 @@ public class Field extends Monad{
             sheet.children.get(i).setPos(fussX, fussY);
         }
         setFoot(fussY);
+    }
+
+    public boolean isOnscreen(Monad m){
+        if ( m.y < latitude + m.h && m.y >= latitude - m.h * 1.5){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 //    public void packSardines(Library library) {
