@@ -29,6 +29,7 @@ public class Cockpit extends Monad{
     if (y < latitude + tulpa.SOLE.h && y >= latitude - h * 1.5) {
       return true;
     } else {
+      System.out.println("COCKPIT OFFSCREEN");
       return false;
     }
   }

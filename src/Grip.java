@@ -3,19 +3,31 @@ import processing.core.PGraphics;
 
 public class Grip extends Monad{
 
-    Scroller parent;
     int color;
 
     boolean grabbed;
     float grabY;
 
     public Grip(Scroller parent){
+
         this.parent = parent;
         parent.children.add(this);
         setPos(parent.x, parent.y);
-        w = parent.parent.scrollerW;
+        w = parent.parent.scrollWidth();
         color = 0xff6C6C6C;
         grabbed = false;
+    }
+
+    // e.g. EXTRA WIDTH, where most Monads it == 0. generalize. make it a method getExtraWidth()
+
+    @Override
+    public boolean isOnscreen(float latitude) {
+        if (y < latitude + parent.h && y >= latitude - h * 1.5) {
+            return true;
+        } else {
+            System.out.println("GRIP OFFSCREEN");
+            return false;
+        }
     }
 
     @Override
@@ -24,10 +36,18 @@ public class Grip extends Monad{
         g.rect(x, y, w, h);
     }
 
-    @Override
-    public void update(){
-        setPos(parent.x, PApplet.constrain(y, 0, parent.h - h));
-        setSize(parent.w, PApplet.constrain(parent.h / parent.parent.foot * parent.h, 0, parent.h));
+    public void updateGrip(float lat, float foot){
+        updateGripSize(lat, foot);
+        updateGripPos(lat, foot);
     }
+
+    public void updateGripSize(float lat, float foot){
+        setSize(parent.w, PApplet.constrain(parent.h / foot * parent.h, 0, parent.h));
+    }
+
+    public void updateGripPos(float lat, float foot){
+        setPos(parent.x, PApplet.constrain(lat / foot * parent.h, 0, parent.h - h));
+    }
+
 
 }

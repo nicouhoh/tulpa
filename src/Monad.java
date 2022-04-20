@@ -47,6 +47,11 @@ public abstract class Monad {
         h = newH;
     }
 
+    public void setBounds(float x, float y, float w, float h){
+        setPos(x, y);
+        setSize(w, h);
+    }
+
     public boolean isOnscreen(float latitude) {
         if (y < latitude + parent.h && y >= latitude - h * 1.5) {
             return true;
@@ -55,7 +60,7 @@ public abstract class Monad {
         }
     }
 
-//    TODO REEXAMINE THIS.
+//    TODO RE-EXAMINE
 //    public Monad spearMonad(float spearX, float spearY, float latitude) {
 //        if (children.size() == 0) return this;
 //        for (Monad school : children) {
@@ -76,4 +81,9 @@ public abstract class Monad {
             return false;
         }
     }
+
+    public float scrollWidth(){
+        return 0;
+    }
+
 }

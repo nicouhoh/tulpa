@@ -23,7 +23,6 @@ public class Callosum {
     // we kick it all off here
 
     public void showtime(PGraphics g){
-        arrangeLovingly();
         update();
         cockpit.cascadeDraw(g, field.latitude);
     }
@@ -33,23 +32,10 @@ public class Callosum {
         library.addToLibrary(clip);
     }
 
-    public void arrangeLovingly(){
-        field.updateSize();
-//        if(field.sardine){
-//            packSardines(library);
-//            return;
-//        }
-        field.setClipSize();
-        for (Clipping clip : library.clippings){
-           field.newSpegel(clip);
-        }
-        field.arrangeSpegels();
-//        updateScroller();
-    }
-
     public void debugInit(){
         library.debugInit();
-        //TODO FIELD STUFF
+        for(Clipping clip : library.clippings){ //TODO How are we actually doing this
+            field.sheet.newSpegel(clip);
+        }
     }
-
 }

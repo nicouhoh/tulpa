@@ -6,71 +6,57 @@ import java.util.ArrayList;
 
 public class Field extends Monad{
 
-    Cockpit parent;
     Scroller scroller;
     ContactSheet sheet;
-    int scrollerW;
-    int sheetZoom;
+    int scrollW;
     float latitude;
-    float clipSize;
-    float pillow;
     float sPillow;
-    float foot;
     boolean sardine;
 
     float zoomPillow;
 
 
     public Field(Cockpit parent){
-        super(parent);
+        this.parent = parent;
+        this.parent.children.add(this);
         setPos(parent.x, parent.y);
         setSize(parent.w, parent.h);
         latitude = 0;
-        scrollerW = 10;
+        scrollW = 10;
         sheet = new ContactSheet(this);
         scroller = new Scroller(this);
-        sheetZoom = 5;
-        pillow = 10;
         sPillow = 2;
-        clipSize = 200;
         sardine = false;
         zoomPillow = 30;
     }
 
-    @Override // gets called by Cockpit's draw().
+    @Override
     public void draw(PGraphics g){
         g.background(49);
     }
 
     @Override
+    public void cascadeUpdate(){
+        update();
+        if (children == null) return;
+        for (Monad c : children){
+            c.cascadeUpdate();
+        }
+        // Weird and ugly. The only way I could figure out how to
+        // work this was to override this so I can put this updateGrip
+        // here. there has to be a better way.
+        //TODO  GALAXY BRAIN: instead of reaching down into grip to
+        //TODO  change the grip, reach down to read the grip position.
+        //TODO  Latitude is based on grip position, not the other way around.
+        scroller.grip.updateGrip(latitude, sheet.foot);
+    }
+
+    @Override
     public void update(){
-        setSize(parent.x, parent.y);
+        setSize(parent.w, parent.h);
+        followScroller();
     }
 
-    public void newSpegel(Clipping clip){
-        Spegel speg = new Spegel(this.sheet, clip);
-        sheet.children.add(speg);
-    }
-
-    public void arrangeSpegels(){
-        float fussX = pillow;
-        float fussY = pillow;
-        for (int i = 0; i < sheet.children.size(); i++){
-            fussX = pillow + (i % sheetZoom) * (pillow + clipSize);
-            fussY = pillow + (i / sheetZoom) * (pillow + clipSize);
-            sheet.children.get(i).setSize(clipSize, clipSize);
-            sheet.children.get(i).setPos(fussX, fussY);
-        }
-        setFoot(fussY);
-    }
-
-    public boolean isOnscreen(Monad m){
-        if ( m.y < latitude + m.h && m.y >= latitude - m.h * 1.5){
-            return true;
-        } else {
-            return false;
-        }
-    }
 
 //    public void packSardines(Library library) {
 //        clipSize = PApplet.constrain(h / sheetZoom, 9, 9999999);
@@ -104,25 +90,37 @@ public class Field extends Monad{
 //            x += newWidth + sPillow;
 //            row.add(clip);
 //        }
-//        foot = y + clipSize + sPillow;
 ////        updateScroller();
 //    }
 
     public void zoom(int z){
-        sheetZoom -= z;
+//        sheetZoom -= z; TODO: temporarily commented to make things work for now
 //        fussMenagerie(parent.library);
     }
 
-    public void updateSize(){
-        w = parent.w - scrollerW;
+    public float scrollWidth(){
+        return scrollW;
     }
 
-    public void setClipSize(){
-        clipSize = PApplet.constrain((w - (pillow * (sheetZoom + 0))) / sheetZoom, 10, 9999999);
+    @Override
+    public boolean isOnscreen(float latitude) {
+        if (y < latitude + parent.h && y >= latitude - h * 1.5) {
+            return true;
+        } else {
+            System.out.println("FIELD OFFSCREEN");
+            return false;
+        }
     }
 
-    public void setFoot(float footY){
-        foot = footY + clipSize + pillow;
+    public void setLatitude(float latY){
+        latitude = latY;
+    }
+
+    // The size of the scroller grip is determined by the contact sheet.
+    // The latitude is determined by the position of the grip.
+    // contact sheet > grip > latitude.
+    public void followScroller(){
+        setLatitude(scroller.grip.y / h * sheet.foot);
     }
 
 }

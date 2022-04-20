@@ -5,7 +5,6 @@ import java.awt.*;
 public class Spegel extends Monad {
 
     Clipping clipping;
-    ContactSheet parent;
     float displayW;
     float displayH;
     float airW;
@@ -20,6 +19,7 @@ public class Spegel extends Monad {
     public void draw(PGraphics g){
         g.image(clipping.img, x + airW, y + airH, displayW, displayH);
         drawSelection(g);
+
     }
 
     @Override
