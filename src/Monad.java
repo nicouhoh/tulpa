@@ -15,15 +15,6 @@ public abstract class Monad {
 
     public void draw(PGraphics g){};
     public void update(){};
-
-    public void mouseOver(){}
-    public void clicked(Operator operator, float clickX, float clickY){
-        monadDebugInfo();
-    }
-    public void pressed(Operator operator, float pressX, float pressY){}
-    public void released(Operator operator, float releaseX, float releaseY){}
-    public void dragged(Operator operator, float dragX, float dragY){}
-
     public void cascadeUpdate(){
         update();
         if (children == null) return;
@@ -91,6 +82,19 @@ public abstract class Monad {
             }
         }
         return this;
+    }
+
+    public Clickable getClickableAtPoint(float pointX, float pointY, float latitude){
+        Clickable output = null;
+        if (this instanceof Clickable) output = (Clickable)this;
+        if (children.size() < 1) return output;
+        for (Monad m : children){
+            if (!m.isOnscreen(latitude)) continue;
+            if (m.pinPoint(pointX, pointY)){
+                return m.getClickableAtPoint(pointX, pointY, latitude);
+            }
+        }
+        return output;
     }
 
     public float scrollWidth(){

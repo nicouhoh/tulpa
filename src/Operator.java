@@ -1,32 +1,50 @@
 import processing.event.MouseEvent;
-import processing.event.KeyEvent;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
     // i.e. eliminate areas where we're not clicking first... then check for onscreen...
 
-    Monad lockedMonad;
+
+    // -------------------------------------- MOUSEHOLE PARADISE --------------------------------------
+
+    Clickable lockedClickable;
 
     int LMB = 37;
     int RMB = 39;
 
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int event, int x, int y){
+
+        // DRAG doesn't really care if the mouse is currently on something.
+        // it's happy as long as it's holding on to something.
+
+        if(button == LMB && event == MouseEvent.DRAG){
+            if (lockedClickable != null) lockedClickable.dragged(this, x, y);
+        }
+
+        // Now we do care if we evented on something that's interested
+
+        Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
+        if (target == null) return;
+
         if (button == LMB && event == MouseEvent.RELEASE){
-            if(lockedMonad != null) {
-                lockedMonad.released(this, x, y);
+            if(lockedClickable != null) {
+                lockedClickable.released(this, x, y);
                 unlock();
             }
             else{
-                cockpit.getChildAtPoint(x, y, cockpit.field.latitude).clicked(this, x, y);
+                target.clicked(this, x, y);
             }
         }
+
         if(button == LMB && event == MouseEvent.PRESS){
-            cockpit.getChildAtPoint(x, y, cockpit.field.latitude).pressed(this, x, y);
+                target.grabbed(this, x, y);
+                target.pressed(this, x, y);
         }
-        if(button == LMB && event == MouseEvent.DRAG){
-            if (lockedMonad != null) lockedMonad.dragged(this, x, y);
-        }
+
     }
+
+
+    // ----------------------------------- KEYBOARD HAPPINESS ---------------------------------------
 
     int LEFT = 37;
     int UP = 38;
@@ -44,12 +62,12 @@ public class Operator {
         }
     }
 
-    public void lockMonad(Monad monad){
-        lockedMonad = monad;
+    public void lockClickable(Clickable c){
+        lockedClickable = c;
     }
 
     public void unlock(){
-        lockedMonad = null;
+        lockedClickable = null;
     }
 
 }

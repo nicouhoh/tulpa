@@ -4,7 +4,7 @@ import processing.core.PGraphics;
 import java.util.ArrayList;
 
 
-public class Scroller extends Monad{
+public class Scroller extends Monad implements Clickable{
   // TODO would be nice to see an indication on the scrollbar of offscreen selected clippings
 
   Grip grip;
@@ -60,4 +60,7 @@ public class Scroller extends Monad{
     Field field = (Field)parent; // surely there must be a way to do this without such bloodshed
     field.followScroller();
   }
+
+  @Override
+  public void grabbed(Operator operator, float grabX, float grabY){}
 }

@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class Grip extends Monad{
+public class Grip extends Monad implements Clickable{
 
     int color;
 
@@ -54,14 +54,14 @@ public class Grip extends Monad{
     }
 
     public void grabGrip(Operator operator, float mouseGrabY){
-        operator.lockMonad(this);
+        operator.lockClickable(this);
         grabbed = true;
         System.out.println("grabbed");
         grabY = mouseGrabY - y;
     }
 
     @Override
-    public void pressed(Operator operator, float pressedX, float pressedY){
+    public void grabbed(Operator operator, float pressedX, float pressedY){
         grabGrip(operator, pressedY);
     }
 
