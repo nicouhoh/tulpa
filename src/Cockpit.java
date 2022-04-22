@@ -26,14 +26,13 @@ public class Cockpit extends Monad{
 
   @Override
   public boolean isOnscreen(float latitude) {
-    if (y < latitude + tulpa.SOLE.h && y >= latitude - h * 1.5) {
+    if (y < tulpa.SOLE.h && y + h >= 0) {
       return true;
     } else {
       System.out.println("COCKPIT OFFSCREEN");
       return false;
     }
   }
-
 
   //
 //  public void switchView(){

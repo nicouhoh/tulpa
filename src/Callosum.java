@@ -7,11 +7,17 @@ public class Callosum {
     Library library;
     Cockpit cockpit;
     Field field;
+    EventEar ear;
 
-    public Callosum(Library library, Cockpit cockpit){
-        this.library = library;
-        this.cockpit = cockpit;
-        this.field = cockpit.field;
+
+//    public Callosum(Library library, Cockpit cockpit){
+//        this.library = library;
+//        this.cockpit = cockpit;
+//        this.field = cockpit.field;
+//    }
+
+    public Callosum(){
+       bigBang();
     }
 
     public void update(){
@@ -20,8 +26,16 @@ public class Callosum {
         }
     }
 
-    // we kick it all off here
+    public void bigBang(){
+        library = new Library();
+        cockpit = new Cockpit();
+        field = cockpit.field;
+        ear = new EventEar(cockpit);
 
+        debugInit(); // outmoded once we have a persistent library.
+    }
+
+    // this is what keeps the universe running
     public void showtime(PGraphics g){
         update();
         cockpit.cascadeDraw(g, field.latitude);

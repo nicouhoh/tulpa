@@ -28,19 +28,10 @@ public void setup(){
   surface.setResizable(true);
 
   sdrop = new SDrop(this);
-  library = new Library();
-  cockpit = new Cockpit();
-  callosum = new Callosum(library, cockpit);
-  input = new Input(library, cockpit);
-  ear = new EventEar();
+  callosum = new Callosum(); // callosum is where we truly kick everything off. check constructor and bigBang();
 
-//  registerMethod("keyEvent", input);
-//  registerMethod("mouseEvent", input);
-  registerMethod("keyEvent", ear);
-  registerMethod("mouseEvent", ear);
-//  registerMethod("mouseWheelEvent", input);
-
-    callosum.debugInit();
+  registerMethod("keyEvent", callosum.ear);
+  registerMethod("mouseEvent", callosum.ear);
 }
 
 public void draw(){

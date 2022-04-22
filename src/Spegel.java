@@ -9,6 +9,7 @@ public class Spegel extends Monad {
     float displayH;
     float airW;
     float airH;
+    PGraphics g = new PGraphics();
 
     public Spegel(ContactSheet parent, Clipping clipping){
         this.parent = parent;
@@ -19,7 +20,6 @@ public class Spegel extends Monad {
     public void draw(PGraphics g){
         g.image(clipping.img, x + airW, y + airH, displayW, displayH);
         drawSelection(g);
-
     }
 
     @Override
@@ -36,9 +36,9 @@ public class Spegel extends Monad {
             airW = (clipW - wid) / 2;
         }
         displayW = wid;
-        w = wid;
+        w = clipW;
         displayH = hei;
-        h = hei;
+        h = clipH;
     }
 
     public void drawSelection(PGraphics g){
@@ -47,5 +47,33 @@ public class Spegel extends Monad {
             g.noFill();
             g.rect(x + airW, y + airH, displayW, displayH);
         }
+    }
+
+    @Override
+    public boolean isOnscreen(float latitude) {
+        if (y - latitude < parent.y + parent.h && y - latitude + h >= parent.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean pinPoint(float pinX, float pinY){
+//        pinY -= latitude;
+        if (pinX >= x + airW && pinX <= x + airW + displayW
+                && pinY >= y + airH && pinY <= y + airH + displayH){
+//            monadDebugInfo();
+            return true;
+
+        } else{
+            return false;
+        }
+    }
+
+    public void debugClipSize(){
+        g.stroke(100);
+        g.noFill();
+        g.rect(x, y, w, h);
     }
 }

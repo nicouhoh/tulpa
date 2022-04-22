@@ -52,38 +52,59 @@ public abstract class Monad {
         setSize(w, h);
     }
 
+    public ArrayList<Monad> getChildren(){
+       return children;
+    }
+
     public boolean isOnscreen(float latitude) {
-        if (y < latitude + parent.h && y >= latitude - h * 1.5) {
+        if (y < parent.y + parent.h && y + h >= parent.y) {
             return true;
         } else {
             return false;
         }
     }
 
-//    TODO RE-EXAMINE
-//    public Monad spearMonad(float spearX, float spearY, float latitude) {
-//        if (children.size() == 0) return this;
-//        for (Monad school : children) {
-//            if (!school.isOnscreen()) continue;
-//            if (!school.bullseye(school, spearX, spearY, latitude)) continue;
-//            return school.spearMonad(spearX, spearY, latitude);
-//        }
-//        return null;
-//    }
-
-
-    public boolean bullseye(Monad monad, float x, float y, float latitude) {
-        if (x >= monad.x && x <= monad.x + monad.w &&
-                y >= monad.y - latitude
-                && y <= monad.y + monad.h - latitude) {
+    public boolean pinPoint(float pinX, float pinY){
+//        pinY -= latitude;
+        if (pinX >= x && pinX <= x + w
+            && pinY >= y && pinY <= y + h){
+//            monadDebugInfo();
             return true;
-        } else {
+
+        } else{
             return false;
         }
+    }
+
+    public Monad getChildAtPoint(float pointX, float pointY, float latitude){
+        if (children.size() < 1) return this;
+        for (Monad m : children){
+            if (!m.isOnscreen(latitude)) continue;
+            if (m.pinPoint(pointX, pointY)){
+                return m.getChildAtPoint(pointX, pointY, latitude);
+            }
+        }
+        return this;
     }
 
     public float scrollWidth(){
         return 0;
     }
 
+    public void monadDebugInfo(){
+        System.out.println();
+        System.out.println(this);
+        System.out.println(x + ", " + y);
+        System.out.println(w + " x " + h);
+        System.out.println("parent: " + parent);
+        System.out.println("children: " + children);
+    }
+
+    public void clicked(){
+        monadDebugInfo();
+    }
+
+    public void dragged(){
+
+    }
 }

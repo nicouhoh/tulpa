@@ -9,9 +9,9 @@ public class ContactSheet extends Monad{
     float clipSize;
     float pillow;
     int sheetZoom;
-    float foot;
+    float f; // This gets passed up to become Field.foot
 
-    ArrayList<Spegel> children = new ArrayList<Spegel>();
+//    ArrayList<Spegel> children = new ArrayList<Spegel>();
 
     public ContactSheet(Field parent){
        this.parent = parent;
@@ -30,13 +30,26 @@ public class ContactSheet extends Monad{
             draw(g);
             if (children == null) return;
             g.push();
-            g.translate(0, latitude);
-            for (Spegel s : children) {
-                s.cascadeDraw(g, latitude);
+            g.translate(0, -latitude);
+//            for (Spegel s : children) {
+            for (Monad m : children){
+                m.cascadeDraw(g, latitude);
             }
             g.pop();
         }
     }
+
+    @Override
+    public boolean isOnscreen(float latitude) {
+        if (y < parent.y + parent.h && y + h >= parent.h) {
+            return true;
+        } else {
+            System.out.println("COCKPIT OFFSCREEN");
+            return false;
+        }
+    }
+
+
 
     @Override
     public void update(){
@@ -64,10 +77,15 @@ public class ContactSheet extends Monad{
             children.get(i).setSize(clipSize, clipSize);
             children.get(i).setPos(fussX, fussY);
         }
-        setFoot(fussY + clipSize + pillow);
+        setF(fussY + clipSize + pillow);
+
     }
 
-    public void setFoot(float footY){
-        foot = footY + clipSize + pillow;
+    public void setF(float floop){
+        f = floop;
+    }
+
+    public float getF(){
+        return f;
     }
 }

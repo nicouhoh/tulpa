@@ -10,6 +10,7 @@ public class Field extends Monad{
     ContactSheet sheet;
     int scrollW;
     float latitude;
+    float foot;
     float sPillow;
     boolean sardine;
 
@@ -18,7 +19,7 @@ public class Field extends Monad{
 
     public Field(Cockpit parent){
         this.parent = parent;
-        this.parent.children.add(this);
+        this.parent.children.add(this); // Field is a child of the Cockpit, and its children are the ContactSheet and the Scroller.
         setPos(parent.x, parent.y);
         setSize(parent.w, parent.h);
         latitude = 0;
@@ -45,16 +46,17 @@ public class Field extends Monad{
         // Weird and ugly. The only way I could figure out how to
         // work this was to override this so I can put this updateGrip
         // here. there has to be a better way.
-        //TODO  GALAXY BRAIN: instead of reaching down into grip to
-        //TODO  change the grip, reach down to read the grip position.
-        //TODO  Latitude is based on grip position, not the other way around.
-        scroller.grip.updateGrip(latitude, sheet.foot);
+        // TODO normally, the grip's position is determined by latitude.
+        // TODO we'll reverse the flow only while we're dragging.
+
+        setFoot(sheet.getF());
+        scroller.updateGrip(latitude, foot); // Not sure about this. maybe it's okay. it only updates on resize, so....
     }
+
 
     @Override
     public void update(){
         setSize(parent.w, parent.h);
-        followScroller();
     }
 
 
@@ -104,7 +106,7 @@ public class Field extends Monad{
 
     @Override
     public boolean isOnscreen(float latitude) {
-        if (y < latitude + parent.h && y >= latitude - h * 1.5) {
+        if (y < parent.y + parent.h && y + h >= parent.y) {
             return true;
         } else {
             System.out.println("FIELD OFFSCREEN");
@@ -112,15 +114,30 @@ public class Field extends Monad{
         }
     }
 
+    public float getLatitude(){
+        return latitude;
+    }
+
     public void setLatitude(float latY){
-        latitude = latY;
+        latitude = PApplet.constrain(latY, 0, foot - h);
+        scroller.updateGrip(latitude, foot);
+    }
+
+    public void stepLatitude(float step){
+        setLatitude(latitude += step);
+        scroller.updateGrip(latitude, foot);
+    }
+
+    public void setFoot(float f){
+       foot = f;
+       scroller.updateGrip(latitude, foot);
     }
 
     // The size of the scroller grip is determined by the contact sheet.
     // The latitude is determined by the position of the grip.
     // contact sheet > grip > latitude.
     public void followScroller(){
-        setLatitude(scroller.grip.y / h * sheet.foot);
+        setLatitude(scroller.grip.y / h * foot);
     }
 
 }

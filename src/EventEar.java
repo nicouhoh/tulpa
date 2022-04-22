@@ -1,17 +1,26 @@
+import processing.core.PApplet;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
 public class EventEar {
 
     public Operator operator;
+    public Cockpit cockpit;
 
-    public void EventEar(){
-       operator = new Operator();
+//    boolean d;
+//    float dX;
+//    float dY;
+//    float dDist = 10;
+//    boolean dragging = false;
+
+    public EventEar(Cockpit cockpit){
+        this.cockpit = cockpit;
+        operator = new Operator();
     }
 
-    public void mouseEvent(MouseEvent e){
+    public void mouseEvent(MouseEvent e) {
         int whisper = e.getAction();
         // ignore these, we'll do it ourselves:
-        switch (whisper){
+        switch (whisper) {
             case MouseEvent.CLICK:
 //            case MouseEvent.ENTER:
 //            case MouseEvent.EXIT:
@@ -24,28 +33,28 @@ public class EventEar {
         int eventY = e.getY();
         int button = e.getButton();
 
-        if (whisper == MouseEvent.PRESS){
+        if (whisper == MouseEvent.PRESS) {
+        } else if (whisper == MouseEvent.RELEASE) {
 
+        } else if (whisper == MouseEvent.DRAG){
         }
-        else if(whisper == MouseEvent.RELEASE){
-            // find out what we released on. have we been dragging?
-        //    System.out.println(tulpa.SOLE.cockpit.spearMonad(eventX, eventY, tulpa.SOLE.cockpit.field.latitude));
-        }
-        else if(whisper == MouseEvent.ENTER){
-            // mouseover. On what?
-        }
-        else if(whisper == MouseEvent.EXIT){
-            // end mouseover.
-        }
+            // ...and send it off to the Operator to be shuttled around in pneumatic tubes
 
-        // ...and send it off to the Operator to be shuttled around in pneumatic tubes
-
-//        operator.interpretWhisper(eventX, eventY, button);
+        operator.interpretMouseySqueaks(cockpit, button, whisper, eventX, eventY);
 
     }
 
     public void keyEvent(KeyEvent e){
+        // construct input data
 
+        int act = e.getAction();
+        if (act == KeyEvent.TYPE || act == KeyEvent.RELEASE) return;
+
+        System.out.println("Key: " + e.getKey() + ", KeyCode: " + e.getKeyCode());
+      // send it to the Operator
+        if (e.getAction() != KeyEvent.RELEASE){
+            operator.interpretTelegram(cockpit, e.getKey(), e.getKeyCode());
+        }
     }
 
 }

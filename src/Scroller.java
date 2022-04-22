@@ -23,7 +23,7 @@ public class Scroller extends Monad{
 
   @Override
   public boolean isOnscreen(float latitude) {
-    if (y < latitude + parent.h && y >= latitude - h * 1.5) {
+    if (y < parent.y + parent.h && y + h >= parent.y) {
       return true;
     } else {
       System.out.println("SCROLLER OFFSCREEN");
@@ -46,6 +46,11 @@ public class Scroller extends Monad{
 
   public void goTo(float latitude, float height, float contentH){
     grip.y = (latitude * height) / contentH;
+  }
+
+  public void updateGrip(float lat, float foot){
+    grip.updateGripSize(lat, foot);
+    grip.updateGripPos(lat, foot);
   }
 
   public void grabGrip(){

@@ -22,7 +22,7 @@ public class Grip extends Monad{
 
     @Override
     public boolean isOnscreen(float latitude) {
-        if (y < latitude + parent.h && y >= latitude - h * 1.5) {
+        if (y < latitude + parent.h && y + h >= parent.y) {
             return true;
         } else {
             System.out.println("GRIP OFFSCREEN");
@@ -36,11 +36,6 @@ public class Grip extends Monad{
         g.rect(x, y, w, h);
     }
 
-    public void updateGrip(float lat, float foot){
-        updateGripSize(lat, foot);
-        updateGripPos(lat, foot);
-    }
-
     public void updateGripSize(float lat, float foot){
         setSize(parent.w, PApplet.constrain(parent.h / foot * parent.h, 0, parent.h));
     }
@@ -48,6 +43,9 @@ public class Grip extends Monad{
     public void updateGripPos(float lat, float foot){
         setPos(parent.x, PApplet.constrain(lat / foot * parent.h, 0, parent.h - h));
     }
+
+
+    // TODO: on drag, let's reverse the flow of latitude??
 
 
 }
