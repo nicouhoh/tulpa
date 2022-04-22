@@ -118,18 +118,26 @@ public class Field extends Monad{
         return latitude;
     }
 
+    // it's possible these three will cause scroller problems related
+    // to the if(scroller.grip.grabbed) return; line in the future.
+    // so if you find you need to change this at some point,
+    // you have my permission
+
     public void setLatitude(float latY){
         latitude = PApplet.constrain(latY, 0, foot - h);
+        if(scroller.grip.grabbed) return;
         scroller.updateGrip(latitude, foot);
     }
 
     public void stepLatitude(float step){
         setLatitude(latitude += step);
+        if(scroller.grip.grabbed) return;
         scroller.updateGrip(latitude, foot);
     }
 
     public void setFoot(float f){
        foot = f;
+       if(scroller.grip.grabbed) return;
        scroller.updateGrip(latitude, foot);
     }
 

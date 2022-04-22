@@ -7,18 +7,17 @@ public class Grip extends Monad{
 
     boolean grabbed;
     float grabY;
+    Field field;
 
     public Grip(Scroller parent){
 
         this.parent = parent;
         parent.children.add(this);
+        field = (Field)parent.parent; //TODO What an eyesore. Smite this one day. yeah we gettin fascist up in here
         setPos(parent.x, parent.y);
         w = parent.parent.scrollWidth();
         color = 0xff6C6C6C;
-        grabbed = false;
     }
-
-    // e.g. EXTRA WIDTH, where most Monads it == 0. generalize. make it a method getExtraWidth()
 
     @Override
     public boolean isOnscreen(float latitude) {
@@ -36,6 +35,12 @@ public class Grip extends Monad{
         g.rect(x, y, w, h);
     }
 
+    @Override
+    public void setPos(float x, float y){
+        this.x = x;
+        this.y = PApplet.constrain(y, parent.y, parent.h - h);
+    }
+
     public void updateGripSize(float lat, float foot){
         setSize(parent.w, PApplet.constrain(parent.h / foot * parent.h, 0, parent.h));
     }
@@ -44,8 +49,32 @@ public class Grip extends Monad{
         setPos(parent.x, PApplet.constrain(lat / foot * parent.h, 0, parent.h - h));
     }
 
+    public void setGripPos(float targetH, float gripY){ // put gripY at newH
+        setPos(parent.x, targetH - gripY);
+    }
+
+    public void grabGrip(Operator operator, float mouseGrabY){
+        operator.lockMonad(this);
+        grabbed = true;
+        System.out.println("grabbed");
+        grabY = mouseGrabY - y;
+    }
+
+    @Override
+    public void pressed(Operator operator, float pressedX, float pressedY){
+        grabGrip(operator, pressedY);
+    }
+
+    @Override
+    public void dragged(Operator operator, float dragX, float dragY){
+        setPos(parent.x, dragY - grabY);
+        field.followScroller();
+    }
+
+    @Override
+    public void released(Operator operator, float dragX, float dragY){
+        grabbed = false;
+    }
 
     // TODO: on drag, let's reverse the flow of latitude??
-
-
 }

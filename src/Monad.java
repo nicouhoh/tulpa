@@ -15,8 +15,14 @@ public abstract class Monad {
 
     public void draw(PGraphics g){};
     public void update(){};
-    public void mouseOver(){}
 
+    public void mouseOver(){}
+    public void clicked(Operator operator, float clickX, float clickY){
+        monadDebugInfo();
+    }
+    public void pressed(Operator operator, float pressX, float pressY){}
+    public void released(Operator operator, float releaseX, float releaseY){}
+    public void dragged(Operator operator, float dragX, float dragY){}
 
     public void cascadeUpdate(){
         update();
@@ -100,11 +106,4 @@ public abstract class Monad {
         System.out.println("children: " + children);
     }
 
-    public void clicked(){
-        monadDebugInfo();
-    }
-
-    public void dragged(){
-
-    }
 }
