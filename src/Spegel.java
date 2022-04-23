@@ -59,16 +59,11 @@ public class Spegel extends Monad implements Clickable{
     }
 
     @Override
-    public boolean pinPoint(float pinX, float pinY){
-//        pinY -= latitude;
-        if (pinX >= x + airW && pinX <= x + airW + displayW
-                && pinY >= y + airH && pinY <= y + airH + displayH){
-//            monadDebugInfo();
-            return true;
-
-        } else{
-            return false;
-        }
+    public boolean pinPoint(float pinX, float pinY, float latitude){
+        pinY += latitude;
+        //            monadDebugInfo();
+        return pinX >= x + airW && pinX <= x + airW + displayW
+                && pinY >= y + airH && pinY <= y + airH + displayH;
     }
 
     public void debugClipSize(){

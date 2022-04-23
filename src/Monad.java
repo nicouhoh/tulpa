@@ -61,23 +61,18 @@ public abstract class Monad {
         }
     }
 
-    public boolean pinPoint(float pinX, float pinY){
+    public boolean pinPoint(float pinX, float pinY, float latitude){
 //        pinY -= latitude;
-        if (pinX >= x && pinX <= x + w
-            && pinY >= y && pinY <= y + h){
-//            monadDebugInfo();
-            return true;
-
-        } else{
-            return false;
-        }
+        //            monadDebugInfo();
+        return pinX >= x && pinX <= x + w
+                && pinY >= y && pinY <= y + h;
     }
 
     public Monad getChildAtPoint(float pointX, float pointY, float latitude){
         if (children.size() < 1) return this;
         for (Monad m : children){
             if (!m.isOnscreen(latitude)) continue;
-            if (m.pinPoint(pointX, pointY)){
+            if (m.pinPoint(pointX, pointY, latitude)){
                 return m.getChildAtPoint(pointX, pointY, latitude);
             }
         }
@@ -91,9 +86,9 @@ public abstract class Monad {
         if (children.size() >= 1) {
             for (Monad m : children) {
                 if (!m.isOnscreen(latitude)) continue;
-                if (m.pinPoint(pointX, pointY)) {
-                    Scrollable smallOut = m.getScrollableAtPoint(pointX, pointY, latitude);
-                    if (smallOut != null) out = smallOut;
+                if (m.pinPoint(pointX, pointY, latitude)) {
+                    Scrollable littleOut = m.getScrollableAtPoint(pointX, pointY, latitude);
+                    if (littleOut != null) out = littleOut;
                 }
             }
         }
@@ -107,9 +102,9 @@ public abstract class Monad {
         if (children.size() >= 1) {
             for (Monad m : children) {
                 if (!m.isOnscreen(latitude)) continue;
-                if (m.pinPoint(pointX, pointY)) {
-                    Clickable smallOut = m.getClickableAtPoint(pointX, pointY, latitude);
-                    if (smallOut != null) out = smallOut;
+                if (m.pinPoint(pointX, pointY, latitude)) {
+                    Clickable littleOut = m.getClickableAtPoint(pointX, pointY, latitude);
+                    if (littleOut != null) out = littleOut;
                 }
             }
         }

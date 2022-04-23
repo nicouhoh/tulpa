@@ -16,7 +16,7 @@ public class Field extends Monad implements Scrollable{
 
     float zoomPillow;
 
-    float scrollAmount = 1;
+    float scrollAmount = 10;
 
 
     public Field(Cockpit parent){
