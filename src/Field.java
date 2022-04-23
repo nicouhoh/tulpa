@@ -4,7 +4,7 @@ import processing.core.PGraphics;
 import java.sql.Array;
 import java.util.ArrayList;
 
-public class Field extends Monad{
+public class Field extends Monad implements Scrollable{
 
     Scroller scroller;
     ContactSheet sheet;
@@ -15,6 +15,8 @@ public class Field extends Monad{
     boolean sardine;
 
     float zoomPillow;
+
+    float scrollAmount = 1;
 
 
     public Field(Cockpit parent){
@@ -146,6 +148,11 @@ public class Field extends Monad{
     // contact sheet > grip > latitude.
     public void followScroller(){
         setLatitude(scroller.grip.y / h * foot);
+    }
+
+
+    public void scroll(Operator operator, int count){
+       stepLatitude(count * scrollAmount);
     }
 
 }

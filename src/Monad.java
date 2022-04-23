@@ -84,18 +84,50 @@ public abstract class Monad {
         return this;
     }
 
-    public Clickable getClickableAtPoint(float pointX, float pointY, float latitude){
-        Clickable output = null;
-        if (this instanceof Clickable) output = (Clickable)this;
-        if (children.size() < 1) return output;
-        for (Monad m : children){
-            if (!m.isOnscreen(latitude)) continue;
-            if (m.pinPoint(pointX, pointY)){
-                return m.getClickableAtPoint(pointX, pointY, latitude);
+    public Scrollable getScrollableAtPoint(float pointX, float pointY, float latitude){
+        Scrollable out = null;
+        if (this instanceof Scrollable) out = (Scrollable)this;
+
+        if (children.size() >= 1) {
+            for (Monad m : children) {
+                if (!m.isOnscreen(latitude)) continue;
+                if (m.pinPoint(pointX, pointY)) {
+                    Scrollable smallOut = m.getScrollableAtPoint(pointX, pointY, latitude);
+                    if (smallOut != null) out = smallOut;
+                }
             }
         }
-        return output;
+        return out;
     }
+
+    public Clickable getClickableAtPoint(float pointX, float pointY, float latitude){
+        Clickable out = null;
+        if (this instanceof Clickable) out = (Clickable)this;
+
+        if (children.size() >= 1) {
+            for (Monad m : children) {
+                if (!m.isOnscreen(latitude)) continue;
+                if (m.pinPoint(pointX, pointY)) {
+                    Clickable smallOut = m.getClickableAtPoint(pointX, pointY, latitude);
+                    if (smallOut != null) out = smallOut;
+                }
+            }
+        }
+        return out;
+    }
+//    public Clickable getClickableAtPoint(float pointX, float pointY, float latitude){
+//        Clickable output = null; //TODO This will set output to null instead of finding non-bottom-level targets!
+//        if (this instanceof Clickable) output = (Clickable)this;
+//        if (children.size() < 1) return output;
+//        for (Monad m : children){
+//            if (!m.isOnscreen(latitude)) continue;
+//            if (m.pinPoint(pointX, pointY)){
+//                return m.getClickableAtPoint(pointX, pointY, latitude);
+//            }
+//        }
+//        return output;
+//    }
+
 
     public float scrollWidth(){
         return 0;

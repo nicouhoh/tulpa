@@ -8,13 +8,8 @@ public class Callosum {
     Cockpit cockpit;
     Field field;
     EventEar ear;
+    Operator operator;
 
-
-//    public Callosum(Library library, Cockpit cockpit){
-//        this.library = library;
-//        this.cockpit = cockpit;
-//        this.field = cockpit.field;
-//    }
 
     public Callosum(){
        bigBang();
@@ -31,6 +26,8 @@ public class Callosum {
         cockpit = new Cockpit();
         field = cockpit.field;
         ear = new EventEar(cockpit);
+        operator = new Operator(this);
+        ear.operator = operator;
 
         debugInit(); // outmoded once we have a persistent library.
     }

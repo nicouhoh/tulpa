@@ -61,20 +61,18 @@ public class Grip extends Monad implements Clickable{
     }
 
     @Override
-    public void grabbed(Operator operator, float pressedX, float pressedY){
+    public void grabbed(Operator operator, float pressedX, float pressedY, Callosum c){
         grabGrip(operator, pressedY);
     }
 
     @Override
-    public void dragged(Operator operator, float dragX, float dragY){
+    public void dragged(Operator operator, float dragX, float dragY, Callosum c){
         setPos(parent.x, dragY - grabY);
         field.followScroller();
     }
 
     @Override
-    public void released(Operator operator, float dragX, float dragY){
+    public void released(Operator operator, float dragX, float dragY, Callosum c){
         grabbed = false;
     }
-
-    // TODO: on drag, let's reverse the flow of latitude??
 }

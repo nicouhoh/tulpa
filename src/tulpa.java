@@ -1,7 +1,6 @@
 import drop.*;
 
 import processing.core.PApplet;
-import processing.event.MouseEvent;
 
 import drop.DropEvent;
 
@@ -47,13 +46,6 @@ public void checkResize(){
     resized = true;
   }
 }
-
-
-// INPUT
-
-//public void mouseWheel(MouseEvent event){
-//  input.wheel(event);
-//}
 
 public void dropEvent(DropEvent dropEvent){
   input.dropInput(dropEvent);

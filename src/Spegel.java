@@ -2,7 +2,7 @@ import processing.core.PGraphics;
 
 import java.awt.*;
 
-public class Spegel extends Monad {
+public class Spegel extends Monad implements Clickable{
 
     Clipping clipping;
     float displayW;
@@ -75,5 +75,11 @@ public class Spegel extends Monad {
         g.stroke(100);
         g.noFill();
         g.rect(x, y, w, h);
+    }
+
+    @Override
+    public void clicked(Operator operator, float clickX, float clickY, Callosum c){
+        monadDebugInfo();
+        c.library.select(this.clipping);
     }
 }
