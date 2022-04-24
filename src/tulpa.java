@@ -47,9 +47,9 @@ public void checkResize(){
   }
 }
 
-public void dropEvent(DropEvent dropEvent){
-  input.dropInput(dropEvent);
-}
+//public void dropEvent(DropEvent dropEvent){
+//  input.dropInput(dropEvent);
+//}
 
     // STARTING (YER) ENGINES
 public static void main (String av[])

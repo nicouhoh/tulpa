@@ -57,11 +57,8 @@ public class Field extends Monad implements Scrollable{
         setSize(parent.w, parent.h);
     }
 
-
-
     public void zoom(int z){
-//        sheetZoom -= z; TODO: temporarily commented to make things work for now
-//        fussMenagerie(parent.library);
+        sheet.sheetZoom -= z;
     }
 
     public float scrollWidth(){

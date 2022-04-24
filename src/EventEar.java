@@ -16,7 +16,6 @@ public class EventEar {
         // ignore these, we'll do it ourselves:
         switch (whisper) {
             case MouseEvent.CLICK:
-                System.out.println("CLICK! NOT RELEASE!");
 //            case MouseEvent.ENTER:
 //            case MouseEvent.EXIT:
 //            case MouseEvent.DRAG:
