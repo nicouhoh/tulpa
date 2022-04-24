@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
+
 public class ContactSheet extends Monad{
 
     float clipSize;
@@ -66,6 +67,22 @@ public class ContactSheet extends Monad{
     public void newSpegel(Clipping clip){
         Spegel speg = new Spegel(this, clip);
         children.add(speg);
+    }
+
+    public void newSpegels(ArrayList<Clipping> clips){
+        ArrayList<Spegel> s = new ArrayList<Spegel>();
+        for (Clipping c : clips){
+          s.add(new Spegel(this, c));
+        }
+        children.addAll(s);
+    }
+
+    public void shatterSpegel(Spegel s){
+        children.remove(s);
+    }
+
+    public void shatterSpegel(ArrayList<Spegel> s){
+        children.removeAll(s);
     }
 
     public void arrangeSpegels(){

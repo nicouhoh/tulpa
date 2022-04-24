@@ -1,4 +1,5 @@
 import processing.core.PGraphics;
+import java.util.ArrayList;
 
 import java.io.File;
 
@@ -9,6 +10,8 @@ public class Callosum {
     Field field;
     EventEar ear;
     Operator operator;
+
+    String path;
 
 
     public Callosum(){
@@ -22,6 +25,8 @@ public class Callosum {
     }
 
     public void bigBang(){
+        path = tulpa.SOLE.sketchPath() + "/data/";
+
         library = new Library();
         cockpit = new Cockpit();
         field = cockpit.field;
@@ -29,7 +34,7 @@ public class Callosum {
         operator = new Operator(this);
         ear.operator = operator;
 
-        debugInit(); // outmoded once we have a persistent library.
+        debugInit(path); // outmoded once we have a persistent library.
     }
 
     // this is what keeps the universe running
@@ -39,14 +44,44 @@ public class Callosum {
     }
 
     public void addClipping(File file){
-        Clipping clip = library.incubateFile(file);
-        library.addToLibrary(clip);
+        Clipping c = library.newClipping(file);
+        field.sheet.newSpegel(c);
     }
 
-    public void debugInit(){
-        library.debugInit();
-        for(Clipping clip : library.clippings){ //TODO How are we actually doing this
-            field.sheet.newSpegel(clip);
+    public void addClippings(File path){
+        ArrayList<Clipping> c = library.newClippings(path);
+        field.sheet.newSpegels(c);
+    }
+
+    public void obliterateClipping(Spegel s){
+        Clipping c = s.clipping;
+        library.whackClipping(c);
+        field.sheet.shatterSpegel(s);
+    }
+
+    public void obliterateClipping(Clipping c){
+        Spegel s = c.spegel;
+        library.whackClipping(c);
+        field.sheet.shatterSpegel(s);
+    }
+
+    public void powerWordKill(){
+        if (library.selected.size() > 0){
+            for (Clipping c : library.selected){
+                obliterateClipping(c);
+            }
+            cockpit.cascadeUpdate();
         }
     }
+    public void debugInit(String p){
+        File data = new File(path);
+        addClippings(data);
+    }
+
+//    public void debugInit(){
+//        library.debugInit();
+//        for(Clipping clip : library.clippings){ //TODO How are we actually doing this
+//            field.sheet.newSpegel(clip);
+//        }
+//    }
 }

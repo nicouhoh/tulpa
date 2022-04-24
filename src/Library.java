@@ -1,11 +1,7 @@
 import processing.core.PApplet;
 
-import processing.event.MouseEvent;
-
 import java.io.File;
 import java.util.ArrayList;
-
-import static java.lang.Math.abs;
 
 
 public class Library {
@@ -26,10 +22,16 @@ public class Library {
     selected = new ArrayList<Clipping>();
   }
 
-  public void debugInit(){
-    File data = new File(path);
-    ArrayList<Clipping> dataClippings = incubateDir(data);
-    addToLibrary(dataClippings);
+  public Clipping newClipping(File file){
+    Clipping clip = incubateFile(file);
+    addToLibrary(clip);
+    return clip;
+  }
+
+  public ArrayList<Clipping> newClippings(File path){
+    ArrayList<Clipping> c = incubateDir(path);
+    addToLibrary(c);
+    return c;
   }
 
   public void addToLibrary(Clipping clip) {
@@ -72,29 +74,39 @@ public class Library {
     return id;
   }
 
-  public void select(Clipping clipping) {
-    clipping.selected = true;
+  public void addSelect(Clipping clipping) {
+    clipping.setSelected(true);
     selected.add(clipping);
   }
 
-  public void deselect(Clipping clipping) {
-    clipping.selected = false;
+  public void removeSelect(Clipping clipping) {
+    clipping.setSelected(false);
     selected.remove(clipping);
   }
 
   public void clearSelection() {
     for (Clipping clipping : selected) {
-      clipping.selected = false;
+      clipping.setSelected(false);
     }
     selected.clear();
+  }
+
+  public void select(Clipping c){
+    clearSelection();
+    addSelect(c);
+  }
+
+  public void toggleSelect(Clipping c){
+    if (c.isSelected()) removeSelect(c);
+    else addSelect(c);
   }
 
   public void selectLeftRight(int n){
     if (selected.size() == 1){
       int current = clippings.indexOf(selected.get(0));
       if (current + n < 0 || current + n >= clippings.size()) return;
-      deselect(selected.get(0));
-      select(clippings.get(current + n));
+      removeSelect(selected.get(0));
+      addSelect(clippings.get(current + n));
     }
   }
 
@@ -139,27 +151,39 @@ public class Library {
 //    }
 //  }
 
-  public void whackClipping() {
-    clippings.removeAll(selected);
+//  public void whackClipping() {
+//    clippings.removeAll(selected);
+//    System.out.println("clipping whacked");
+//  }
+
+  public void whackClipping(Clipping c){
+    clippings.remove(c);
   }
 
-  public void clickSelect(MouseEvent e) {
-    boolean bromp = false;
-    for (Clipping clip : clippings) {
-//      if (!clip.onscreen || !clip.clicked()) continue;
-      if (!e.isMetaDown() && !e.isControlDown()) {
-        clearSelection();
-      } else if (clip.selected) {
-        deselect(clip);
-        return;
-      }
-      select(clip);
-      bromp = true;
-    }
-    if (!bromp) {
-      clearSelection();
-    }
+  public void whackClipping(ArrayList<Clipping> c){
+    clippings.removeAll(c);
   }
+
+//  public void clickSelect()
+
+
+//  public void clickSelect(MouseEvent e) {
+//    boolean bromp = false;
+//    for (Clipping clip : clippings) {
+////      if (!clip.onscreen || !clip.clicked()) continue;
+//      if (!e.isMetaDown() && !e.isControlDown()) {
+//        clearSelection();
+//      } else if (clip.selected) {
+//        deselect(clip);
+//        return;
+//      }
+//      select(clip);
+//      bromp = true;
+//    }
+//    if (!bromp) {
+//      clearSelection();
+//    }
+//  }
 
   public void zoom(){
     if (selected.size() == 1) zoom = true;

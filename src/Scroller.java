@@ -54,7 +54,7 @@ public class Scroller extends Monad implements Clickable{
   }
 
   @Override
-  public void pressed(Operator operator, float pressedX, float pressedY, Callosum c){
+  public void pressed(Operator operator, int mod, float pressedX, float pressedY, Callosum c){
     grip.setGripPos(pressedY, grip.h / 2);
     grip.grabGrip(operator, pressedY);
     Field field = (Field)parent; // surely there must be a way to do this without such bloodshed

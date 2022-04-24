@@ -2,10 +2,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
-import javax.swing.event.MouseInputListener;
-import java.awt.event.MouseEvent;
 import java.io.File;
-import java.lang.annotation.Documented;
 
 public class Clipping {
 
@@ -16,6 +13,8 @@ public class Clipping {
 
     String bodyText;
 
+    Spegel spegel;
+
     boolean selected;
 
     public Clipping(File file, String idIn) {
@@ -24,6 +23,13 @@ public class Clipping {
         img = tulpa.SOLE.loadImage(imgPath);
     }
 
+    public boolean isSelected(){
+        return selected;
+    }
+
+    public void setSelected(boolean set){
+        selected = set;
+    }
 
     public void zoomClipping(PGraphics g, float w, float h, float p){
         float zoomW = 0;

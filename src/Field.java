@@ -48,8 +48,6 @@ public class Field extends Monad implements Scrollable{
         // Weird and ugly. The only way I could figure out how to
         // work this was to override this so I can put this updateGrip
         // here. there has to be a better way.
-        // TODO normally, the grip's position is determined by latitude.
-        // TODO we'll reverse the flow only while we're dragging.
 
         setFoot(sheet.getF());
         scroller.updateGrip(latitude, foot); // Not sure about this. maybe it's okay. it only updates on resize, so....

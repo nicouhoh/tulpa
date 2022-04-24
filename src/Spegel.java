@@ -1,4 +1,5 @@
 import processing.core.PGraphics;
+import processing.event.KeyEvent;
 
 import java.awt.*;
 
@@ -14,6 +15,7 @@ public class Spegel extends Monad implements Clickable{
     public Spegel(ContactSheet parent, Clipping clipping){
         this.parent = parent;
         this.clipping = clipping;
+        this.clipping.spegel = this;
     }
 
     @Override
@@ -73,8 +75,13 @@ public class Spegel extends Monad implements Clickable{
     }
 
     @Override
-    public void clicked(Operator operator, float clickX, float clickY, Callosum c){
+    public void clicked(Operator operator, int mod, float clickX, float clickY, Callosum c){
         monadDebugInfo();
-        c.library.select(this.clipping);
+        System.out.println(mod);
+        if (mod == 0) {
+            c.library.select(this.clipping);
+        } else if(mod == KeyEvent.CTRL){
+            c.library.toggleSelect(this.clipping);
+        }
     }
 }

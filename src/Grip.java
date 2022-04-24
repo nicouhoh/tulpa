@@ -53,6 +53,8 @@ public class Grip extends Monad implements Clickable{
         setPos(parent.x, targetH - gripY);
     }
 
+    // normally the grip's position is determined by latitude.
+    // but when the grip be gripped, the flow reverses.
     public void grabGrip(Operator operator, float mouseGrabY){
         operator.lockClickable(this);
         grabbed = true;
@@ -61,18 +63,18 @@ public class Grip extends Monad implements Clickable{
     }
 
     @Override
-    public void grabbed(Operator operator, float pressedX, float pressedY, Callosum c){
+    public void grabbed(Operator operator, int mod, float pressedX, float pressedY, Callosum c){
         grabGrip(operator, pressedY);
     }
 
     @Override
-    public void dragged(Operator operator, float dragX, float dragY, Callosum c){
+    public void dragged(Operator operator, int mod, float dragX, float dragY, Callosum c){
         setPos(parent.x, dragY - grabY);
         field.followScroller();
     }
 
     @Override
-    public void released(Operator operator, float dragX, float dragY, Callosum c){
+    public void released(Operator operator, int mod, float dragX, float dragY, Callosum c){
         grabbed = false;
     }
 }

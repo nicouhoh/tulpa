@@ -29,7 +29,7 @@ public class Input{
     if (state == State.LIBRARY){                // LIBRARY -----------------------
       switch (e.getKeyCode()) {
         case 8 -> {                                       // BACKSPACE
-          library.whackClipping();
+//          library.whackClipping();
 //          cockpit.field.fussMenagerie(library);
         }
         case 32 -> {                                      // SPACE

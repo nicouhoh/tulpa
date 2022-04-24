@@ -27,10 +27,11 @@ public class EventEar {
         int eventY = e.getY();
         int button = e.getButton();
         int count = e.getCount();
+        int mod = e.getModifiers();
 
             // ...and send it off to the Operator to be shuttled around in pneumatic tubes
 
-        operator.interpretMouseySqueaks(cockpit, button, whisper, count, eventX, eventY);
+        operator.interpretMouseySqueaks(cockpit, button, whisper, count, eventX, eventY, mod);
 
     }
 

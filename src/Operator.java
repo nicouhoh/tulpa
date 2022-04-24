@@ -1,4 +1,5 @@
 import processing.event.MouseEvent;
+import processing.event.KeyEvent;
 
 import java.awt.event.MouseWheelEvent;
 
@@ -19,13 +20,13 @@ public class Operator {
         this.callosum = callosum;
     }
 
-    public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y){
+    public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod){
 
         // DRAG doesn't really care if the mouse is currently on something.
         // it's happy as long as it's holding on to something.
 
         if(button == LMB && act == MouseEvent.DRAG){
-            if (lockedClickable != null) lockedClickable.dragged(this, x, y, callosum);
+            if (lockedClickable != null) lockedClickable.dragged(this, mod, x, y, callosum);
         }
 
         else if(act == MouseEvent.WHEEL){
@@ -42,16 +43,16 @@ public class Operator {
 
             if (button == LMB && act == MouseEvent.RELEASE) {
                 if (lockedClickable != null) {
-                    lockedClickable.released(this, x, y, callosum);
+                    lockedClickable.released(this, mod, x, y, callosum);
                     unlock();
                 } else {
-                    target.clicked(this, x, y, callosum);
+                    target.clicked(this, mod, x, y, callosum);
                 }
             }
 
             if (button == LMB && act == MouseEvent.PRESS) {
-                target.grabbed(this, x, y, callosum);
-                target.pressed(this, x, y, callosum);
+                target.grabbed(this, mod, x, y, callosum);
+                target.pressed(this, mod, x, y, callosum);
             }
         }
 
@@ -60,10 +61,12 @@ public class Operator {
 
     // ----------------------------------- KEYBOARD HAPPINESS ---------------------------------------
 
+    int BACKSPACE = 8;
     int LEFT = 37;
     int UP = 38;
     int RIGHT = 39;
     int DOWN = 40;
+
 
     public void interpretTelegram(Cockpit cockpit, char key, int kc){
         if(kc == UP){
@@ -73,7 +76,10 @@ public class Operator {
         else if(kc == DOWN){
            cockpit.field.stepLatitude(100);
 //           System.out.println(field.getLatitude());
+        }else if(kc == BACKSPACE){
+           callosum.powerWordKill();
         }
+        else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
     }
 
     public void lockClickable(Clickable c){
