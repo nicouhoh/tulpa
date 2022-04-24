@@ -20,8 +20,13 @@ public class Operator {
         this.callosum = callosum;
     }
 
-    public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod){
 
+    // TODO it would be just lovely to tidy this up at some point
+    public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod){
+        System.out.println(button + ", " + act);
+        if (button == LMB && act == MouseEvent.RELEASE){
+            System.out.println("HERE!");
+        }
         // DRAG doesn't really care if the mouse is currently on something.
         // it's happy as long as it's holding on to something.
 
@@ -36,26 +41,24 @@ public class Operator {
 
         else {
 
-            // from here on we do care if we evented on something that's interested
+            // from here on we DO care if we evented on something that's interested
 
             Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
-            if (target == null) return;
 
             if (button == LMB && act == MouseEvent.RELEASE) {
                 if (lockedClickable != null) {
                     lockedClickable.released(this, mod, x, y, callosum);
                     unlock();
                 } else {
-                    target.clicked(this, mod, x, y, callosum);
+                    if (target != null) target.clicked(this, mod, x, y, callosum);
                 }
             }
 
-            if (button == LMB && act == MouseEvent.PRESS) {
+            if (button == LMB && target != null && act == MouseEvent.PRESS) {
                 target.grabbed(this, mod, x, y, callosum);
                 target.pressed(this, mod, x, y, callosum);
             }
         }
-
     }
 
 
