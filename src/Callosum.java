@@ -1,3 +1,4 @@
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import java.util.ArrayList;
 
@@ -73,6 +74,48 @@ public class Callosum {
             cockpit.cascadeUpdate();
         }
     }
+
+    public void toggleBrine(){
+        // keep selected clippings in roughly the same place
+        // TODO someday, make this work on x axis as well figure out a better solution for multiple/no select
+        // TODO OR, riddle me this????? if the one selected clipping is offscreen???? then what???
+        if(library.selected.size() > 0){
+            Clipping c = library.selected.get(0);
+
+            float screenY = c.spegel.y - field.latitude;
+            field.sheet.toggleFishiness();
+            cockpit.cascadeUpdate();
+            field.setLatitude(c.spegel.y - screenY);
+        }else{
+            field.sheet.toggleFishiness();
+        }
+        cockpit.cascadeUpdate();
+    }
+
+    public void selectLeftRight(int n){
+        if (library.selected.size() == 1){
+            int current = library.clippings.indexOf(library.selected.get(0));
+            if (current + n < 0 || current + n >= library.clippings.size()) return;
+            library.removeSelect(library.selected.get(0));
+            library.addSelect(library.clippings.get(current + n));
+        }
+    }
+
+    public void selectUpDownGrid(int columns){
+        if(library.selected.size() == 1) {
+            int index = library.clippings.indexOf(library.selected.get(0));
+            Clipping c = library.clippings.get(PApplet.constrain(index + columns, 0, library.clippings.size() - 1));
+            library.select(c);
+        }
+    }
+
+    public void selectUpDown(int direction){
+        if(library.selected.size() != 1) return;
+        if (field.sheet.sardine) library.selectUpDownSardine(direction);
+        else selectUpDownGrid(direction * field.sheet.sheetZoom);
+        field.jumpToSpegel(library.selected.get(0).spegel);
+    }
+
     public void debugInit(String p){
         File data = new File(path);
         addClippings(data);

@@ -19,7 +19,7 @@ public class ContactSheet extends Monad{
        this.parent.children.add(this);
        sardine = false;
        pillow = 10;
-       sPillow = 5;
+       sPillow = 2;
        clipSize = 200;
        sheetZoom = 5;
        setPos(parent.x, parent.y);
@@ -51,8 +51,6 @@ public class ContactSheet extends Monad{
             return false;
         }
     }
-
-
 
     @Override
     public void update(){

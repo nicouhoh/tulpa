@@ -72,18 +72,23 @@ public class Operator {
 
 
     public void interpretTelegram(Cockpit cockpit, char key, int kc){
+
         if(kc == UP){
-           cockpit.field.stepLatitude(-100);
-//           System.out.println(field.getLatitude());
+            callosum.selectUpDown(-1);
+            // TODO followSelection
         }
         else if(kc == DOWN){
-           cockpit.field.stepLatitude(100);
-//           System.out.println(field.getLatitude());
+            callosum.selectUpDown(1);
+            // TODO followSelection
+        }else if(kc == LEFT){
+            callosum.selectLeftRight(-1);
+        }else if(kc == RIGHT){
+            callosum.selectLeftRight(1);
         }else if(kc == BACKSPACE){
-           callosum.powerWordKill();
+            callosum.powerWordKill();
+
         }else if(key == '0'){
-            callosum.field.sheet.toggleFishiness();
-            callosum.cockpit.cascadeUpdate();
+            callosum.toggleBrine();
         }
         else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
     }

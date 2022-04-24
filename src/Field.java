@@ -82,15 +82,24 @@ public class Field extends Monad implements Scrollable{
         return latitude;
     }
 
-    // it's possible these three will cause scroller problems related
+    // it's possible the following few will cause scroller problems related
     // to the if(scroller.grip.grabbed) return; line in the future.
-    // so if you find you need to change this at some point,
-    // you have my permission
+    // so if you find you need to change this at some point, go with God
 
     public void setLatitude(float latY){
         latitude = PApplet.constrain(latY, 0, foot - h);
         if(scroller.grip.grabbed) return;
         scroller.updateGrip(latitude, foot);
+    }
+
+    // choose a y value and where onscreen you want to put it
+    public void goTo(float lat, float where){
+       setLatitude(lat - where);
+    }
+
+    public void jumpToSpegel(Spegel s){
+            if(s.y - latitude < y) goTo(s.y, sheet.pillow);
+            else if (s.y - latitude + s.displayH > h) goTo(s.y, h - s.h - sheet.pillow);
     }
 
     public void stepLatitude(float step){
@@ -111,7 +120,6 @@ public class Field extends Monad implements Scrollable{
     public void followScroller(){
         setLatitude(scroller.grip.y / h * foot);
     }
-
 
     public void scroll(Operator operator, int count){
        stepLatitude(count * scrollAmount);

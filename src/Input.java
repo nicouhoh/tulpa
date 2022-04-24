@@ -37,7 +37,7 @@ public class Input{
           library.zoom();
         }
         case 37 -> {                                      // LEFT ARROW
-          library.selectLeftRight(-1);
+//          library.selectLeftRight(-1);
 //          cockpit.arrowFollow();
         }
         //case 38 -> library.selectDownUp(-cockpit.sheetZoom);       // UP ARROW
@@ -47,7 +47,7 @@ public class Input{
 //          cockpit.arrowFollow();
         }
         case 39 -> {                                      // RIGHT ARROW
-          library.selectLeftRight(1);
+//          library.selectLeftRight(1);
 //          cockpit.arrowFollow();
         }
         //case 40 -> library.selectDownUp(cockpit.sheetZoom);     // DOWN ARROW
@@ -73,8 +73,8 @@ public class Input{
           library.unZoom();
           state = State.LIBRARY;
         }
-        case 37 -> library.selectLeftRight(-1);        // LEFT ARROW
-        case 39 -> library.selectLeftRight(1);         // RIGHT ARROW
+//        case 37 -> library.selectLeftRight(-1);        // LEFT ARROW
+//        case 39 -> library.selectLeftRight(1);         // RIGHT ARROW
       }
     }
   }

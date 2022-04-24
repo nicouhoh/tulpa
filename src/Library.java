@@ -101,49 +101,33 @@ public class Library {
     else addSelect(c);
   }
 
-  public void selectLeftRight(int n){
-    if (selected.size() == 1){
-      int current = clippings.indexOf(selected.get(0));
-      if (current + n < 0 || current + n >= clippings.size()) return;
-      removeSelect(selected.get(0));
-      addSelect(clippings.get(current + n));
+
+
+  public void selectUpDownSardine(int direction){
+    Clipping selClip = selected.get(0);
+    float bestScore = 0;
+    Clipping best = selClip;
+
+    for (Clipping c : clippings){
+      Spegel s = c.spegel;
+      if (c == selClip) continue;
+      if (c.spegel.y < selClip.spegel.y - s.displayH * 1.2 || s.y > selClip.spegel.y + selClip.spegel.displayH * 1.2) continue;
+      if (findOverlap(selClip.spegel, s) > bestScore && (selClip.spegel.y - s.y) * direction < 0){
+        bestScore = findOverlap(selClip.spegel, s);
+        best = c;
+      }
     }
+    clearSelection();
+    select(best);
   }
 
-//  public void selectUpDownGrid(int columns){
-//    if(selected.size() == 1) {
-//      int index = clippings.indexOf(selected.get(0));
-//      Clipping c = clippings.get(PApplet.constrain(index + columns, 0, clippings.size() - 1));
-//      deselect(selected.get(0));
-//      select(c);
-//    }
-//  }
-//
-//  public void selectUpDownSardine(int direction){
-//    Clipping selClip = selected.get(0);
-//    float bestScore = 0;
-//    Clipping best = selClip;
-//
-//    for (Clipping c : clippings){
-//      if (c == selClip) continue;
-//      if (c.y < selClip.y - c.displayH * 1.2 || c.y > selClip.y + selClip.displayH * 1.2) continue;
-//      if (findOverlap(selClip, c) > bestScore && (selClip.y - c.y) * direction < 0){
-//        bestScore = findOverlap(selClip, c);
-//        best = c;
-//      }
-//    }
-//    clearSelection();
-//    select(best);
-//  }
-//
-//  public float findOverlap(Clipping clip1, Clipping clip2){
-//    if (clip1.x > clip2.x + clip2.displayW || clip1.x + clip1.displayW <= clip2.x) return 0;
-//    float left = PApplet.max(clip1.x, clip2.x);
-//    float right = PApplet.min(clip1.x + clip1.displayW, clip2.x + clip2.displayW);
-//    float ans = PApplet.max(left, right) - PApplet.min(left, right);
-//    return ans;
-//  }
-//
+  public float findOverlap(Spegel s1, Spegel s2){
+    if (s1.x > s2.x + s2.displayW || s1.x + s1.displayW <= s2.x) return 0;
+    float left = PApplet.max(s1.x, s2.x);
+    float right = PApplet.min(s1.x + s1.displayW, s2.x + s2.displayW);
+    return PApplet.max(left, right) - PApplet.min(left, right);
+  }
+
 //  public void overlapDebug(){
 //    if (selected.size() == 2){
 //      float ans = findOverlap(selected.get(0), selected.get(1));
