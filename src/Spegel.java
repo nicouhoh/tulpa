@@ -82,6 +82,8 @@ public class Spegel extends Monad implements Clickable{
             c.library.select(this.clipping);
         } else if(mod == KeyEvent.CTRL){
             c.library.toggleSelect(this.clipping);
+        } else if(mod == KeyEvent.SHIFT){
+           // TODO select range ( & if some but not all are selected, select all; if all are selected, deselect)
         }
     }
 }

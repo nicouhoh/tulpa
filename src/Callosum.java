@@ -77,11 +77,4 @@ public class Callosum {
         File data = new File(path);
         addClippings(data);
     }
-
-//    public void debugInit(){
-//        library.debugInit();
-//        for(Clipping clip : library.clippings){ //TODO How are we actually doing this
-//            field.sheet.newSpegel(clip);
-//        }
-//    }
 }

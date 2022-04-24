@@ -151,11 +151,6 @@ public class Library {
 //    }
 //  }
 
-//  public void whackClipping() {
-//    clippings.removeAll(selected);
-//    System.out.println("clipping whacked");
-//  }
-
   public void whackClipping(Clipping c){
     clippings.remove(c);
   }
@@ -163,27 +158,6 @@ public class Library {
   public void whackClipping(ArrayList<Clipping> c){
     clippings.removeAll(c);
   }
-
-//  public void clickSelect()
-
-
-//  public void clickSelect(MouseEvent e) {
-//    boolean bromp = false;
-//    for (Clipping clip : clippings) {
-////      if (!clip.onscreen || !clip.clicked()) continue;
-//      if (!e.isMetaDown() && !e.isControlDown()) {
-//        clearSelection();
-//      } else if (clip.selected) {
-//        deselect(clip);
-//        return;
-//      }
-//      select(clip);
-//      bromp = true;
-//    }
-//    if (!bromp) {
-//      clearSelection();
-//    }
-//  }
 
   public void zoom(){
     if (selected.size() == 1) zoom = true;

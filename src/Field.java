@@ -12,7 +12,6 @@ public class Field extends Monad implements Scrollable{
     float latitude;
     float foot;
     float sPillow;
-    boolean sardine;
 
     float zoomPillow;
 
@@ -29,7 +28,6 @@ public class Field extends Monad implements Scrollable{
         sheet = new ContactSheet(this);
         scroller = new Scroller(this);
         sPillow = 2;
-        sardine = false;
         zoomPillow = 30;
     }
 
@@ -60,40 +58,6 @@ public class Field extends Monad implements Scrollable{
     }
 
 
-//    public void packSardines(Library library) {
-//        clipSize = PApplet.constrain(h / sheetZoom, 9, 9999999);
-//        ArrayList<Spegel> row = new ArrayList<Spegel>();
-//        float rowWidth = sPillow;
-//        float rowHeight = sPillow;
-//        float x = sPillow;
-//        float y = sPillow;
-//
-//        for (Spegel clip : library.Spegels) {
-//            float clipW = clip.img.width;
-//            float clipH = clip.img.height;
-//            float newWidth = (clipW / clipH) * clipSize;
-//            float nextY = clipSize;
-//            if (rowWidth + newWidth > w + sPillow) {    // if it dont fit
-//                // resize the row to fit the window
-//                float ratio = (w - sPillow) / rowWidth;
-//                for (Spegel c : row){
-//                    c.setSize(c.displayW * ratio, c.displayH * ratio);
-//                    c.setPos(c.x * ratio, c.y);
-//                    nextY = c.displayH;
-//                }
-//                x = sPillow;
-//                y += nextY + sPillow;
-//                rowWidth = sPillow;
-//                row.clear();
-//            }
-//            rowWidth += newWidth;
-//            clip.setSize(newWidth, clipSize);
-//            clip.setPos(x, y);
-//            x += newWidth + sPillow;
-//            row.add(clip);
-//        }
-////        updateScroller();
-//    }
 
     public void zoom(int z){
 //        sheetZoom -= z; TODO: temporarily commented to make things work for now

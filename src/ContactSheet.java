@@ -9,15 +9,17 @@ public class ContactSheet extends Monad{
 
     float clipSize;
     float pillow;
+    float sPillow;
     int sheetZoom;
     float f; // This gets passed up to become Field.foot
-
-//    ArrayList<Spegel> children = new ArrayList<Spegel>();
+    boolean sardine;
 
     public ContactSheet(Field parent){
        this.parent = parent;
        this.parent.children.add(this);
+       sardine = false;
        pillow = 10;
+       sPillow = 5;
        clipSize = 200;
        sheetZoom = 5;
        setPos(parent.x, parent.y);
@@ -57,7 +59,8 @@ public class ContactSheet extends Monad{
         setPos(parent.x, parent.y);
         setSize(parent.w - parent.scrollWidth(), parent.h);
         setClipSize();
-        arrangeSpegels();
+        if (sardine) packSardines();
+        else arrangeSpegels();
     }
 
     public void setClipSize(){
@@ -95,7 +98,49 @@ public class ContactSheet extends Monad{
             children.get(i).setPos(fussX, fussY);
         }
         setF(fussY + clipSize + pillow);
+    }
 
+    public void packSardines(){
+        clipSize = PApplet.constrain(h / sheetZoom, 9, h);
+        ArrayList<Spegel> row = new ArrayList<Spegel>();
+        float rowWidth = sPillow;
+        float x = sPillow;
+        float y = sPillow;
+        float endY = 0;
+
+        for (Monad m : children){
+            Spegel s = (Spegel)m;
+            float clipW = s.clipping.img.width;
+            float clipH = s.clipping.img.height;
+            float newWidth = (clipW / clipH) * clipSize;
+            float nextY = clipSize;
+            if (rowWidth + newWidth > w + sPillow) {    // if it dont fit
+                // resize the row to fit the window
+                float ratio = (w - sPillow) / rowWidth;
+                for (Spegel c : row){
+                    c.setSize(c.displayW * ratio, c.displayH * ratio);
+                    c.setPos(c.x * ratio, c.y);
+                    nextY = c.displayH;
+                }
+                x = sPillow;
+                y += nextY + sPillow;
+                rowWidth = sPillow;
+                row.clear();
+            }
+            rowWidth += newWidth;
+            s.setSize(newWidth, clipSize);
+            s.setPos(x, y);
+            x += newWidth + sPillow;
+            row.add(s);
+            endY = nextY;
+        }
+        setF(y + endY + sPillow);
+//        updateScroller();
+    }
+
+    public void toggleFishiness(){
+        sardine = !sardine; // ahhhh, the dao.......
+        // TODO keep your place when switching back and forth
     }
 
     public void setF(float floop){

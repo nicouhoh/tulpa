@@ -78,6 +78,9 @@ public class Operator {
 //           System.out.println(field.getLatitude());
         }else if(kc == BACKSPACE){
            callosum.powerWordKill();
+        }else if(key == '0'){
+            callosum.field.sheet.toggleFishiness();
+            callosum.cockpit.cascadeUpdate();
         }
         else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
     }
