@@ -34,9 +34,9 @@ public class ContactSheet extends Monad{
             if (children == null) return;
             g.push();
             g.translate(0, -latitude);
-//            for (Spegel s : children) {
-            for (Monad m : children){
-                m.cascadeDraw(g, latitude);
+//            for (Monad m : children){
+            for(int i = 0; i < children.size(); i++){
+                children.get(i).cascadeDraw(g, latitude);
             }
             g.pop();
         }

@@ -49,11 +49,13 @@ public class Callosum {
     public void addClipping(File file){
         Clipping c = library.newClipping(file);
         field.sheet.newSpegel(c);
+        cockpit.cascadeUpdate();
     }
 
     public void addClippings(File path){
         ArrayList<Clipping> c = library.newClippings(path);
         field.sheet.newSpegels(c);
+        cockpit.cascadeUpdate();
     }
 
     public void obliterateClipping(Spegel s){
