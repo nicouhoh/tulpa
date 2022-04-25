@@ -100,6 +100,7 @@ public class Callosum {
             if (current + n < 0 || current + n >= library.clippings.size()) return;
             library.removeSelect(library.selected.get(0));
             library.addSelect(library.clippings.get(current + n));
+            field.jumpToSpegel(library.selected.get(0).spegel);
             cv.setupImage(library.selected.get(0));
         }
     }
