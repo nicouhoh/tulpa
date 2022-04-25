@@ -8,17 +8,11 @@ import drop.DropEvent;
 public class tulpa  extends PApplet  {
 SDrop sdrop;
 
-public Library library;
-public Cockpit cockpit;
 public Callosum callosum;
-public Scroller scroller;
-public Input input;
 int w, h;
 public boolean resized = false;
 
 public static tulpa SOLE = null;
-
-public EventEar ear;
 
 public void setup(){
   SOLE = this;
@@ -47,9 +41,9 @@ public void checkResize(){
   }
 }
 
-//public void dropEvent(DropEvent dropEvent){
-//  input.dropInput(dropEvent);
-//}
+public void dropEvent(DropEvent dropEvent){
+    callosum.ear.dropEvent(dropEvent);
+}
 
     // STARTING (YER) ENGINES
 public static void main (String av[])

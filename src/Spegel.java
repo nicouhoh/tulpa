@@ -14,6 +14,7 @@ public class Spegel extends Monad implements Clickable{
 
     public Spegel(ContactSheet parent, Clipping clipping){
         this.parent = parent;
+        this.parent.children.add(this);
         this.clipping = clipping;
         this.clipping.spegel = this;
     }
@@ -53,17 +54,12 @@ public class Spegel extends Monad implements Clickable{
 
     @Override
     public boolean isOnscreen(float latitude) {
-        if (y - latitude < parent.y + parent.h && y - latitude + h >= parent.y) {
-            return true;
-        } else {
-            return false;
-        }
+        return y - latitude < parent.y + parent.h && y - latitude + h >= parent.y;
     }
 
     @Override
     public boolean pinPoint(float pinX, float pinY, float latitude){
         pinY += latitude;
-        //            monadDebugInfo();
         return pinX >= x + airW && pinX <= x + airW + displayW
                 && pinY >= y + airH && pinY <= y + airH + displayH;
     }
@@ -80,7 +76,7 @@ public class Spegel extends Monad implements Clickable{
         System.out.println(mod);
         if (mod == 0) {
             c.library.select(this.clipping);
-        } else if(mod == KeyEvent.CTRL){
+        } else if(mod == KeyEvent.CTRL || mod == KeyEvent.META){
             c.library.toggleSelect(this.clipping);
         } else if(mod == KeyEvent.SHIFT){
            // TODO select range ( & if some but not all are selected, select all; if all are selected, deselect)

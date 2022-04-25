@@ -6,5 +6,5 @@ public interface Clickable {
     default void pressed(Operator operator, int mod, float pressX, float pressY, Callosum c){}
     default void grabbed(Operator operator, int mod, float grabX, float grabY, Callosum c) {}
     default void dragged(Operator operator, int mod, float dragX, float dragY, Callosum c){}
-    default void released(Operator operator, int mod, float releaseX, float releaseY, Callosum c){}
+    default void dropped(Operator operator, int mod, float dropX, float dropY, Callosum c){}
 }

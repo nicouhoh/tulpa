@@ -74,7 +74,7 @@ public class Grip extends Monad implements Clickable{
     }
 
     @Override
-    public void released(Operator operator, int mod, float dragX, float dragY, Callosum c){
+    public void dropped(Operator operator, int mod, float dropX, float dropY, Callosum c){
         grabbed = false;
     }
 }

@@ -115,21 +115,21 @@ public class Input{
 ////      cockpit.goTo(cockpit.latitude + event.getCount(), 0);
 //  }
   
-//  public void dropInput(DropEvent drop){
-//    if(state != State.LIBRARY) return;
-//    System.out.println("dropInput");
-//    if (drop.isImage() && drop.file().getName().contains(".jpg")){ //TODO Take out .jpg clause when memory isn't an issue anymore
-//      Clipping clipping = library.incubateFile(drop.file());
-//      library.addToLibrary(clipping);
-//    }else if(drop.isFile()){
-//      System.out.println("drop.isFile");
-//      File file = new File(drop.toString());
-//      System.out.print("ABSOLUTE PATH: " + file.getAbsolutePath());
-//      if (file.isDirectory()){
-//        ArrayList<Clipping> clippings = library.incubateDir(file);
-//        library.addToLibrary(clippings);
-//      }
-//    }
-////    cockpit.field.fussMenagerie(library);
-//  }
+  public void dropInput(DropEvent drop){
+    if(state != State.LIBRARY) return;
+    System.out.println("dropInput");
+    if (drop.isImage() && drop.file().getName().contains(".jpg")){ //TODO Take out .jpg clause when memory isn't an issue anymore
+      Clipping clipping = library.incubateFile(drop.file());
+      library.addToLibrary(clipping);
+    }else if(drop.isFile()){
+      System.out.println("drop.isFile");
+      File file = new File(drop.toString());
+      System.out.print("ABSOLUTE PATH: " + file.getAbsolutePath());
+      if (file.isDirectory()){
+        ArrayList<Clipping> clippings = library.incubateDir(file);
+        library.addToLibrary(clippings);
+      }
+    }
+// d   cockpit.field.fussMenagerie(library);
+  }
 }

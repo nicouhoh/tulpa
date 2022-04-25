@@ -1,6 +1,8 @@
 import processing.core.PApplet;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
+import drop.DropEvent;
+
 public class EventEar {
 
     public Operator operator;
@@ -46,6 +48,11 @@ public class EventEar {
         if (e.getAction() != KeyEvent.RELEASE){
             operator.interpretTelegram(cockpit, e.getKey(), e.getKeyCode());
         }
+    }
+
+    public void dropEvent(DropEvent e){
+        System.out.println("DropEvent");
+        operator.receiveCarePackage(cockpit, e);
     }
 
 }

@@ -110,19 +110,6 @@ public abstract class Monad {
         }
         return out;
     }
-//    public Clickable getClickableAtPoint(float pointX, float pointY, float latitude){
-//        Clickable output = null; //TODO This will set output to null instead of finding non-bottom-level targets!
-//        if (this instanceof Clickable) output = (Clickable)this;
-//        if (children.size() < 1) return output;
-//        for (Monad m : children){
-//            if (!m.isOnscreen(latitude)) continue;
-//            if (m.pinPoint(pointX, pointY)){
-//                return m.getClickableAtPoint(pointX, pointY, latitude);
-//            }
-//        }
-//        return output;
-//    }
-
 
     public float scrollWidth(){
         return 0;

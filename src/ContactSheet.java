@@ -67,7 +67,7 @@ public class ContactSheet extends Monad{
 
     public void newSpegel(Clipping clip){
         Spegel speg = new Spegel(this, clip);
-        children.add(speg);
+//        children.add(speg);
     }
 
     public void newSpegels(ArrayList<Clipping> clips){
@@ -75,7 +75,7 @@ public class ContactSheet extends Monad{
         for (Clipping c : clips){
           s.add(new Spegel(this, c));
         }
-        children.addAll(s);
+//        children.addAll(s);
     }
 
     public void shatterSpegel(Spegel s){

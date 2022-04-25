@@ -1,7 +1,7 @@
 import processing.event.MouseEvent;
-import processing.event.KeyEvent;
-
-import java.awt.event.MouseWheelEvent;
+import drop.DropEvent;
+import java.io.File;
+import java.util.ArrayList;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
@@ -50,7 +50,7 @@ public class Operator {
 
                 if (button == LMB && act == MouseEvent.RELEASE) {
                     if (lockedClickable != null) {
-                        lockedClickable.released(this, mod, x, y, callosum);
+                        lockedClickable.dropped(this, mod, x, y, callosum);
                         unlock();
                     } else {
                         if (target != null) target.clicked(this, mod, x, y, callosum);
@@ -111,6 +111,19 @@ public class Operator {
             if (key == ' ') {
                 state = State.LIBRARY;
                 callosum.exitClippingView();
+            }
+        }
+    }
+
+    public void receiveCarePackage(Cockpit cockpit, DropEvent e){
+        if (state != State.LIBRARY) return;
+        if (e.isImage() && e.file().getName().contains(".jpg")){ // TODO can't wait to kill this
+            callosum.addClipping(e.file());
+        } else if (e.isFile()){
+            File file = new File(e.toString());
+            System.out.print("ABSOLUTE PATH: " + file.getAbsolutePath());
+            if (file.isDirectory()){
+                callosum.addClippings(file);
             }
         }
     }
