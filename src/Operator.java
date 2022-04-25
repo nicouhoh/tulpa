@@ -1,7 +1,6 @@
 import processing.event.MouseEvent;
 import drop.DropEvent;
 import java.io.File;
-import java.util.ArrayList;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
@@ -23,43 +22,42 @@ public class Operator {
 // -------------------------------------- MOUSEHOLE PARADISE --------------------------------------
 
 
-    // TODO it would be just lovely to tidy this up at some point
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
 
-//        System.out.println(button + ", " + act);
 
         if (state == State.LIBRARY) {
 
-//            if (button == LMB && act == MouseEvent.RELEASE) {
-//                System.out.println("HERE!");
-//            }
-
-            // DRAG doesn't really care if the mouse is currently on something.
-            // it's happy as long as it's holding on to something.
-
-            if (button == LMB && act == MouseEvent.DRAG) {
-                if (lockedClickable != null) lockedClickable.dragged(this, mod, x, y, callosum);
-            } else if (act == MouseEvent.WHEEL) {
+            if(act == MouseEvent.WHEEL){
                 Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
                 if (sTarget != null) sTarget.scroll(this, count);
-            } else {
+                return;
+            }
 
-                // from here on we DO care if we evented on something that's interested
+            else if (button == LMB) {
+
+                // DRAG doesn't really care if the mouse is currently on something.
+                // it's happy as long as it's holding on to something.
+                if (act == MouseEvent.DRAG) {
+                    if (lockedClickable != null) lockedClickable.dragged(this, mod, x, y, callosum);
+                    return;
+                }
 
                 Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
 
-                if (button == LMB && act == MouseEvent.RELEASE) {
+                if (act == MouseEvent.RELEASE) {
+                    callosum.cockpit.casper = null;
                     if (lockedClickable != null) {
                         lockedClickable.dropped(this, mod, x, y, callosum);
                         unlock();
-                    } else {
+//                    } else { // TODO commenting this out for now to make clicking and dragging work at the same time-ish. Someday will have to actually reckon w it
                         if (target != null) target.clicked(this, mod, x, y, callosum);
                     }
                 }
 
-                if (button == LMB && target != null && act == MouseEvent.PRESS) {
-                    target.grabbed(this, mod, x, y, callosum);
+                if (target != null && act == MouseEvent.PRESS) {
                     target.pressed(this, mod, x, y, callosum);
+                    setLockedClickable(target);
+                    target.grabbed(this, mod, x, y, callosum);
                 }
             }
         }
@@ -117,7 +115,7 @@ public class Operator {
 
     public void receiveCarePackage(Cockpit cockpit, DropEvent e){
         if (state != State.LIBRARY) return;
-        if (e.isImage() && e.file().getName().contains(".jpg")){ // TODO can't wait to kill this
+        if (e.isImage() && e.file().getName().contains(".jpg")){ // TODO can't wait to kill this. i got the bloodlust....
             callosum.addClipping(e.file());
         } else if (e.isFile()){
             File file = new File(e.toString());
@@ -128,7 +126,7 @@ public class Operator {
         }
     }
 
-    public void lockClickable(Clickable c){
+    public void setLockedClickable(Clickable c){
         lockedClickable = c;
     }
 

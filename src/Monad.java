@@ -9,12 +9,14 @@ public abstract class Monad {
     float h;
 
     boolean onscreen;
+    boolean grabbed;
 
     ArrayList<Monad> children = new ArrayList<Monad>();
     Monad parent;
 
     public void draw(PGraphics g){};
     public void update(){};
+
     public void cascadeUpdate(){
         update();
         if (children == null) return;
@@ -62,8 +64,6 @@ public abstract class Monad {
     }
 
     public boolean pinPoint(float pinX, float pinY, float latitude){
-//        pinY -= latitude;
-        //            monadDebugInfo();
         return pinX >= x && pinX <= x + w
                 && pinY >= y && pinY <= y + h;
     }

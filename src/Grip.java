@@ -5,7 +5,6 @@ public class Grip extends Monad implements Clickable{
 
     int color;
 
-    boolean grabbed;
     float grabY;
     Field field;
 
@@ -56,9 +55,7 @@ public class Grip extends Monad implements Clickable{
     // normally the grip's position is determined by latitude.
     // but when the grip be gripped, the flow reverses.
     public void grabGrip(Operator operator, float mouseGrabY){
-        operator.lockClickable(this);
         grabbed = true;
-        System.out.println("grabbed");
         grabY = mouseGrabY - y;
     }
 

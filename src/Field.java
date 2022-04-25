@@ -4,7 +4,7 @@ import processing.core.PGraphics;
 import java.sql.Array;
 import java.util.ArrayList;
 
-public class Field extends Monad implements Scrollable{
+public class Field extends Monad implements Scrollable {
 
     Scroller scroller;
     ContactSheet sheet;
@@ -121,5 +121,6 @@ public class Field extends Monad implements Scrollable{
     public void scroll(Operator operator, int count){
        stepLatitude(count * scrollAmount);
     }
+
 
 }
