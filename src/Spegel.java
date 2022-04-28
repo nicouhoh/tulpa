@@ -50,6 +50,7 @@ public class Spegel extends Monad implements Clickable{
         }
     }
 
+
     @Override
     public boolean isOnscreen(float latitude) {
         return y - latitude < parent.y + parent.h && y - latitude + h >= parent.y;
@@ -61,6 +62,7 @@ public class Spegel extends Monad implements Clickable{
         return pinX >= x + airW && pinX <= x + airW + displayW
                 && pinY >= y + airH && pinY <= y + airH + displayH;
     }
+
 
     public void debugClipSize(PGraphics g){
         g.stroke(100);
@@ -85,16 +87,26 @@ public class Spegel extends Monad implements Clickable{
     public void grabbed(Operator operator, int mod, float grabX, float grabY, Callosum c){
         System.out.println("Spegel grabbed");
         float l = c.field.latitude;
-        c.cockpit.setCasper(this, grabX - this.x - airW, grabY - this.y - airH + l);
     }
 
     @Override
-    public void dragged(Operator operator, int mod, float dragX, float dragY, Callosum c){
-
+    public void dragged(Operator operator, int mod, float dragX, float dragY, float lockedX, float lockedY, Callosum c){
+        if(c.field.casper == null) c.field.setCasper(this);
+        c.field.setCasperPos(lockedX + airW, lockedY + airH);
     }
 
     @Override
     public void dropped(Operator operator, int mod, float releaseX, float releaseY, Callosum c){
+        c.field.setBetweenClips(null);
     }
+
+//    @Override
+//    public void hoveredWithGift(Operator operator, int mod, float hoverX, float hoverY, Clickable gift, float lockedX, float lockedY, Callosum c){
+        // temporary fix. if we're close enough to the edge, just reroute to Field.
+//        float hoverPillow = 5;
+//        if (hoverX < x + airW + hoverPillow || hoverX > x + w - airW - hoverPillow){
+//           c.field.hoveredWithGift(operator, mod, hoverX, hoverY, gift, lockedX, lockedY, c);
+//        }
+//    }
 
 }

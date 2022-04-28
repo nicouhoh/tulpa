@@ -4,7 +4,7 @@ import processing.core.PGraphics;
 import java.sql.Array;
 import java.util.ArrayList;
 
-public class Field extends Monad implements Scrollable {
+public class Field extends Monad implements Scrollable, Clickable {
 
     Scroller scroller;
     ContactSheet sheet;
@@ -17,6 +17,11 @@ public class Field extends Monad implements Scrollable {
 
     float scrollAmount = 10;
 
+    Spegel casper;
+    float casperX;
+    float casperY;
+
+    Clipping[] betweenClips;
 
     public Field(Cockpit parent){
         this.parent = parent;
@@ -36,6 +41,10 @@ public class Field extends Monad implements Scrollable {
         g.background(49);
     }
 
+    public void drawOnTop(PGraphics g){
+        drawCasper(g);
+    }
+
     @Override
     public void cascadeUpdate(){
         update();
@@ -51,6 +60,12 @@ public class Field extends Monad implements Scrollable {
         scroller.updateGrip(latitude, foot); // Not sure about this. maybe it's okay. it only updates on resize, so....
     }
 
+    @Override
+    public void cascadeDraw(PGraphics g, float latitude){
+       super.cascadeDraw(g, latitude);
+       drawOnTop(g);
+    }
+
 
     @Override
     public void update(){
@@ -61,6 +76,7 @@ public class Field extends Monad implements Scrollable {
         sheet.sheetZoom -= z;
     }
 
+    @Override
     public float scrollWidth(){
         return scrollW;
     }
@@ -118,9 +134,65 @@ public class Field extends Monad implements Scrollable {
         setLatitude(scroller.grip.y / h * foot);
     }
 
+    // TODO down the line: what if, blur whatever's underneath? too fancy?
+    public void drawCasper(PGraphics g){
+        if (casper != null){
+            g.tint(255, 130);
+            g.image(casper.clipping.img,
+                    tulpa.SOLE.mouseX + casperX,
+                    tulpa.SOLE.mouseY + casperY - latitude,
+                    casper.displayW, casper.displayH);
+            g.tint(255);
+        }
+        drawBetweener(g, betweenClips);
+    }
+
+    public void setCasper(Spegel s){
+        casper = s;
+    }
+
+    public void setCasperPos(float cx, float cy) {
+        casperX = cx;
+        casperY = cy;
+    }
+
+    public void clearCasper(){
+        setCasper(null);
+        setBetweenClips(null);
+    }
+
+    public void drawBetweener(PGraphics g, Clipping[] chums){
+        if (chums != null) {
+            Spegel lefto = chums[0] == null ? null : chums[0].spegel;
+            Spegel righto = chums[1] == null ? null : chums[1].spegel;
+            g.stroke(255, 255, 70);
+            if(lefto != null) g.line(lefto.x + lefto.displayW + lefto.airW, lefto.y + lefto.airH - latitude, lefto.x + lefto.displayW + lefto.airW, lefto.y + + lefto.airH + lefto.displayH - latitude);
+            if(righto != null) g.line(righto.x + righto.airW, righto.y + righto.airH - latitude, righto.x + righto.airW, righto.y + + righto.airH + righto.displayH - latitude);
+            // hahahahahahahahaha ok
+        }
+    }
+
+    public void setBetweenClips(Clipping[] bc) {
+        betweenClips = bc;
+    }
+
+    @Override
     public void scroll(Operator operator, int count){
        stepLatitude(count * scrollAmount);
     }
 
+    @Override
+    public void hoveredWithGift(Operator operator, int mod, float hoverX, float hoverY, Clickable gift, float lockedX, float lockedY, Callosum c){
+        if(gift instanceof Spegel) {
+            setBetweenClips(c.getBetweenClippings(hoverX, hoverY)); // ONLY on hoverWithGift
+            // for right now we clear betweenClips in Operator under the RELEASED section. is there a better way?
+        }
+    }
 
+    @Override
+    public void offeredGift(Operator operator, int mod, float giftX, float giftY, Clickable gift, Callosum c){
+        if (gift instanceof Spegel && betweenClips != null) {
+            c.moveClipping(gift.getClipping(), betweenClips[1]);
+        }
+    }
 }

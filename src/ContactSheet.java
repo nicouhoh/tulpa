@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import processing.core.PApplet;
@@ -136,8 +135,8 @@ public class ContactSheet extends Monad{
 //        updateScroller();
     }
 
-    public void toggleFishiness(){
-        sardine = !sardine; // ahhhh, the dao.......
+    public void fishKoan(){
+        sardine = !sardine;
         // TODO keep your place when switching back and forth
     }
 

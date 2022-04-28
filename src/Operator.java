@@ -1,12 +1,15 @@
 import processing.event.MouseEvent;
 import drop.DropEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
 
     Callosum callosum;
     Clickable lockedClickable;
+    float lockedX;
+    float lockedY;
     State state;
 
     int LMB = 37;
@@ -19,7 +22,7 @@ public class Operator {
 
 
 
-// -------------------------------------- MOUSEHOLE PARADISE --------------------------------------
+// -------------------------------------- MOUSEHOLE HELL --------------------------------------
 
 
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
@@ -27,36 +30,48 @@ public class Operator {
 
         if (state == State.LIBRARY) {
 
+
             if(act == MouseEvent.WHEEL){
                 Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
                 if (sTarget != null) sTarget.scroll(this, count);
                 return;
             }
 
-            else if (button == LMB) {
+            Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
+            if (target == null) return;
+
+            if (button == LMB) {
 
                 // DRAG doesn't really care if the mouse is currently on something.
                 // it's happy as long as it's holding on to something.
                 if (act == MouseEvent.DRAG) {
-                    if (lockedClickable != null) lockedClickable.dragged(this, mod, x, y, callosum);
+                    if (lockedClickable != null){
+                        lockedClickable.dragged(this, mod, x, y, lockedX, lockedY, callosum);
+                        target.hoveredWithGift(this,mod, x, y, lockedClickable, lockedX, lockedY, callosum);
+                        if (target != callosum.field) callosum.field.setBetweenClips(null); // TODO cheating... is there a better way
+
+                    }
                     return;
                 }
 
-                Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
 
                 if (act == MouseEvent.RELEASE) {
-                    callosum.cockpit.casper = null;
+
                     if (lockedClickable != null) {
+                        target.offeredGift(this, mod, x, y, lockedClickable, callosum);
                         lockedClickable.dropped(this, mod, x, y, callosum);
                         unlock();
 //                    } else { // TODO commenting this out for now to make clicking and dragging work at the same time-ish. Someday will have to actually reckon w it
                         if (target != null) target.clicked(this, mod, x, y, callosum);
                     }
+                    callosum.field.clearCasper(); // clear casper & betweener
+
                 }
 
                 if (target != null && act == MouseEvent.PRESS) {
                     target.pressed(this, mod, x, y, callosum);
                     setLockedClickable(target);
+                    setLockedPos((Monad)target, x, y);
                     target.grabbed(this, mod, x, y, callosum);
                 }
             }
@@ -70,7 +85,7 @@ public class Operator {
     }
 
 
-// ----------------------------------- KEYBOARD HAPPINESS ---------------------------------------
+// ----------------------------------- KEYBOARD PARADISE ---------------------------------------
 
     int BACKSPACE = 8;
     int LEFT = 37;
@@ -94,6 +109,13 @@ public class Operator {
             else if (key == ' ') {
                 state = State.CLIPPING;
                 callosum.viewClipping();
+            }
+            else if (key == '?'){
+                if(callosum.library.selected.size() > 0){
+                    for (Clipping c : callosum.library.selected){
+                        c.spegel.monadDebugInfo(callosum.field.latitude);
+                    }
+                }
             }
 
             else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
@@ -128,6 +150,11 @@ public class Operator {
 
     public void setLockedClickable(Clickable c){
         lockedClickable = c;
+    }
+
+    public void setLockedPos(Monad target, float x, float y){
+       lockedX = target.x - x;
+       lockedY = target.y - y;
     }
 
     public void unlock(){

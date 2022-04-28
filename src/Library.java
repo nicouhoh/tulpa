@@ -2,6 +2,7 @@ import processing.core.PApplet;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class Library {
@@ -101,8 +102,6 @@ public class Library {
     else addSelect(c);
   }
 
-
-
   public void selectUpDownSardine(int direction){
     Clipping selClip = selected.get(0);
     float bestScore = 0;
@@ -128,12 +127,9 @@ public class Library {
     return PApplet.max(left, right) - PApplet.min(left, right);
   }
 
-//  public void overlapDebug(){
-//    if (selected.size() == 2){
-//      float ans = findOverlap(selected.get(0), selected.get(1));
-//      System.out.println("Overlap between " + selected.get(0).imgPath + " and " + selected.get(1).imgPath + ": " + ans);
-//    }
-//  }
+  // move Clipping c before clipping c2
+  public void moveClipping(Clipping c, Clipping c2){
+  }
 
   public void whackClipping(Clipping c){
     clippings.remove(c);

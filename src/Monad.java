@@ -9,6 +9,7 @@ public abstract class Monad {
     float h;
 
     boolean onscreen;
+
     boolean grabbed;
 
     ArrayList<Monad> children = new ArrayList<Monad>();
@@ -115,11 +116,12 @@ public abstract class Monad {
         return 0;
     }
 
-    public void monadDebugInfo(){
+    public void monadDebugInfo(float latitude){
         System.out.println();
         System.out.println(this);
         System.out.println(x + ", " + y);
         System.out.println(w + " x " + h);
+        System.out.println("Onscreen: " + isOnscreen(latitude));
         System.out.println("parent: " + parent);
         System.out.println("children: " + children);
     }

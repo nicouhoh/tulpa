@@ -31,24 +31,6 @@ public class Clipping {
         selected = set;
     }
 
-    public void zoomClipping(PGraphics g, float w, float h, float p){
-        float zoomW = 0;
-        float zoomH = 0;
-
-        if (img.height >= img.width){
-            zoomH = PApplet.constrain(img.height, 10, h - p);
-            zoomW = (zoomH / img.height) * img.width;
-        }
-//        else if (img.width > img.height || zoomW > w - p * 2)
-          else {
-            zoomW = PApplet.constrain(img.width, 10, w - p);
-            zoomH = (zoomW / img.width) * img.height;
-        }
-        g.image(img, w / 2 - zoomW / 2, h / 2 - zoomH / 2, zoomW, zoomH);
-    }
-
-
-
 
 
 }

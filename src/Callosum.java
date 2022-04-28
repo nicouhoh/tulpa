@@ -3,6 +3,7 @@ import processing.core.PGraphics;
 import java.util.ArrayList;
 
 import java.io.File;
+import java.util.Collections;
 
 public class Callosum {
 
@@ -15,12 +16,15 @@ public class Callosum {
 
     String path;
 
+    float betweenPillow = 15;
+
 
     public Callosum(){
        bigBang();
     }
 
     public void update(){
+//        field.betweenClips = getSurroundingClippings(tulpa.SOLE.mouseX, tulpa.SOLE.mouseY);
         if (tulpa.SOLE.resized){
             cockpit.cascadeUpdate();
         }
@@ -82,16 +86,16 @@ public class Callosum {
     public void toggleBrine(){
         // keep selected clippings in roughly the same place
         // TODO someday, make this work on x axis as well figure out a better solution for multiple/no select
-        // TODO OR, riddle me this????? if the one selected clipping is offscreen???? then what???
+        // TODO OR, riddle me this????? if the lone selected clipping is offscreen???? then what???
         if(library.selected.size() > 0){
             Clipping c = library.selected.get(0);
 
             float screenY = c.spegel.y - field.latitude;
-            field.sheet.toggleFishiness();
+            field.sheet.fishKoan();
             cockpit.cascadeUpdate();
             field.setLatitude(c.spegel.y - screenY);
         }else{
-            field.sheet.toggleFishiness();
+            field.sheet.fishKoan();
         }
         cockpit.cascadeUpdate();
     }
@@ -138,12 +142,98 @@ public class Callosum {
         }
     }
 
+    public void moveClipping(Clipping c1, Clipping c2){
+        int ci = library.clippings.indexOf(c1);
+        int c2i = library.clippings.indexOf(c2);
+        if (ci < c2i){
+            Collections.rotate(library.clippings.subList(ci, c2i), -1);
+            Collections.rotate(field.sheet.children.subList(ci, c2i), -1);
+        }else if(ci > c2i){
+            Collections.rotate(library.clippings.subList(c2i, ci+1), 1);
+            Collections.rotate(field.sheet.children.subList(c2i, ci+1), 1);
+        }
+
+        cockpit.cascadeUpdate();
+    }
+
     public void exitClippingView(){
         cv.setEnabled(false);
+    }
+
+    public Clipping[] getBetweenClippings(float x, float y){
+        Clipping[] out = new Clipping[2];
+        Spegel rightBoy = null;
+        Spegel leftBoy = null;
+        Spegel currentBoy = null;
+        Spegel nextBoy = null;
+
+        for (Monad m : field.sheet.children){
+
+            // eliminate clippings offscreen or above the mouse
+            if(!m.isOnscreen(field.latitude)) continue;
+            if (m.y + m.h - field.latitude <= y) continue;
+            if (m.y - field.latitude > y) return null; // if we get down past the mouse we're not going to hit it.
+
+            currentBoy = (Spegel)m;
+            nextBoy = stepSpegel(currentBoy, 1);
+
+            // between two Spegels
+            if (isBetween(x, y, currentBoy, nextBoy, field.latitude)){
+               out[0] = currentBoy.clipping;
+               out[1] = nextBoy.clipping;
+               return out;
+            }
+            // to the left of the leftmost clipping
+            else if (collision(x, y, field.x, currentBoy.x + currentBoy.airW, currentBoy.y - field.latitude, currentBoy.y + currentBoy.h - field.latitude)) {
+                rightBoy = currentBoy;
+                if (field.sheet.children.indexOf(currentBoy) == 0){ // if it's the very first clipping
+                    out[0] = null;
+                } else{
+                    out[0] = stepSpegel(currentBoy, -1).clipping;
+                }
+                out[1] = currentBoy.clipping;
+                return out;
+            }
+            // if this is the very last clipping
+            else if (stepSpegel(currentBoy, 1) == currentBoy) {
+                out[0] = currentBoy.clipping;
+                out[1] = null;
+                return out;
+            }
+            // to the right of the rightmost clipping
+            else if (currentBoy.y < nextBoy.y){
+                out[0] = currentBoy.clipping;
+                out[1] = stepSpegel(currentBoy, 1).clipping;
+                return out;
+            }
+        }
+        return null;
+    }
+
+    public Clipping stepClipping(Clipping c, int step){
+        int index = library.clippings.indexOf(c);
+        if (index + step > 0 && index + step <= library.clippings.size()){
+            return (library.clippings.get(index + step));
+        }
+        return null;
+    }
+
+    public Spegel stepSpegel(Spegel s, int step){
+        int index = field.sheet.children.indexOf(s);
+        return (Spegel)field.sheet.children.get(PApplet.constrain(index + step, 0, field.sheet.children.size() - 1));
+    }
+
+    public boolean isBetween(float x, float y, Spegel left, Spegel right, float latitude){
+        return collision(x, y, left.x + left.airW + left.displayW, right.x + right.airW, left.y - latitude, left.y + left.h - latitude);
+    }
+
+    public boolean collision(float checkX, float checkY, float leftX, float rightX, float topY, float bottomY){
+        return checkX > leftX && checkX < rightX && checkY > topY && checkY < bottomY;
     }
 
     public void debugInit(String p){
         File data = new File(path);
         addClippings(data);
     }
+
 }

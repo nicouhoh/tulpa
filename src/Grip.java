@@ -60,12 +60,12 @@ public class Grip extends Monad implements Clickable{
     }
 
     @Override
-    public void grabbed(Operator operator, int mod, float pressedX, float pressedY, Callosum c){
-        grabGrip(operator, pressedY);
+    public void grabbed(Operator operator, int mod, float grabbedX, float grabbedY, Callosum c){
+        grabGrip(operator, grabbedY);
     }
 
     @Override
-    public void dragged(Operator operator, int mod, float dragX, float dragY, Callosum c){
+    public void dragged(Operator operator, int mod, float dragX, float dragY, float lockedX, float lockedY, Callosum c){
         setPos(parent.x, dragY - grabY);
         field.followScroller();
     }

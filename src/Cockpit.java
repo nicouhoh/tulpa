@@ -10,9 +10,6 @@ public class Cockpit extends Monad{
 
   float zoomPillow;
 
-  Spegel casper;
-  float casperX;
-  float casperY;
 
   public Cockpit(){
     setPos(0, 0);
@@ -30,7 +27,6 @@ public class Cockpit extends Monad{
   @Override
   public void cascadeDraw(PGraphics g, float latitude){
     super.cascadeDraw(g, latitude);
-    drawOnTop(g);
   }
 
   @Override
@@ -43,25 +39,14 @@ public class Cockpit extends Monad{
     }
   }
 
-  public void drawOnTop(PGraphics g){
-    drawCasper(g);
-  }
 
-  public void drawCasper(PGraphics g){
-    if (casper != null){
-      g.tint(255, 130);
-      g.image(casper.clipping.img,
-              tulpa.SOLE.mouseX - casperX,
-              tulpa.SOLE.mouseY - casperY,
-              casper.displayW, casper.displayH);
-      g.tint(255);
-    }
-  }
 
-  public void setCasper(Spegel s, float x, float y){
-    casper = s;
-    casperX = x;
-    casperY = y;
-
-  }
+//  public void setBetweenClips(Clipping[] bc){
+//    betweenClips = bc;
+//  }
+//
+//  public void setBetweenClips(Clipping c1, Clipping c2){
+//    betweenClips[0] = c1;
+//    betweenClips[1] = c2;
+//  }
 }
