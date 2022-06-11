@@ -2,7 +2,6 @@ import processing.core.PApplet;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class Library {
@@ -12,6 +11,8 @@ public class Library {
   int nextid;
 
   ArrayList<Clipping> selected;
+
+  ArrayList<Tag> tags = new ArrayList<Tag>();
 
   boolean zoom;
 
@@ -73,6 +74,59 @@ public class Library {
     String id = date + PApplet.nf(nextid, 3);
     nextid++;
     return id;
+  }
+
+  public Tag createTag(String name){
+    if (tagExists(tags, name)) return null;
+    return new Tag(name);
+  }
+
+  public Tag getTag(String s){
+    for (Tag t : tags){
+      if (t.name.toLowerCase() == s.toLowerCase()){
+        return t;
+      }
+    }
+    return null;
+  }
+
+  public void tagClipping(Clipping c, Tag t){
+    if (!tagExists(tags, t)){
+      tags.add(t);
+    }
+    if (!c.taggedWith(t.name)){
+      c.addTag(t);
+    }
+  }
+
+  public void tagClipping(Clipping c, String name){
+    if (!tagExists(tags, name)){
+      Tag tagatha = createTag(name);
+      tags.add(tagatha);
+    }
+    if (!c.taggedWith(name)){
+      c.addTag(getTag(name));
+    }
+  }
+
+  public void tagClipping(Clipping c, ArrayList<Tag> l){
+    for (Tag t : l){
+      tagClipping(c, t);
+    }
+  }
+
+  public boolean tagExists(ArrayList<Tag> taggies, String s){
+    for (Tag t : taggies){
+      if (t.name.toLowerCase() == s.toLowerCase()) return true;
+    }
+    return false;
+  }
+
+  public boolean tagExists(ArrayList<Tag> taggies, Tag korv){
+    for (Tag t : taggies){
+      if (t.name.equalsIgnoreCase(korv.name)) return true;
+    }
+    return false;
   }
 
   public void addSelect(Clipping clipping) {
@@ -145,5 +199,15 @@ public class Library {
 
   public void unZoom(){
     zoom = false;
+  }
+
+  public void debugTagList(){
+    if (tags == null){
+      System.out.println("No tags");
+      return;
+    }
+    for (Tag t : tags){
+      System.out.println(t.name);
+    }
   }
 }

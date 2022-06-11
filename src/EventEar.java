@@ -38,15 +38,17 @@ public class EventEar {
     }
 
     public void keyEvent(KeyEvent e){
+
         // construct input data
-
         int act = e.getAction();
-        if (act == KeyEvent.TYPE || act == KeyEvent.RELEASE) return;
+        //if (act == KeyEvent.TYPE || act == KeyEvent.RELEASE) return;
+        if (act == KeyEvent.RELEASE) return;
 
-        System.out.println("Key: " + e.getKey() + ", KeyCode: " + e.getKeyCode());
+        // System.out.println("Key: " + e.getKey() + ", KeyCode: " + e.getKeyCode() + ", Action: " + e.getAction());
+
       // send it to the Operator
         if (e.getAction() != KeyEvent.RELEASE){
-            operator.interpretTelegram(cockpit, e.getKey(), e.getKeyCode());
+            operator.interpretTelegram(cockpit, e.getKey(), e.getKeyCode(), act);
         }
     }
 

@@ -1,7 +1,8 @@
+import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 import drop.DropEvent;
 import java.io.File;
-import java.util.ArrayList;
+import java.security.Key;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
@@ -11,6 +12,8 @@ public class Operator {
     float lockedX;
     float lockedY;
     State state;
+
+    boolean tCheck = false; // this is just a corny way to prevent getting a "t" when entering tag mode. just for prototyping
 
     int LMB = 37;
     int RMB = 39;
@@ -92,9 +95,10 @@ public class Operator {
     int UP = 38;
     int RIGHT = 39;
     int DOWN = 40;
+    int ENTER = 10;
 
 
-    public void interpretTelegram(Cockpit cockpit, char key, int kc) {
+    public void interpretTelegram(Cockpit cockpit, char key, int kc, int act) {
 
         if (state == State.LIBRARY) {
             if (kc == UP) callosum.selectUpDown(-1);
@@ -117,8 +121,22 @@ public class Operator {
                     }
                 }
             }
+            else if (key == 't'){
+                if(callosum.library.selected.size() == 1){
+                    Spegel s = callosum.library.selected.get(0).spegel;
+                    if (s.tagBubble == null) {
+                        s.createTagBubble();
+                    }
+                    callosum.currentText = s.getScrawler();
+                    state = State.MINITEXT;
+                    tCheck = true;
+                }
+            }
+            else if (key == 'T' && act == KeyEvent.PRESS){
+                callosum.library.debugTagList();
+            }
 
-            else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
+            //else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
         }
 
         else if(state == State.CLIPPING){
@@ -131,6 +149,20 @@ public class Operator {
             if (key == ' ') {
                 state = State.LIBRARY;
                 callosum.exitClippingView();
+            }
+        }
+
+        else if (state == State.MINITEXT){
+            if (tCheck) {
+                tCheck = false;
+                return;
+            }
+            if (kc == ENTER){
+                callosum.library.tagClipping(callosum.library.selected.get(0), callosum.getCurrentText().parseTags());
+                callosum.currentText = null;
+                state = State.LIBRARY;
+            }else if (act == KeyEvent.TYPE){
+                callosum.getCurrentText().type(key, kc);
             }
         }
     }

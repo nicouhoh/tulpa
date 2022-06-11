@@ -8,6 +8,7 @@ public class Spegel extends Monad implements Clickable{
     float displayH;
     float airW;
     float airH;
+    Scrawler tagBubble;
     boolean casper;
 
     public Spegel(ContactSheet parent, Clipping clipping){
@@ -50,7 +51,6 @@ public class Spegel extends Monad implements Clickable{
         }
     }
 
-
     @Override
     public boolean isOnscreen(float latitude) {
         return y - latitude < parent.y + parent.h && y - latitude + h >= parent.y;
@@ -63,6 +63,19 @@ public class Spegel extends Monad implements Clickable{
                 && pinY >= y + airH && pinY <= y + airH + displayH;
     }
 
+    public void createTagBubble(){
+        tagBubble = new Scrawler(this, x+airW, y+airH+displayH-30, w, 30, "Type a #tag");
+        children.add(tagBubble);
+    }
+
+    public Scrawler getScrawler(){
+        for (Monad m : children){
+            if(m instanceof Scrawler){
+                return (Scrawler)m;
+            }
+        }
+        return null;
+    }
 
     public void debugClipSize(PGraphics g){
         g.stroke(100);

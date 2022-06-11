@@ -1,4 +1,5 @@
 public enum State {
     LIBRARY,
-    CLIPPING
+    CLIPPING,
+    MINITEXT
 }

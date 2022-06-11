@@ -9,7 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Drop" level="project" />
     <orderEntry type="library" name="Processing" level="project" />
-    <orderEntry type="library" name="linux-aarch64" level="project" />
     <orderEntry type="library" name="Drop" level="project" />
   </component>
 </module>

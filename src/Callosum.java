@@ -16,6 +16,8 @@ public class Callosum {
 
     String path;
 
+    Scrawler currentText;
+
     float betweenPillow = 15;
 
 
@@ -81,6 +83,10 @@ public class Callosum {
             }
             cockpit.cascadeUpdate();
         }
+    }
+
+    public Scrawler getCurrentText(){
+        return currentText;
     }
 
     public void toggleBrine(){
