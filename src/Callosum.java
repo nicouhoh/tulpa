@@ -10,6 +10,7 @@ public class Callosum {
     Library library;
     Cockpit cockpit;
     Field field;
+    Panel panel;
     EventEar ear;
     Operator operator;
     ClippingView cv;
@@ -19,6 +20,10 @@ public class Callosum {
     Scrawler currentText;
 
     float betweenPillow = 15;
+
+    boolean panelOpen;
+    float splitClosed = 0;
+    float splitOpen = 400;
 
 
     public Callosum(){
@@ -36,8 +41,9 @@ public class Callosum {
         path = tulpa.SOLE.sketchPath() + "/data/";
 
         library = new Library();
-        cockpit = new Cockpit();
+        cockpit = new Cockpit(this);
         field = cockpit.field;
+        panel = cockpit.panel;
         ear = new EventEar(cockpit);
         operator = new Operator(this);
         ear.operator = operator;
@@ -165,6 +171,18 @@ public class Callosum {
     public void exitClippingView(){
         cv.setEnabled(false);
     }
+
+    public void togglePanel(){
+        if(panelOpen){
+            field.x = splitClosed;
+            field.w = cockpit.w - splitClosed;
+        }else{
+            field.x = splitOpen;
+            field.w = cockpit.w;
+        }
+        panel.toggleOpen();
+    }
+
 
     public Clipping[] getBetweenClippings(float x, float y){
         Clipping[] out = new Clipping[2];

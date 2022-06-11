@@ -96,6 +96,7 @@ public class Operator {
     int RIGHT = 39;
     int DOWN = 40;
     int ENTER = 10;
+    int TAB = 9;
 
 
     public void interpretTelegram(Cockpit cockpit, char key, int kc, int act) {
@@ -106,6 +107,7 @@ public class Operator {
             else if (kc == LEFT) callosum.selectLeftRight(-1);
             else if (kc == RIGHT) callosum.selectLeftRight(1);
             else if (kc == BACKSPACE) callosum.powerWordKill();
+            else if (kc == TAB) callosum.cockpit.togglePanel();
 
             else if (key == '0') callosum.toggleBrine();
             else if (key == '-') callosum.zoom(-1);

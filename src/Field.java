@@ -1,9 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-import java.sql.Array;
-import java.util.ArrayList;
-
 public class Field extends Monad implements Scrollable, Clickable {
 
     Scroller scroller;
@@ -12,6 +9,7 @@ public class Field extends Monad implements Scrollable, Clickable {
     float latitude;
     float foot;
     float sPillow;
+    float offset = 0;
 
     float zoomPillow;
 
@@ -26,8 +24,7 @@ public class Field extends Monad implements Scrollable, Clickable {
     public Field(Cockpit parent){
         this.parent = parent;
         this.parent.children.add(this); // Field is a child of the Cockpit, and its children are the ContactSheet and the Scroller.
-        setPos(parent.x, parent.y);
-        setSize(parent.w, parent.h);
+        setBounds(parent.x, parent.y, parent.w, parent.h);
         latitude = 0;
         scrollW = 10;
         sheet = new ContactSheet(this);
@@ -69,7 +66,7 @@ public class Field extends Monad implements Scrollable, Clickable {
 
     @Override
     public void update(){
-        setSize(parent.w, parent.h);
+        setBounds(parent.x + offset, parent.y, parent.w - offset, parent.h);
     }
 
     public void zoom(int z){
@@ -125,6 +122,10 @@ public class Field extends Monad implements Scrollable, Clickable {
        foot = f;
        if(scroller.grip.grabbed) return;
        scroller.updateGrip(latitude, foot);
+    }
+
+    public void setOffset(float f){
+        offset = f;
     }
 
     // The size of the scroller grip is determined by the contact sheet.

@@ -6,15 +6,19 @@ public class Cockpit extends Monad{
   Field field;
   Scroller scroller;
 
+  Panel panel;
+  float panelWidth = 400;
+  boolean panelOpen;
+
   boolean sardine;
 
   float zoomPillow;
 
-
-  public Cockpit(){
+  public Cockpit(Callosum c){
     setPos(0, 0);
     setSize(tulpa.SOLE.width, tulpa.SOLE.height);
     field = new Field(this);
+    panel = new Panel(this, c);
     sardine = false;
     zoomPillow = 30;
   }
@@ -22,6 +26,27 @@ public class Cockpit extends Monad{
   @Override
   public void update(){
     setSize(tulpa.SOLE.width, tulpa.SOLE.height);
+  }
+
+  public void closePanel(){
+    panel.setBounds(x, y, 0, h);
+    panel.setOpen(false);
+    field.setOffset(0);
+    panelOpen = false;
+    cascadeUpdate();
+  }
+
+  public void openPanel(){
+    panel.setBounds(x, y, panelWidth, h);
+    panel.setOpen(true);
+    field.setOffset(panelWidth);
+    panelOpen = true;
+    cascadeUpdate();
+  }
+
+  public void togglePanel(){
+    if (panelOpen) closePanel();
+    else openPanel();
   }
 
   @Override
@@ -39,14 +64,4 @@ public class Cockpit extends Monad{
     }
   }
 
-
-
-//  public void setBetweenClips(Clipping[] bc){
-//    betweenClips = bc;
-//  }
-//
-//  public void setBetweenClips(Clipping c1, Clipping c2){
-//    betweenClips[0] = c1;
-//    betweenClips[1] = c2;
-//  }
 }

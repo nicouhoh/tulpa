@@ -44,7 +44,7 @@ public class EventEar {
         //if (act == KeyEvent.TYPE || act == KeyEvent.RELEASE) return;
         if (act == KeyEvent.RELEASE) return;
 
-        // System.out.println("Key: " + e.getKey() + ", KeyCode: " + e.getKeyCode() + ", Action: " + e.getAction());
+        System.out.println("Key: " + e.getKey() + ", KeyCode: " + e.getKeyCode() + ", Action: " + e.getAction());
 
       // send it to the Operator
         if (e.getAction() != KeyEvent.RELEASE){

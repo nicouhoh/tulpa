@@ -86,11 +86,11 @@ public class ContactSheet extends Monad{
     }
 
     public void arrangeSpegels(){
-        float fussX = pillow;
-        float fussY = pillow;
+        float fussX = x + pillow;
+        float fussY = x + pillow;
         for (int i = 0; i < children.size(); i++){
-            fussX = pillow + (i % sheetZoom) * (pillow + clipSize);
-            fussY = pillow + (i / sheetZoom) * (pillow + clipSize);
+            fussX = x + pillow + (i % sheetZoom) * (pillow + clipSize);
+            fussY = y + pillow + (i / sheetZoom) * (pillow + clipSize);
             children.get(i).setSize(clipSize, clipSize);
             children.get(i).setPos(fussX, fussY);
         }

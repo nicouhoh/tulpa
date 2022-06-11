@@ -37,9 +37,15 @@ public class Scrawler extends Monad{
         this.blankText = bt;
     }
 
+    @Override
     public void draw(PGraphics g){
         drawBox(g);
         drawText(g);
+    }
+
+    @Override
+    public void update(){
+        setBounds(parent.x, parent.y + parent.h - h, parent.w, h);
     }
 
     public void drawBox(PGraphics g){
