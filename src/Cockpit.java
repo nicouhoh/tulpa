@@ -7,8 +7,6 @@ public class Cockpit extends Monad{
   Scroller scroller;
 
   Panel panel;
-  float panelWidth = 400;
-  boolean panelOpen;
 
   boolean sardine;
 
@@ -26,27 +24,6 @@ public class Cockpit extends Monad{
   @Override
   public void update(){
     setSize(tulpa.SOLE.width, tulpa.SOLE.height);
-  }
-
-  public void closePanel(){
-    panel.setBounds(x, y, 0, h);
-    panel.setOpen(false);
-    field.setOffset(0);
-    panelOpen = false;
-    cascadeUpdate();
-  }
-
-  public void openPanel(){
-    panel.setBounds(x, y, panelWidth, h);
-    panel.setOpen(true);
-    field.setOffset(panelWidth);
-    panelOpen = true;
-    cascadeUpdate();
-  }
-
-  public void togglePanel(){
-    if (panelOpen) closePanel();
-    else openPanel();
   }
 
   @Override

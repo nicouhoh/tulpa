@@ -8,7 +8,7 @@ public class Spegel extends Monad implements Clickable{
     float displayH;
     float airW;
     float airH;
-    Scrawler tagBubble;
+    TagBubble tagBubble;
     boolean casper;
 
     public Spegel(ContactSheet parent, Clipping clipping){
@@ -64,7 +64,7 @@ public class Spegel extends Monad implements Clickable{
     }
 
     public void createTagBubble(){
-        tagBubble = new Scrawler(this, x+airW, y+airH+displayH-30, w, 30, "Type a #tag");
+        tagBubble = new TagBubble(this, x+airW, y+airH+displayH-30, w, 30);
         children.add(tagBubble);
     }
 

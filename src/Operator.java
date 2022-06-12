@@ -2,7 +2,6 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 import drop.DropEvent;
 import java.io.File;
-import java.security.Key;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
@@ -107,8 +106,9 @@ public class Operator {
             else if (kc == LEFT) callosum.selectLeftRight(-1);
             else if (kc == RIGHT) callosum.selectLeftRight(1);
             else if (kc == BACKSPACE) callosum.powerWordKill();
-            else if (kc == TAB) callosum.cockpit.togglePanel();
-
+            else if (kc == TAB){
+                callosum.togglePanel(); // >> TEXT state
+            }
             else if (key == '0') callosum.toggleBrine();
             else if (key == '-') callosum.zoom(-1);
             else if (key == '=') callosum.zoom(1);
@@ -129,9 +129,7 @@ public class Operator {
                     if (s.tagBubble == null) {
                         s.createTagBubble();
                     }
-                    callosum.currentText = s.getScrawler();
-                    state = State.MINITEXT;
-                    tCheck = true;
+                    focusScrawler(s.getScrawler());
                 }
             }
             else if (key == 'T' && act == KeyEvent.PRESS){
@@ -154,17 +152,23 @@ public class Operator {
             }
         }
 
-        else if (state == State.MINITEXT){
+        else if (state == State.TEXT){
             if (tCheck) {
                 tCheck = false;
                 return;
             }
-            if (kc == ENTER){
-                callosum.library.tagClipping(callosum.library.selected.get(0), callosum.getCurrentText().parseTags());
-                callosum.currentText = null;
+            if (kc == TAB && callosum.getCurrentText() instanceof SearchBar){
+                callosum.togglePanel();
+            } else if (kc == ENTER){
+                if(callosum.getCurrentText() instanceof TagBubble) {
+                    callosum.library.tagClipping(callosum.library.selected.get(0), callosum.getCurrentText().parseTags());
+                }
+                callosum.getCurrentText().commit();
+                tCheck = false;
                 state = State.LIBRARY;
-            }else if (act == KeyEvent.TYPE){
-                callosum.getCurrentText().type(key, kc);
+                callosum.unfocusText();
+            }else if (act == KeyEvent.TYPE && callosum.getCurrentText() != null){
+                    callosum.getCurrentText().type(key, kc);
             }
         }
     }
@@ -189,6 +193,18 @@ public class Operator {
     public void setLockedPos(Monad target, float x, float y){
        lockedX = target.x - x;
        lockedY = target.y - y;
+    }
+
+    public void focusScrawler(Scrawler s){
+        callosum.focusText(s);
+        state = State.TEXT;
+        tCheck = true;
+    }
+
+    public void unFocusScrawler(){
+        callosum.focusText(null);
+        state = State.LIBRARY;
+        tCheck = false;
     }
 
     public void unlock(){

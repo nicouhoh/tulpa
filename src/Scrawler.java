@@ -1,9 +1,7 @@
 import java.util.ArrayList;
-
-import jogamp.opengl.glu.nurbs.CArrayOfArcs;
 import processing.core.PGraphics;
 
-public class Scrawler extends Monad{
+public abstract class Scrawler extends Monad implements Clickable {
 
     String blankText = "Type here";
     String bodyText = "";
@@ -12,35 +10,20 @@ public class Scrawler extends Monad{
     int blankTextColor = 100;
     int bodyTextColor = 235;
 
-    public Scrawler(Monad parent, float x, float y, float w, float h){
-        this.parent = parent;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-    }
-
-    public Scrawler(Monad parent, float x, float y, float w){
-        this.parent = parent;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = 30;
-    }
-
-    public Scrawler(Monad parent, float x, float y, float w, float h, String bt){
-        this.parent = parent;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.blankText = bt;
-    }
+    boolean focused;
 
     @Override
     public void draw(PGraphics g){
         drawBox(g);
         drawText(g);
+        drawFocus(g);
+    }
+
+    public void drawFocus(PGraphics g){
+        if(!focused) return;
+        g.stroke(255);
+        g.noFill();
+        g.rect(x, y, w, h);
     }
 
     @Override
@@ -73,38 +56,36 @@ public class Scrawler extends Monad{
 
     public ArrayList<Tag> parseTags(){
         ArrayList<Tag> output = new ArrayList<Tag>();
-        String s = bodyText;
-        boolean buildingTag = false;
-        int startTag = 0;
-
-        for (int i = 0; i < s.length(); i++){
-            char c = s.charAt(i);
-            if(!buildingTag){
-                if (c == '#' && (i == 0 || s.charAt(i-1) == ' ')){
-                    startTag = i;
-                    buildingTag = true;
-                }
-            }
-            if(buildingTag){
-                if(c == ' ') {
-                    String newS = s.substring(startTag, i);
-                    buildingTag = false;
-                    output.add(new Tag(newS));
-                } else if (i == s.length() - 1){
-                    String newS = s.substring(startTag);
-                    buildingTag = false;
-                    output.add(new Tag(newS));
-                }
-            }
+        String[] words = bodyText.split(" ");
+        for(String word : words){
+           if (word.charAt(0) == '#'){
+               output.add(new Tag(word));
+           }
         }
         return output;
     }
 
     public void type(char key, int kc){
         if (key == '\b') { // BACKSPACE
+            if (bodyText.length() < 1) return;
             bodyText = bodyText.substring(0, bodyText.length() - 1);
         }else{
             bodyText += key;
         }
     }
+
+    @Override
+    public void clicked(Operator operator, int mod, float clickX, float clickY, Callosum c){
+        // put into typing mode and focus this text box
+        System.out.println("Scrawler clicked");
+        c.currentText = this;
+        operator.state = State.TEXT;
+        operator.tCheck = true;
+    }
+
+    public void setFocused(boolean bool){
+        focused = bool;
+    }
+
+    public void commit(){}
 }

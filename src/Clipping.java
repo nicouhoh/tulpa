@@ -36,7 +36,7 @@ public class Clipping {
 
     public boolean taggedWith(String s){
         for (Tag t : tags){
-            if (t.name.toLowerCase() == s.toLowerCase()){
+            if (t.name.equalsIgnoreCase(s)){
                 return true;
             }
         }

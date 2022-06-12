@@ -174,6 +174,18 @@ public class Library {
     select(best);
   }
 
+  public ArrayList<Clipping> search(String s){
+    ArrayList<Clipping> output = new ArrayList<Clipping>();
+    String[] terms = s.split(" ");
+    for (Clipping c : clippings){
+      for (String word : terms){
+        if(!c.taggedWith(word)) continue;
+        output.add(c);
+      }
+    }
+    return output;
+  }
+
   public float findOverlap(Spegel s1, Spegel s2){
     if (s1.x > s2.x + s2.displayW || s1.x + s1.displayW <= s2.x) return 0;
     float left = PApplet.max(s1.x, s2.x);

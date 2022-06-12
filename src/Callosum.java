@@ -95,6 +95,11 @@ public class Callosum {
         return currentText;
     }
 
+    public void focusText(Scrawler s){
+        currentText = s;
+        if (currentText != null) currentText.setFocused(true);
+    }
+
     public void toggleBrine(){
         // keep selected clippings in roughly the same place
         // TODO someday, make this work on x axis as well figure out a better solution for multiple/no select
@@ -172,16 +177,6 @@ public class Callosum {
         cv.setEnabled(false);
     }
 
-    public void togglePanel(){
-        if(panelOpen){
-            field.x = splitClosed;
-            field.w = cockpit.w - splitClosed;
-        }else{
-            field.x = splitOpen;
-            field.w = cockpit.w;
-        }
-        panel.toggleOpen();
-    }
 
 
     public Clipping[] getBetweenClippings(float x, float y){
@@ -260,4 +255,41 @@ public class Callosum {
         addClippings(data);
     }
 
+    public void openPanel(){
+        panel.open();
+        field.setOffset(panel.panelWidth);
+        focusText(panel.rum.searchBar);
+        operator.state = State.TEXT;
+        cockpit.cascadeUpdate();
+    }
+
+    public void closePanel(){
+        panel.close();
+        field.setOffset(0);
+        if(getCurrentText() instanceof SearchBar) {
+            operator.state = State.LIBRARY;
+            unfocusText();
+        }
+        unfocusText();
+        cockpit.cascadeUpdate();
+    }
+
+    public void togglePanel(){
+        if(panel.isOpen()){
+            field.x = splitClosed;
+            field.w = cockpit.w - splitClosed;
+            closePanel();
+        }else{
+            field.x = splitOpen;
+            field.w = cockpit.w;
+            openPanel();
+        }
+    }
+
+    public void unfocusText(){
+        if(currentText != null){
+            currentText.setFocused(false);
+            focusText(null);
+        }
+    }
 }
