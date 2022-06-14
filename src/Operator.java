@@ -2,6 +2,7 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 import drop.DropEvent;
 import java.io.File;
+import java.security.Key;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
@@ -28,9 +29,16 @@ public class Operator {
 
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
 
-        if(getState() == State.TEXT){
+        // unfocus text if we click outside it
+        if(getState() == State.TEXT && act != MouseEvent.MOVE){
             // TODO click out of text focus
+            Clickable cTarget = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
+            if (cTarget != callosum.currentText){
+                callosum.unfocusText();
+                changeState(State.LIBRARY);
+            }
         }
+
 
         if (getState() == State.LIBRARY) {
 
@@ -66,13 +74,13 @@ public class Operator {
                         lockedClickable.dropped(this, mod, x, y, callosum);
                         unlock();
 //                    } else { // TODO commenting this out for now to make clicking and dragging work at the same time-ish. Someday will have to actually reckon w it
-                        if (target != null) target.clicked(this, mod, x, y, callosum);
+                        target.clicked(this, mod, x, y, callosum);
                     }
                     callosum.field.clearCasper(); // clear casper & betweener
 
                 }
 
-                if (target != null && act == MouseEvent.PRESS) {
+                if (act == MouseEvent.PRESS) {
                     target.pressed(this, mod, x, y, callosum);
                     setLockedClickable(target);
                     setLockedPos((Monad)target, x, y);
@@ -107,7 +115,7 @@ public class Operator {
     public void interpretTelegram(Cockpit cockpit, char key, int kc, int act, int mod) {
 
 
-        if (getState() == State.LIBRARY) {
+        if (getState() == State.LIBRARY & act == KeyEvent.PRESS) {
             if (kc == UP) callosum.selectUpDown(-1);
             else if (kc == DOWN) callosum.selectUpDown(1);
             else if (kc == LEFT) callosum.selectLeftRight(-1);

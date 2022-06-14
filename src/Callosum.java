@@ -21,11 +21,6 @@ public class Callosum {
 
     float betweenPillow = 15;
 
-    boolean panelOpen;
-    float splitClosed = 0;
-    float splitOpen = 400;
-
-
     public Callosum(){
        bigBang();
     }
@@ -110,6 +105,7 @@ public class Callosum {
     }
 
     public void toggleBrine(){
+        System.out.println("toggling sardine mode");
         // keep selected clippings in roughly the same place
         // TODO someday, make this work on x axis as well figure out a better solution for multiple/no select
         // TODO OR, riddle me this????? if the lone selected clipping is offscreen???? then what???
@@ -267,6 +263,7 @@ public class Callosum {
     public void openPanel(){
         panel.open();
         field.setOffset(panel.panelWidth);
+        // field.setSize(cockpit.w - panel.panelWidth, cockpit.h);
         focusText(panel.rum.searchBar);
         operator.state = State.TEXT;
         cockpit.cascadeUpdate();
@@ -285,12 +282,8 @@ public class Callosum {
 
     public void togglePanel(){
         if(panel.isOpen()){
-            field.x = splitClosed;
-            field.w = cockpit.w - splitClosed;
             closePanel();
         }else{
-            field.x = splitOpen;
-            field.w = cockpit.w;
             openPanel();
         }
     }

@@ -53,8 +53,7 @@ public class ContactSheet extends Monad{
 
     @Override
     public void update(){
-        setPos(parent.x, parent.y);
-        setSize(parent.w - parent.scrollWidth(), parent.h);
+        setBounds(parent.x, parent.y, parent.w - parent.scrollWidth(), parent.h);
         setClipSize();
         if (sardine) packSardines();
         else arrangeSpegels();
@@ -101,8 +100,8 @@ public class ContactSheet extends Monad{
         clipSize = PApplet.constrain(h / sheetZoom, 9, h);
         ArrayList<Spegel> row = new ArrayList<Spegel>();
         float rowWidth = sPillow;
-        float x = sPillow;
-        float y = sPillow;
+        float sx = sPillow;
+        float sy = sPillow;
         float endY = 0;
 
         for (Monad m : children){
@@ -114,24 +113,24 @@ public class ContactSheet extends Monad{
             if (rowWidth + newWidth > w + sPillow) {    // if it dont fit
                 // resize the row to fit the window
                 float ratio = (w - sPillow) / rowWidth;
-                for (Spegel c : row){
-                    c.setSize(c.displayW * ratio, c.displayH * ratio);
-                    c.setPos(c.x * ratio, c.y);
-                    nextY = c.displayH;
+                for (Spegel sp : row){
+                    sp.setSize(sp.displayW * ratio, sp.displayH * ratio);
+                    sp.setPos(x + sp.x * ratio, sp.y);
+                    nextY = sp.displayH;
                 }
-                x = sPillow;
-                y += nextY + sPillow;
+                sx = sPillow;
+                sy += nextY + sPillow;
                 rowWidth = sPillow;
                 row.clear();
             }
             rowWidth += newWidth;
             s.setSize(newWidth, clipSize);
-            s.setPos(x, y);
-            x += newWidth + sPillow;
+            s.setPos(sx, sy);
+            sx += newWidth + sPillow;
             row.add(s);
             endY = nextY;
         }
-        setF(y + endY + sPillow);
+        setF(sy + endY + sPillow);
 //        updateScroller();
     }
 
