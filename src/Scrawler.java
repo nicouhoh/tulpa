@@ -78,9 +78,7 @@ public abstract class Scrawler extends Monad implements Clickable {
     public void clicked(Operator operator, int mod, float clickX, float clickY, Callosum c){
         // put into typing mode and focus this text box
         System.out.println("Scrawler clicked");
-        c.currentText = this;
-        operator.state = State.TEXT;
-        operator.tCheck = true;
+        c.focusText(this);
     }
 
     public void setFocused(boolean bool){

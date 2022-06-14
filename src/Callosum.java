@@ -97,7 +97,16 @@ public class Callosum {
 
     public void focusText(Scrawler s){
         currentText = s;
+        operator.state = State.TEXT;
         if (currentText != null) currentText.setFocused(true);
+    }
+
+    public void unfocusText(){
+        if(currentText != null){
+            currentText.setFocused(false);
+            currentText = null;
+        }
+        operator.state = State.LIBRARY;
     }
 
     public void toggleBrine(){
@@ -286,10 +295,4 @@ public class Callosum {
         }
     }
 
-    public void unfocusText(){
-        if(currentText != null){
-            currentText.setFocused(false);
-            focusText(null);
-        }
-    }
 }

@@ -17,6 +17,12 @@ public class SearchBar extends Scrawler {
     }
 
     @Override
+    public void type(char key, int kc){
+        if (key == '\t') return;
+        super.type(key, kc);
+    }
+
+    @Override
     public void commit(){
         System.out.println(callosum.library.search(bodyText));
         // search

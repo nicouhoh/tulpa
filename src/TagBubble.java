@@ -10,4 +10,10 @@ public class TagBubble extends Scrawler {
         this.blankText = "Type a #tag";
     }
 
+    @Override
+    public void type(char key, int kc){
+        if (key == '\t') return;
+        super.type(key, kc);
+    }
+
 }

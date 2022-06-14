@@ -12,14 +12,13 @@ public class Operator {
     float lockedY;
     State state;
 
-    boolean tCheck = false; // this is just a corny way to prevent getting a "t" when entering tag mode. just for prototyping
 
     int LMB = 37;
     int RMB = 39;
 
     public Operator(Callosum callosum){
         this.callosum = callosum;
-        state = State.LIBRARY;
+        changeState(State.LIBRARY);
     }
 
 
@@ -29,8 +28,11 @@ public class Operator {
 
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
 
+        if(getState() == State.TEXT){
+            // TODO click out of text focus
+        }
 
-        if (state == State.LIBRARY) {
+        if (getState() == State.LIBRARY) {
 
 
             if(act == MouseEvent.WHEEL){
@@ -79,7 +81,7 @@ public class Operator {
             }
         }
 
-        else if (state == State.CLIPPING){
+        else if (getState() == State.CLIPPING){
             if (button == LMB && act == MouseEvent.RELEASE) {
                 System.out.println("Clipping mode click");
             }
@@ -97,10 +99,15 @@ public class Operator {
     int ENTER = 10;
     int TAB = 9;
 
+    int SHIFT = 1;
+    int CTRL = 2;
+    int META = 8;
 
-    public void interpretTelegram(Cockpit cockpit, char key, int kc, int act) {
 
-        if (state == State.LIBRARY) {
+    public void interpretTelegram(Cockpit cockpit, char key, int kc, int act, int mod) {
+
+
+        if (getState() == State.LIBRARY) {
             if (kc == UP) callosum.selectUpDown(-1);
             else if (kc == DOWN) callosum.selectUpDown(1);
             else if (kc == LEFT) callosum.selectLeftRight(-1);
@@ -109,9 +116,9 @@ public class Operator {
             else if (kc == TAB){
                 callosum.togglePanel(); // >> TEXT state
             }
-            else if (key == '0') callosum.toggleBrine();
-            else if (key == '-') callosum.zoom(-1);
-            else if (key == '=') callosum.zoom(1);
+            else if (key == '0' && mod == CTRL || mod == META) callosum.toggleBrine();
+            else if (key == '-' && mod == CTRL || mod == META) callosum.zoom(-1);
+            else if (key == '=' && mod == CTRL || mod == META) callosum.zoom(1);
             else if (key == ' ') {
                 state = State.CLIPPING;
                 callosum.viewClipping();
@@ -123,23 +130,22 @@ public class Operator {
                     }
                 }
             }
-            else if (key == 't'){
+            else if (act == KeyEvent.TYPE){
+                if (key == '\n' || key == '\t') return; // let's not open it up on ENTER or TAB
                 if(callosum.library.selected.size() == 1){
                     Spegel s = callosum.library.selected.get(0).spegel;
                     if (s.tagBubble == null) {
                         s.createTagBubble();
+                        s.tagBubble.bodyText += key;
                     }
-                    focusScrawler(s.getScrawler());
+                    callosum.focusText(s.getScrawler());
                 }
-            }
-            else if (key == 'T' && act == KeyEvent.PRESS){
-                callosum.library.debugTagList();
             }
 
             //else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
         }
 
-        else if(state == State.CLIPPING){
+        else if(getState() == State.CLIPPING){
 
             // TODO figure out multiple selex
 
@@ -147,16 +153,12 @@ public class Operator {
             if (kc == RIGHT) callosum.selectLeftRight(1);
 
             if (key == ' ') {
-                state = State.LIBRARY;
+                changeState(State.LIBRARY);
                 callosum.exitClippingView();
             }
         }
 
-        else if (state == State.TEXT){
-            if (tCheck) {
-                tCheck = false;
-                return;
-            }
+        else if (getState() == State.TEXT){
             if (kc == TAB && callosum.getCurrentText() instanceof SearchBar){
                 callosum.togglePanel();
             } else if (kc == ENTER){
@@ -164,8 +166,7 @@ public class Operator {
                     callosum.library.tagClipping(callosum.library.selected.get(0), callosum.getCurrentText().parseTags());
                 }
                 callosum.getCurrentText().commit();
-                tCheck = false;
-                state = State.LIBRARY;
+                changeState(State.LIBRARY);
                 callosum.unfocusText();
             }else if (act == KeyEvent.TYPE && callosum.getCurrentText() != null){
                     callosum.getCurrentText().type(key, kc);
@@ -174,7 +175,7 @@ public class Operator {
     }
 
     public void receiveCarePackage(Cockpit cockpit, DropEvent e){
-        if (state != State.LIBRARY) return;
+        if (getState() != State.LIBRARY) return;
         if (e.isImage() && e.file().getName().contains(".jpg")){ // TODO can't wait to kill this. i got the bloodlust....
             callosum.addClipping(e.file());
         } else if (e.isFile()){
@@ -195,20 +196,21 @@ public class Operator {
        lockedY = target.y - y;
     }
 
-    public void focusScrawler(Scrawler s){
-        callosum.focusText(s);
-        state = State.TEXT;
-        tCheck = true;
-    }
-
     public void unFocusScrawler(){
         callosum.focusText(null);
-        state = State.LIBRARY;
-        tCheck = false;
+        changeState(State.LIBRARY);
     }
 
     public void unlock(){
         lockedClickable = null;
+    }
+
+    public State getState(){
+        return state;
+    }
+
+    public void changeState(State s){
+        state = s;
     }
 
 }

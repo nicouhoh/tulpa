@@ -48,7 +48,7 @@ public class EventEar {
 
       // send it to the Operator
         if (e.getAction() != KeyEvent.RELEASE){
-            operator.interpretTelegram(cockpit, e.getKey(), e.getKeyCode(), act);
+            operator.interpretTelegram(cockpit, e.getKey(), e.getKeyCode(), act, e.getModifiers());
         }
     }
 
