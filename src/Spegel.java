@@ -3,6 +3,7 @@ import processing.event.KeyEvent;
 
 public class Spegel extends Monad implements Clickable{
 
+    ContactSheet cs;
     Clipping clipping;
     float displayW;
     float displayH;
@@ -13,7 +14,7 @@ public class Spegel extends Monad implements Clickable{
 
     public Spegel(ContactSheet parent, Clipping clipping){
         this.parent = parent;
-        this.parent.children.add(this);
+        parent.children.add(this);
         this.clipping = clipping;
         this.clipping.spegel = this;
     }

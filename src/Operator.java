@@ -115,30 +115,29 @@ public class Operator {
     public void interpretTelegram(Cockpit cockpit, char key, int kc, int act, int mod) {
 
 
-        if (getState() == State.LIBRARY & act == KeyEvent.PRESS) {
-            if (kc == UP) callosum.selectUpDown(-1);
-            else if (kc == DOWN) callosum.selectUpDown(1);
-            else if (kc == LEFT) callosum.selectLeftRight(-1);
-            else if (kc == RIGHT) callosum.selectLeftRight(1);
-            else if (kc == BACKSPACE) callosum.powerWordKill();
-            else if (kc == TAB){
-                callosum.togglePanel(); // >> TEXT state
-            }
-            else if (key == '0' && mod == CTRL || mod == META) callosum.toggleBrine();
-            else if (key == '-' && mod == CTRL || mod == META) callosum.zoom(-1);
-            else if (key == '=' && mod == CTRL || mod == META) callosum.zoom(1);
-            else if (key == ' ') {
-                state = State.CLIPPING;
-                callosum.viewClipping();
-            }
-            else if (key == '?'){
-                if(callosum.library.selected.size() > 0){
-                    for (Clipping c : callosum.library.selected){
-                        c.spegel.monadDebugInfo(callosum.field.latitude);
+        if (getState() == State.LIBRARY){
+            if(act == KeyEvent.PRESS) {
+                if (kc == UP) callosum.selectUpDown(-1);
+                else if (kc == DOWN) callosum.selectUpDown(1);
+                else if (kc == LEFT) callosum.selectLeftRight(-1);
+                else if (kc == RIGHT) callosum.selectLeftRight(1);
+                else if (kc == BACKSPACE) callosum.powerWordKill();
+                else if (kc == TAB) {
+                    callosum.togglePanel(); // >> TEXT state
+                } else if (key == '0' && mod == CTRL || mod == META) callosum.toggleBrine();
+                else if (key == '-' && mod == CTRL || mod == META) callosum.zoom(-1);
+                else if (key == '=' && mod == CTRL || mod == META) callosum.zoom(1);
+                else if (key == ' ') {
+                    changeState(State.CLIPPING);
+                    callosum.viewClipping();
+                } else if (key == '?') {
+                    if (callosum.library.selected.size() > 0) {
+                        for (Clipping c : callosum.library.selected) {
+                            c.spegel.monadDebugInfo(callosum.field.latitude);
+                        }
                     }
                 }
-            }
-            else if (act == KeyEvent.TYPE){
+            } else if (act == KeyEvent.TYPE){
                 if (key == '\n' || key == '\t') return; // let's not open it up on ENTER or TAB
                 if(callosum.library.selected.size() == 1){
                     Spegel s = callosum.library.selected.get(0).spegel;
@@ -149,7 +148,6 @@ public class Operator {
                     callosum.focusText(s.getScrawler());
                 }
             }
-
             //else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
         }
 

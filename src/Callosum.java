@@ -124,19 +124,30 @@ public class Callosum {
 
     public void selectLeftRight(int n){
         if (library.selected.size() == 1){
-            int current = library.clippings.indexOf(library.selected.get(0));
-            if (current + n < 0 || current + n >= library.clippings.size()) return;
+            ArrayList<Spegel> s = field.sheet.getFilteredSpegels();
+            int current = s.indexOf(library.selected.get(0).spegel);
+            if (current + n < 0 || current + n >= s.size()) return;
             library.removeSelect(library.selected.get(0));
-            library.addSelect(library.clippings.get(current + n));
+            library.addSelect(s.get(current + n).clipping);
+//            library.addSelect(library.clippings.get(current + n));
             field.jumpToSpegel(library.selected.get(0).spegel);
             cv.setupImage(library.selected.get(0));
         }
     }
 
+    //----------------
+    //----------------
+    //----------------
+    // TODO I AM HERE. CHANGING SELECTUPDOWNGRID TO BE BASED ON SPEGELS, FOR FILTER PURPOSES
+    //----------------
+    //----------------
+    //-------------
+
     public void selectUpDownGrid(int columns){
         if(library.selected.size() == 1) {
-            int index = library.clippings.indexOf(library.selected.get(0));
-            Clipping c = library.clippings.get(PApplet.constrain(index + columns, 0, library.clippings.size() - 1));
+            ArrayList<Spegel> s = field.sheet.getFilteredSpegels();
+            int index = s.indexOf(library.selected.get(0).spegel);
+            Clipping c = s.get(PApplet.constrain(index + columns, 0, library.clippings.size() - 1)).clipping;
             library.select(c);
             cv.setupImage(c);
         }
@@ -286,6 +297,11 @@ public class Callosum {
         }else{
             openPanel();
         }
+    }
+
+    public void search(String s){
+        field.sheet.filterSpegels(library.search(s));
+        cockpit.cascadeUpdate();
     }
 
 }

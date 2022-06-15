@@ -1,15 +1,16 @@
 import processing.core.PApplet;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
 public class Library {
 
-  ArrayList<Clipping> clippings;
   String path;
   int nextid;
 
+  ArrayList<Clipping> clippings;
   ArrayList<Clipping> selected;
 
   ArrayList<Tag> tags = new ArrayList<Tag>();

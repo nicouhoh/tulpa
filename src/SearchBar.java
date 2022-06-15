@@ -24,8 +24,10 @@ public class SearchBar extends Scrawler {
 
     @Override
     public void commit(){
-        System.out.println(callosum.library.search(bodyText));
+        //callosum.library.setSearchResults(callosum.library.search(bodyText));
+        //System.out.println(callosum.library.getSearchResults());
         // search
+        callosum.search(bodyText);
     }
 
     // search as you type
