@@ -29,38 +29,38 @@ public class Operator {
 
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
 
-        // unfocus text if we click outside it
-        if(getState() == State.TEXT && act != MouseEvent.MOVE){
-            // TODO click out of text focus
-            Clickable cTarget = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
-            if (cTarget != callosum.currentText){
-                callosum.unfocusText();
-                changeState(State.LIBRARY);
-            }
-        }
+        switch (getState()) {
+            // unfocus text if we click outside it
+            case TEXT:
+                if (act != MouseEvent.MOVE) {
+                    // TODO click out of text focus
+                    Clickable cTarget = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
+                    if (cTarget != callosum.currentText) {
+                        callosum.unfocusText();
+                        changeState(State.LIBRARY);
+                    }
+                }
+                break;
 
 
-        if (getState() == State.LIBRARY) {
+            case LIBRARY:
+                if (act == MouseEvent.WHEEL) {
+                    Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
+                    if (sTarget != null) sTarget.scroll(this, count);
+                    return;
+                }
 
-
-            if(act == MouseEvent.WHEEL){
-                Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
-                if (sTarget != null) sTarget.scroll(this, count);
-                return;
-            }
-
-            Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
-            if (target == null) return;
-
-            if (button == LMB) {
+                Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
+                if (target == null) return;
 
                 // DRAG doesn't really care if the mouse is currently on something.
                 // it's happy as long as it's holding on to something.
                 if (act == MouseEvent.DRAG) {
-                    if (lockedClickable != null){
+                    if (lockedClickable != null) {
                         lockedClickable.dragged(this, mod, x, y, lockedX, lockedY, callosum);
-                        target.hoveredWithGift(this,mod, x, y, lockedClickable, lockedX, lockedY, callosum);
-                        if (target != callosum.field) callosum.field.setBetweenClips(null); // TODO cheating... is there a better way
+                        target.hoveredWithGift(this, mod, x, y, lockedClickable, lockedX, lockedY, callosum);
+                        if (target != callosum.field)
+                            callosum.field.setBetweenClips(null); // TODO cheating... is there a better way
 
                     }
                     return;
@@ -83,18 +83,18 @@ public class Operator {
                 if (act == MouseEvent.PRESS) {
                     target.pressed(this, mod, x, y, callosum);
                     setLockedClickable(target);
-                    setLockedPos((Monad)target, x, y);
+                    setLockedPos((Monad) target, x, y);
                     target.grabbed(this, mod, x, y, callosum);
                 }
-            }
-        }
+                break;
 
-        else if (getState() == State.CLIPPING){
-            if (button == LMB && act == MouseEvent.RELEASE) {
-                System.out.println("Clipping mode click");
-            }
-        }
+            case CLIPPING:
+                if (button == LMB && act == MouseEvent.RELEASE) {
+                    System.out.println("Clipping mode click");
+                }
+                break;
     }
+        }
 
 
 // ----------------------------------- KEYBOARD PARADISE ---------------------------------------
@@ -114,69 +114,71 @@ public class Operator {
 
     public void interpretTelegram(Cockpit cockpit, char key, int kc, int act, int mod) {
 
+        switch (getState()) {
 
-        if (getState() == State.LIBRARY){
-            if(act == KeyEvent.PRESS) {
-                if (kc == UP) callosum.selectUpDown(-1);
-                else if (kc == DOWN) callosum.selectUpDown(1);
-                else if (kc == LEFT) callosum.selectLeftRight(-1);
-                else if (kc == RIGHT) callosum.selectLeftRight(1);
-                else if (kc == BACKSPACE) callosum.powerWordKill();
-                else if (kc == TAB) {
-                    callosum.togglePanel(); // >> TEXT state
-                } else if (key == '0' && mod == CTRL || mod == META) callosum.toggleBrine();
-                else if (key == '-' && mod == CTRL || mod == META) callosum.zoom(-1);
-                else if (key == '=' && mod == CTRL || mod == META) callosum.zoom(1);
-                else if (key == ' ') {
-                    changeState(State.CLIPPING);
-                    callosum.viewClipping();
-                } else if (key == '?') {
-                    if (callosum.library.selected.size() > 0) {
-                        for (Clipping c : callosum.library.selected) {
-                            c.spegel.monadDebugInfo(callosum.field.latitude);
+            case LIBRARY:
+                if (act == KeyEvent.PRESS) {
+                    if (kc == UP) callosum.selectUpDown(-1);
+                    else if (kc == DOWN) callosum.selectUpDown(1);
+                    else if (kc == LEFT) callosum.selectLeftRight(-1);
+                    else if (kc == RIGHT) callosum.selectLeftRight(1);
+                    else if (kc == BACKSPACE) callosum.powerWordKill();
+                    else if (kc == TAB) {
+                        callosum.togglePanel(); // -> TEXT state
+                    } else if (key == '0' && mod == CTRL || mod == META) callosum.toggleBrine();
+                    else if (key == '-' && mod == CTRL || mod == META) callosum.zoom(-1);
+                    else if (key == '=' && mod == CTRL || mod == META) callosum.zoom(1);
+                    else if (key == ' ') { // TODO THIS IS MY NEXT MOVE: FIX THE CLIPPING VIEW SITUATION ---------------------------------------------------------------------------
+                        callosum.viewClipping(); // -> CLIPPING state
+                    } else if (key == '?') {
+                        if (callosum.library.selected.size() > 0) {
+                            for (Clipping c : callosum.library.selected) {
+                                c.spegel.monadDebugInfo(callosum.field.latitude);
+                            }
                         }
                     }
-                }
-            } else if (act == KeyEvent.TYPE){
-                if (key == '\n' || key == '\t') return; // let's not open it up on ENTER or TAB
-                if(callosum.library.selected.size() == 1){
-                    Spegel s = callosum.library.selected.get(0).spegel;
-                    if (s.tagBubble == null) {
-                        s.createTagBubble();
-                        s.tagBubble.bodyText += key;
+                } else if (act == KeyEvent.TYPE) {
+                    if (key == '\n' || key == '\t' || key == ' ') return; // let's not open it up on ENTER, SPACE or TAB
+                    if (callosum.library.selected.size() == 1) {
+                        Spegel s = callosum.library.selected.get(0).spegel;
+                        if (s.tagBubble == null) {
+                            s.createTagBubble();
+                            s.tagBubble.bodyText += key;
+                        }
+                        callosum.focusText(s.getScrawler());
                     }
-                    callosum.focusText(s.getScrawler());
                 }
-            }
-            //else System.out.println("Unknown key: " + key + ", Keycode: " + kc);
-        }
+                break;
 
-        else if(getState() == State.CLIPPING){
 
-            // TODO figure out multiple selex
+            case CLIPPING:
+                if (act == KeyEvent.PRESS) {
+                    // TODO figure out multiple selex
 
-            if (kc == LEFT) callosum.selectLeftRight(-1);
-            if (kc == RIGHT) callosum.selectLeftRight(1);
+                    if (kc == LEFT) callosum.selectLeftRight(-1);
+                    if (kc == RIGHT) callosum.selectLeftRight(1);
 
-            if (key == ' ') {
-                changeState(State.LIBRARY);
-                callosum.exitClippingView();
-            }
-        }
-
-        else if (getState() == State.TEXT){
-            if (kc == TAB && callosum.getCurrentText() instanceof SearchBar){
-                callosum.togglePanel();
-            } else if (kc == ENTER){
-                if(callosum.getCurrentText() instanceof TagBubble) {
-                    callosum.library.tagClipping(callosum.library.selected.get(0), callosum.getCurrentText().parseTags());
+                    if (key == ' ') {
+                        changeState(State.LIBRARY);
+                        callosum.exitClippingView();
+                    }
                 }
-                callosum.getCurrentText().commit();
-                changeState(State.LIBRARY);
-                callosum.unfocusText();
-            }else if (act == KeyEvent.TYPE && callosum.getCurrentText() != null){
+                break;
+
+            case TEXT:
+                if (kc == TAB && callosum.getCurrentText() instanceof SearchBar) {
+                    callosum.togglePanel();
+                } else if (kc == ENTER) {
+                    if (callosum.getCurrentText() instanceof TagBubble) {
+                        callosum.library.tagClipping(callosum.library.selected.get(0), callosum.getCurrentText().parseTags());
+                    }
+                    callosum.getCurrentText().commit();
+                    changeState(State.LIBRARY);
+                    callosum.unfocusText();
+                } else if (act == KeyEvent.TYPE && callosum.getCurrentText() != null) {
                     callosum.getCurrentText().type(key, kc);
-            }
+                }
+                break;
         }
     }
 

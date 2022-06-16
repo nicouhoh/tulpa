@@ -44,13 +44,14 @@ public class ClippingView extends Monad{
     @Override
     public void draw(PGraphics g){
         if(enabled) {
+            System.out.println("Drawing Clipping View");
             g.fill(0, bgAlpha);
             g.rect(x, y, w, h);
             g.image(clip.img, parent.w / 2 - imageW / 2, parent.h / 2 - imageH / 2, imageW, imageH);
         }
     }
 
-    public void setEnabled(boolean e){
-        enabled = e;
-    }
+    public void enable(){ enabled = true; }
+
+    public void disable(){ enabled = false; }
 }

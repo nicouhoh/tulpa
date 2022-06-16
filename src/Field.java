@@ -5,6 +5,7 @@ public class Field extends Monad implements Scrollable, Clickable {
 
     Scroller scroller;
     ContactSheet sheet;
+    ClippingView cv;
     int scrollW;
     float latitude;
     float foot;
@@ -29,6 +30,7 @@ public class Field extends Monad implements Scrollable, Clickable {
         scrollW = 10;
         sheet = new ContactSheet(this);
         scroller = new Scroller(this);
+        cv = new ClippingView(this);
         sPillow = 2;
         zoomPillow = 30;
     }
@@ -160,6 +162,14 @@ public class Field extends Monad implements Scrollable, Clickable {
     public void clearCasper(){
         setCasper(null);
         setBetweenClips(null);
+    }
+
+    public void enableClippingView(){
+        cv.enable();
+    }
+
+    public void disableClippingView(){
+        cv.disable();
     }
 
     public void drawBetweener(PGraphics g, Clipping[] chums){

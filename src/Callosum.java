@@ -13,7 +13,6 @@ public class Callosum {
     Panel panel;
     EventEar ear;
     Operator operator;
-    ClippingView cv;
 
     String path;
 
@@ -42,7 +41,6 @@ public class Callosum {
         ear = new EventEar(cockpit);
         operator = new Operator(this);
         ear.operator = operator;
-        cv = new ClippingView(field);
 
         debugInit(path); // outmoded once we have a persistent library.
     }
@@ -131,7 +129,7 @@ public class Callosum {
             library.addSelect(s.get(current + n).clipping);
 //            library.addSelect(library.clippings.get(current + n));
             field.jumpToSpegel(library.selected.get(0).spegel);
-            cv.setupImage(library.selected.get(0));
+            field.cv.setupImage(library.selected.get(0));
         }
     }
 
@@ -149,7 +147,7 @@ public class Callosum {
             int index = s.indexOf(library.selected.get(0).spegel);
             Clipping c = s.get(PApplet.constrain(index + columns, 0, library.clippings.size() - 1)).clipping;
             library.select(c);
-            cv.setupImage(c);
+            field.cv.setupImage(c);
         }
     }
 
@@ -158,7 +156,7 @@ public class Callosum {
         if (field.sheet.sardine) library.selectUpDownSardine(direction);
         else selectUpDownGrid(direction * field.sheet.sheetZoom);
         field.jumpToSpegel(library.selected.get(0).spegel);
-        cv.setupImage(library.selected.get(0));
+        field.cv.setupImage(library.selected.get(0));
     }
 
     // FIXME if you zoom in too far, you'll crash the dang thing
@@ -169,9 +167,10 @@ public class Callosum {
 
     public void viewClipping(){
         if (library.selected.size() == 1) {
+            operator.changeState(State.CLIPPING);
             Clipping c = library.selected.get(0);
-            cv.setupImage(c);
-            cv.setEnabled(true);
+            field.cv.setupImage(c);
+            field.cv.enable();
         }
     }
 
@@ -190,7 +189,7 @@ public class Callosum {
     }
 
     public void exitClippingView(){
-        cv.setEnabled(false);
+        field.cv.disable();
     }
 
 

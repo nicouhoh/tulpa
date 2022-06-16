@@ -5,6 +5,7 @@ public class Spegel extends Monad implements Clickable{
 
     ContactSheet cs;
     Clipping clipping;
+    ClippingView cv;
     float displayW;
     float displayH;
     float airW;
