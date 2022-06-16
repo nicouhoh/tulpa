@@ -5,7 +5,7 @@ public class Field extends Monad implements Scrollable, Clickable {
 
     Scroller scroller;
     ContactSheet sheet;
-    ClippingView cv;
+    Vision vision;
     int scrollW;
     float latitude;
     float foot;
@@ -30,7 +30,7 @@ public class Field extends Monad implements Scrollable, Clickable {
         scrollW = 10;
         sheet = new ContactSheet(this);
         scroller = new Scroller(this);
-        cv = new ClippingView(this);
+        vision = new Vision(this);
         sPillow = 2;
         zoomPillow = 30;
     }
@@ -64,7 +64,6 @@ public class Field extends Monad implements Scrollable, Clickable {
        super.cascadeDraw(g, latitude);
        drawOnTop(g);
     }
-
 
     @Override
     public void update(){
@@ -165,11 +164,11 @@ public class Field extends Monad implements Scrollable, Clickable {
     }
 
     public void enableClippingView(){
-        cv.enable();
+        vision.enable();
     }
 
     public void disableClippingView(){
-        cv.disable();
+        vision.disable();
     }
 
     public void drawBetweener(PGraphics g, Clipping[] chums){
@@ -205,5 +204,9 @@ public class Field extends Monad implements Scrollable, Clickable {
         if (gift instanceof Spegel && betweenClips != null) {
             c.moveClipping(gift.getClipping(), betweenClips[1]);
         }
+    }
+
+    public float getOffset(){
+        return offset;
     }
 }

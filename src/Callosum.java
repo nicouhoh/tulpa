@@ -122,14 +122,15 @@ public class Callosum {
 
     public void selectLeftRight(int n){
         if (library.selected.size() == 1){
+            Clipping selClip = library.selected.get(0);
             ArrayList<Spegel> s = field.sheet.getFilteredSpegels();
-            int current = s.indexOf(library.selected.get(0).spegel);
+            int current = s.indexOf(selClip.spegel);
             if (current + n < 0 || current + n >= s.size()) return;
-            library.removeSelect(library.selected.get(0));
-            library.addSelect(s.get(current + n).clipping);
-//            library.addSelect(library.clippings.get(current + n));
-            field.jumpToSpegel(library.selected.get(0).spegel);
-            field.cv.setupImage(library.selected.get(0));
+            library.removeSelect(selClip);
+            selClip = s.get(current + n).clipping;
+            library.addSelect(selClip);
+            field.jumpToSpegel(selClip.spegel);
+            field.vision.setClipping(selClip);
         }
     }
 
@@ -147,7 +148,7 @@ public class Callosum {
             int index = s.indexOf(library.selected.get(0).spegel);
             Clipping c = s.get(PApplet.constrain(index + columns, 0, library.clippings.size() - 1)).clipping;
             library.select(c);
-            field.cv.setupImage(c);
+            field.vision.setClipping(c);
         }
     }
 
@@ -156,7 +157,7 @@ public class Callosum {
         if (field.sheet.sardine) library.selectUpDownSardine(direction);
         else selectUpDownGrid(direction * field.sheet.sheetZoom);
         field.jumpToSpegel(library.selected.get(0).spegel);
-        field.cv.setupImage(library.selected.get(0));
+        field.vision.setClipping(library.selected.get(0));
     }
 
     // FIXME if you zoom in too far, you'll crash the dang thing
@@ -169,8 +170,8 @@ public class Callosum {
         if (library.selected.size() == 1) {
             operator.changeState(State.CLIPPING);
             Clipping c = library.selected.get(0);
-            field.cv.setupImage(c);
-            field.cv.enable();
+            field.vision.setClipping(c);
+            field.vision.enable();
         }
     }
 
@@ -189,7 +190,7 @@ public class Callosum {
     }
 
     public void exitClippingView(){
-        field.cv.disable();
+        field.vision.disable();
     }
 
 
@@ -296,6 +297,7 @@ public class Callosum {
         }else{
             openPanel();
         }
+        cockpit.cascadeUpdate();
     }
 
     public void search(String s){
