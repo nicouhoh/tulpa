@@ -6,53 +6,56 @@ public class Vision extends Monad{
     float imageH;
 
     VisionImage vi;
-    Graffito vt;
+    Graffito graffito;
 
-    float cPillow;
-    float bgAlpha;
+    float pillow = 20;
+    float minGraffitoH = 100;
+    float bgAlpha = 230;
 
     Clipping clip;
-    boolean enabled;
 
     public Vision(Field parent){
        this.parent = parent;
        parent.children.add(this);
        vi = new VisionImage(this);
-       enabled = false;
-       bgAlpha = 220;
-       cPillow = 20;
+       graffito = new Graffito(this);
        setBounds(parent.x, parent.y, parent.w, parent.h);
+       enabled = false;
     }
 
     @Override
     public void update(){
        setBounds(parent.x, parent.y, parent.w, parent.h);
-    }
-
-    @Override
-    public void cascadeDraw(PGraphics g, float latitude){
-        if (!enabled) return;
-        super.cascadeDraw(g, latitude);
+       setUpVision();
     }
 
     public void setImage(){
         if (clip == null) return;
-        vi.setUp(clip.img);
     }
 
     public void setClipping(Clipping c){
        clip = c;
-       setImage();
     }
 
+    // TODO Maybe blur everything underneath
     @Override
     public void draw(PGraphics g){
             g.fill(0, bgAlpha);
             g.rect(x, y, w, h);
-            g.image(clip.img, x + w / 2 - imageW / 2, y + h / 2 - imageH / 2, imageW, imageH);
     }
 
-    public void enable(){ enabled = true; }
+    public void setUpVision(){
+        vi.setImage(clip.img);
+        float vy = pillow;
+        vi.findSize(w - pillow*2, y + h - minGraffitoH - pillow*3);
+        vi.findPos(pillow, y + h - minGraffitoH - pillow*2);
+        graffito.setBounds(x + pillow + w/2 - graffito.gW/2, y + h - pillow - minGraffitoH, graffito.gW, minGraffitoH);
+    }
+
+    public void enable(){
+        enabled = true;
+        cascadeUpdate();
+    }
 
     public void disable(){ enabled = false; }
 }

@@ -2,9 +2,6 @@ public class SearchBar extends Scrawler {
 
     Callosum callosum;
 
-    int boxColor = 30;
-    int textColor = 235;
-
     public SearchBar(Rummager parent, float x, float y, float w, float h, Callosum c){
         this.parent = parent;
         parent.children.add(this);
@@ -17,6 +14,12 @@ public class SearchBar extends Scrawler {
     }
 
     @Override
+    public void update(){
+        setBounds(parent.x, parent.y, parent.w, parent.h);
+        textSize = h - h/4;
+    }
+
+    @Override
     public void type(char key, int kc){
         if (key == '\t') return;
         super.type(key, kc);
@@ -24,9 +27,6 @@ public class SearchBar extends Scrawler {
 
     @Override
     public void commit(){
-        //callosum.library.setSearchResults(callosum.library.search(bodyText));
-        //System.out.println(callosum.library.getSearchResults());
-        // search
         callosum.search(bodyText);
     }
 

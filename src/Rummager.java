@@ -10,10 +10,7 @@ public class Rummager extends Monad {
         this.panel = (Panel)parent;
         parent.children.add(this);
         searchBar = new SearchBar(this, x, y, w, h, parent.callosum);
+        searchBar.textSize = h - h/4;
     }
 
-    @Override
-    public void update(){
-        searchBar.setBounds(x, y, w, h);
-    }
 }

@@ -8,6 +8,7 @@ public class TagBubble extends Scrawler {
         this.w = w;
         this.h = h;
         this.blankText = "Type a #tag";
+        this.textSize = h - h/4;
     }
 
     @Override

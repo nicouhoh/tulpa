@@ -1,15 +1,13 @@
+import processing.core.PGraphics;
 public class Graffito extends Scrawler {
 
-    float xpillow;
-    float ypillow;
+    float gW = 950;
 
     public Graffito(Vision parent){
         this.parent = parent;
-        this.blankText = "Type here";
-    }
-
-    public void update(){
-//        setBounds(parent.x + xpillow, )
+        parent.children.add(this);
+        enabled = true;
+        textSize = 40;
     }
 
 }

@@ -18,8 +18,9 @@ public class EventEar {
         // ignore these, we'll do it ourselves:
         switch (whisper) {
             case MouseEvent.CLICK:
-//            case MouseEvent.ENTER:
-//            case MouseEvent.EXIT:
+            case MouseEvent.ENTER:
+            case MouseEvent.EXIT:
+            case MouseEvent.MOVE:
 //            case MouseEvent.DRAG:
                 return;
         }

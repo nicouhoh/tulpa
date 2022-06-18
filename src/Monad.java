@@ -8,8 +8,8 @@ public abstract class Monad {
     float w;
     float h;
 
+    boolean enabled = true;
     boolean onscreen;
-
     boolean grabbed;
 
     ArrayList<Monad> children = new ArrayList<Monad>();
@@ -19,6 +19,7 @@ public abstract class Monad {
     public void update(){};
 
     public void cascadeUpdate(){
+        if(!enabled) return;
         update();
         if (children == null) return;
         for (Monad c : children){
@@ -28,6 +29,7 @@ public abstract class Monad {
 
     // Generally we call this on Cockpit, and it tumbles down from there.
     public void cascadeDraw(PGraphics g, float latitude){
+        if(!enabled) return;
         if(isOnscreen(latitude)) {
             draw(g);
             if (children == null) return;
@@ -57,6 +59,7 @@ public abstract class Monad {
     }
 
     public boolean isOnscreen(float latitude) {
+        if(!enabled) return false;
         if (y < parent.y + parent.h && y + h >= parent.y) {
             return true;
         } else {
@@ -82,6 +85,7 @@ public abstract class Monad {
 
     public Scrollable getScrollableAtPoint(float pointX, float pointY, float latitude){
         Scrollable out = null;
+        if(!enabled) return out;
         if (this instanceof Scrollable) out = (Scrollable)this;
 
         if (children.size() >= 1) {
@@ -98,11 +102,13 @@ public abstract class Monad {
 
     public Clickable getClickableAtPoint(float pointX, float pointY, float latitude){
         Clickable out = null;
+        if (!enabled) return out;
         if (this instanceof Clickable) out = (Clickable)this;
 
         if (children.size() >= 1) {
             for (Monad m : children) {
                 if (!m.isOnscreen(latitude)) continue;
+                if (!m.enabled) continue;
                 if (m.pinPoint(pointX, pointY, latitude)) {
                     Clickable littleOut = m.getClickableAtPoint(pointX, pointY, latitude);
                     if (littleOut != null) out = littleOut;
@@ -124,6 +130,14 @@ public abstract class Monad {
         System.out.println("Onscreen: " + isOnscreen(latitude));
         System.out.println("parent: " + parent);
         System.out.println("children: " + children);
+    }
+
+    public void enable(){
+        enabled = true;
+    }
+
+    public void disable(){
+        enabled = false;
     }
 
 }

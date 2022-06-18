@@ -11,6 +11,7 @@ public class Spegel extends Monad implements Clickable{
     float airW;
     float airH;
     TagBubble tagBubble;
+    float tagbH = 30;
     boolean casper;
 
     public Spegel(ContactSheet parent, Clipping clipping){
@@ -18,6 +19,12 @@ public class Spegel extends Monad implements Clickable{
         parent.children.add(this);
         this.clipping = clipping;
         this.clipping.spegel = this;
+    }
+
+    @Override
+    public void update(){
+        if(tagBubble == null) return;
+        tagBubble.setBounds(x + airW, y + airH + h - tagbH, w - airW * 2, tagbH);
     }
 
     @Override
@@ -66,7 +73,7 @@ public class Spegel extends Monad implements Clickable{
     }
 
     public void createTagBubble(){
-        tagBubble = new TagBubble(this, x+airW, y+airH+displayH-30, w, 30);
+        tagBubble = new TagBubble(this, x+airW, y + airH + displayH - 30, w - airW * 2, 30);
         children.add(tagBubble);
     }
 

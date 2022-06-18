@@ -6,6 +6,9 @@ public abstract class Scrawler extends Monad implements Clickable {
     String blankText = "Type here";
     String bodyText = "";
 
+    float textSize;
+    float boxSize;
+
     int boxColor = 30;
     int blankTextColor = 100;
     int bodyTextColor = 235;
@@ -26,11 +29,6 @@ public abstract class Scrawler extends Monad implements Clickable {
         g.rect(x, y, w, h);
     }
 
-    @Override
-    public void update(){
-        setBounds(parent.x, parent.y + parent.h - h, parent.w, h);
-    }
-
     public void drawBox(PGraphics g){
         g.noStroke();
         g.fill(boxColor);
@@ -38,7 +36,7 @@ public abstract class Scrawler extends Monad implements Clickable {
     }
 
     public void drawText(PGraphics g){
-        g.textSize(h);
+        g.textSize(textSize);
         String dtext = "";
         if(bodyText.length() > 0){
             g.fill(bodyTextColor);
@@ -47,7 +45,7 @@ public abstract class Scrawler extends Monad implements Clickable {
             g.fill(blankTextColor);
             dtext = blankText;
         }
-        g.text(dtext, x, y + h - h/4);
+        g.text(dtext, x, y, w, h);
     }
 
     public void drawCursor(PGraphics g){

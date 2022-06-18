@@ -131,6 +131,7 @@ public class Callosum {
             library.addSelect(selClip);
             field.jumpToSpegel(selClip.spegel);
             field.vision.setClipping(selClip);
+            field.vision.setUpVision();
         }
     }
 
@@ -171,6 +172,7 @@ public class Callosum {
             operator.changeState(State.CLIPPING);
             Clipping c = library.selected.get(0);
             field.vision.setClipping(c);
+            field.vision.setUpVision();
             field.vision.enable();
         }
     }
