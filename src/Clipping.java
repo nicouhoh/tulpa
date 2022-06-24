@@ -12,7 +12,7 @@ public class Clipping {
     PImage img;
     String imgPath;
 
-    String bodyText;
+    String bodyText = "";
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 

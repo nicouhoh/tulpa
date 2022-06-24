@@ -29,10 +29,6 @@ public class Vision extends Monad{
        setUpVision();
     }
 
-    public void setImage(){
-        if (clip == null) return;
-    }
-
     public void setClipping(Clipping c){
        clip = c;
     }

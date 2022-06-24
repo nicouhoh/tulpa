@@ -2,7 +2,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
-public class VisionImage extends Monad {
+public class VisionImage extends Monad implements Clickable{
 
     PImage img;
     float xpillow = 50;

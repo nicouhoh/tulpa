@@ -2,7 +2,6 @@ import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 import drop.DropEvent;
 import java.io.File;
-import java.security.Key;
 
 public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
@@ -17,87 +16,56 @@ public class Operator {
     int LMB = 37;
     int RMB = 39;
 
-    public Operator(Callosum callosum){
+    public Operator(Callosum callosum) {
         this.callosum = callosum;
         changeState(State.LIBRARY);
     }
 
 
+// -------------------------------------- <3 MOUSEHOLE HEAVEN <3 --------------------------------------
 
-// -------------------------------------- MOUSEHOLE HELL --------------------------------------
-
+    // TODO Then we're figuring out the text box in visual mode, aka Graffito.
 
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
 
+        Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
+        if (target == null) return;
+
         switch (getState()) {
-            // unfocus text if we click outside it
+
             case TEXT:
-                if (act != MouseEvent.MOVE) {
-                    // TODO click out of text focus
-                    Clickable cTarget = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
-                    if (cTarget != callosum.currentText) {
-                        callosum.unfocusText();
-                        changeState(State.LIBRARY);
-                    }
-                }
-                break;
+                checkClickOutsideText(target, cockpit, button, act, count, x, y, mod);
+                return;
 
 
             case LIBRARY:
                 if (act == MouseEvent.WHEEL) {
-                    Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
-                    if (sTarget != null) sTarget.scroll(this, count);
+                    libraryWheel(cockpit, count, x, y);
                     return;
                 }
 
-                Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
-                if (target == null) return;
+                switch (act) {
+                    case MouseEvent.DRAG:
+                        libraryDrag(target, x, y, mod);
 
-                // DRAG doesn't really care if the mouse is currently on something.
-                // it's happy as long as it's holding on to something.
-                if (act == MouseEvent.DRAG) {
-                    if (lockedClickable != null) {
-                        lockedClickable.dragged(this, mod, x, y, lockedX, lockedY, callosum);
-                        target.hoveredWithGift(this, mod, x, y, lockedClickable, lockedX, lockedY, callosum);
-                        if (target != callosum.field)
-                            callosum.field.setBetweenClips(null); // TODO cheating... is there a better way
+                    case MouseEvent.RELEASE:
+                        libraryRelease(target, x, y, mod);
 
-                    }
-                    return;
+                    case MouseEvent.PRESS:
+                        libraryPress(target, x, y, mod);
+
+                    break;
                 }
-
-
-                if (act == MouseEvent.RELEASE) {
-
-                    if (lockedClickable != null) {
-                        target.offeredGift(this, mod, x, y, lockedClickable, callosum);
-                        lockedClickable.dropped(this, mod, x, y, callosum);
-                        unlock();
-//                    } else { // TODO commenting this out for now to make clicking and dragging work at the same time-ish. Someday will have to actually reckon w it
-                        target.clicked(this, mod, x, y, callosum);
-                    }
-                    callosum.field.clearCasper(); // clear casper & betweener
-
-                }
-
-                if (act == MouseEvent.PRESS) {
-                    target.pressed(this, mod, x, y, callosum);
-                    setLockedClickable(target);
-                    setLockedPos((Monad) target, x, y);
-                    target.grabbed(this, mod, x, y, callosum);
-                }
-                break;
 
             case CLIPPING:
-                if (button == LMB && act == MouseEvent.RELEASE) {
-                    System.out.println("Clipping mode click");
+                if (act == MouseEvent.RELEASE){
+                    clippingClick(target, mod, x, y, callosum);
                 }
-                break;
-    }
         }
+    }
 
 
-// ----------------------------------- KEYBOARD PARADISE ---------------------------------------
+// ----------------------------------- KEYBOARD INFERNO ---------------------------------------
 
     int BACKSPACE = 8;
     int LEFT = 37;
@@ -128,7 +96,7 @@ public class Operator {
                     } else if (key == '0' && mod == CTRL || mod == META) callosum.toggleBrine();
                     else if (key == '-' && mod == CTRL || mod == META) callosum.zoom(-1);
                     else if (key == '=' && mod == CTRL || mod == META) callosum.zoom(1);
-                    else if (key == ' ') { // TODO THIS IS MY NEXT MOVE: FIX THE CLIPPING VIEW SITUATION ---------------------------------------------------------------------------
+                    else if (key == ' ') {
                         callosum.viewClipping(); // -> CLIPPING state
                     } else if (key == '?') {
                         if (callosum.library.selected.size() > 0) {
@@ -138,15 +106,7 @@ public class Operator {
                         }
                     }
                 } else if (act == KeyEvent.TYPE) {
-                    if (key == '\n' || key == '\t' || key == ' ') return; // let's not open it up on ENTER, SPACE or TAB
-                    if (callosum.library.selected.size() == 1) {
-                        Spegel s = callosum.library.selected.get(0).spegel;
-                        if (s.tagBubble == null) {
-                            s.createTagBubble();
-                            s.tagBubble.bodyText += key;
-                        }
-                        callosum.focusText(s.getScrawler());
-                    }
+                    openTagBubbleOnType(key);
                 }
                 break;
 
@@ -162,6 +122,11 @@ public class Operator {
                         changeState(State.LIBRARY);
                         callosum.exitClippingView();
                     }
+                }
+                else if (act == KeyEvent.TYPE){
+                    if (key == '\n' || key == '\t' || key == ' ') return;
+                    callosum.focusText(callosum.graffito);
+                    callosum.graffito.type(key, kc);
                 }
                 break;
 
@@ -182,43 +147,108 @@ public class Operator {
         }
     }
 
-    public void receiveCarePackage(Cockpit cockpit, DropEvent e){
+    public void receiveCarePackage(Cockpit cockpit, DropEvent e) {
         if (getState() != State.LIBRARY) return;
-        if (e.isImage() && e.file().getName().contains(".jpg")){ // TODO can't wait to kill this. i got the bloodlust....
+        if (e.isImage() && e.file().getName().contains(".jpg")) { // TODO can't wait to kill this. i got the bloodlust....
             callosum.addClipping(e.file());
-        } else if (e.isFile()){
+        } else if (e.isFile()) {
             File file = new File(e.toString());
             System.out.print("ABSOLUTE PATH: " + file.getAbsolutePath());
-            if (file.isDirectory()){
+            if (file.isDirectory()) {
                 callosum.addClippings(file);
             }
         }
     }
 
-    public void setLockedClickable(Clickable c){
+    public void setLockedClickable(Clickable c) {
         lockedClickable = c;
     }
 
-    public void setLockedPos(Monad target, float x, float y){
-       lockedX = target.x - x;
-       lockedY = target.y - y;
+    public void setLockedPos(Monad target, float x, float y) {
+        lockedX = target.x - x;
+        lockedY = target.y - y;
     }
 
-    public void unFocusScrawler(){
+    public void unFocusScrawler() {
         callosum.focusText(null);
         changeState(State.LIBRARY);
     }
 
-    public void unlock(){
+    public void unlock() {
         lockedClickable = null;
     }
 
-    public State getState(){
+    public State getState() {
         return state;
     }
 
-    public void changeState(State s){
+    public void changeState(State s) {
         state = s;
+    }
+
+    public void checkClickOutsideText(Clickable target, Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
+        if (!(target instanceof Graffito) && !(target instanceof VisionImage)) {
+            callosum.unfocusText();
+            changeState(State.LIBRARY);
+            interpretMouseySqueaks(cockpit, button, act, count, x, y, mod);
+        }
+    }
+
+    public void libraryWheel(Cockpit cockpit, int count, int x, int y) {
+        Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
+        if (sTarget != null) sTarget.scroll(this, count);
+    }
+
+    public void libraryDrag(Clickable target, int x, int y, int mod){
+        if (lockedClickable != null) {
+            lockedClickable.dragged(this, mod, x, y, lockedX, lockedY, callosum);
+            target.hoveredWithGift(this, mod, x, y, lockedClickable, lockedX, lockedY, callosum);
+            if (target != callosum.field)
+                callosum.field.setBetweenClips(null); // TODO cheating... is there a better way
+        }
+    }
+
+    public void libraryRelease(Clickable target, int x, int y, int mod){
+        if (lockedClickable != null) {
+            target.offeredGift(this, mod, x, y, lockedClickable, callosum);
+            lockedClickable.dropped(this, mod, x, y, callosum);
+            unlock();
+//                    } else { // TODO commenting this out for now to make clicking and dragging work at the same time-ish. Someday will have to actually reckon w it
+            target.clicked(this, mod, x, y, callosum);
+        }
+        callosum.field.clearCasper(); // clear casper & betweener
+
+    }
+
+    public void libraryPress(Clickable target, int x, int y, int mod){
+        target.pressed(this, mod, x, y, callosum);
+        setLockedClickable(target);
+        setLockedPos((Monad) target, x, y);
+        target.grabbed(this, mod, x, y, callosum);
+    }
+
+    public void clippingClick(Clickable target, int mod, int x, int y, Callosum callosum){
+        System.out.println(target);
+        if (target instanceof VisionImage) System.out.println("Something happens");
+        else if (target instanceof Graffito) {
+            target.clicked(this, mod, x, y, callosum);
+        }
+        else {
+            changeState(State.LIBRARY);
+            callosum.exitClippingView();
+        }
+    }
+
+    public void openTagBubbleOnType(char key){
+        if (key == '\n' || key == '\t' || key == ' ') return; // let's not open it up on ENTER, SPACE or TAB
+        if (callosum.library.selected.size() == 1) {
+            Spegel s = callosum.library.selected.get(0).spegel;
+            if (s.tagBubble == null) {
+                s.createTagBubble();
+                s.tagBubble.bodyText += key;
+            }
+            callosum.focusText(s.getScrawler());
+        }
     }
 
 }

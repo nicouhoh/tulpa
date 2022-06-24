@@ -13,6 +13,8 @@ public class Callosum {
     Panel panel;
     EventEar ear;
     Operator operator;
+    Vision vision;
+    Graffito graffito;
 
     String path;
 
@@ -41,6 +43,8 @@ public class Callosum {
         ear = new EventEar(cockpit);
         operator = new Operator(this);
         ear.operator = operator;
+        vision = field.vision;
+        graffito = vision.graffito;
 
         debugInit(path); // outmoded once we have a persistent library.
     }
