@@ -45,7 +45,7 @@ public abstract class Scrawler extends Monad implements Clickable {
         }
     }
 
-    public ArrayList<Tag> parseTags(){
+    public ArrayList<Tag> parseTags(String text){
         ArrayList<Tag> output = new ArrayList<Tag>();
         String[] words = text.split(" ");
         for(String word : words){

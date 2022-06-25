@@ -36,14 +36,14 @@ public class TagBubble extends Scrawler {
             g.text(text, x, y, w, h);
         }else{
             g.fill(blankTextColor);
-            g.text(text, x, y, w, h);
+            g.text(blankText, x, y, w, h);
         }
     }
 
     @Override
     public void commit(Callosum cal) {
         c.bodyText += " " + text;
-        cal.library.tagClipping(c, parseTags());
+        cal.library.tagClipping(c, parseTags(text));
         text = "";
         disable();
     }

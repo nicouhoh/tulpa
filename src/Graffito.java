@@ -34,4 +34,9 @@ public class Graffito extends Scrawler {
             c.bodyText += key;
         }
     }
+
+    @Override
+    public void commit(Callosum cal){
+        cal.library.tagClipping(c, parseTags(c.bodyText));
+    }
 }
