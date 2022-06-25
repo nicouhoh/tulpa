@@ -3,11 +3,10 @@ import processing.core.PGraphics;
 
 public abstract class Scrawler extends Monad implements Clickable {
 
+    String text;
     String blankText = "Type here";
-    String bodyText = "";
 
     float textSize;
-    float boxSize;
 
     int boxColor = 30;
     int blankTextColor = 100;
@@ -22,7 +21,7 @@ public abstract class Scrawler extends Monad implements Clickable {
         drawFocus(g);
     }
 
-    public void drawFocus(PGraphics g){
+    public void drawFocus(PGraphics g){ // TODO this will be unnecessary once we have a text cursor
         if(!focused) return;
         g.stroke(255);
         g.noFill();
@@ -37,38 +36,32 @@ public abstract class Scrawler extends Monad implements Clickable {
 
     public void drawText(PGraphics g){
         g.textSize(textSize);
-        String dtext = "";
-        if(bodyText.length() > 0){
+        if(text.length() > 0){
             g.fill(bodyTextColor);
-            dtext = bodyText;
+            g.text(text, x, y, w, h);
         }else{
             g.fill(blankTextColor);
-            dtext = blankText;
+            g.text(text, x, y, w, h);
         }
-        g.text(dtext, x, y, w, h);
-    }
-
-    public void drawCursor(PGraphics g){
-
     }
 
     public ArrayList<Tag> parseTags(){
         ArrayList<Tag> output = new ArrayList<Tag>();
-        String[] words = bodyText.split(" ");
+        String[] words = text.split(" ");
         for(String word : words){
-           if (word.charAt(0) == '#'){
+           if (word.length() > 0 && word.charAt(0) == '#'){
                output.add(new Tag(word));
            }
         }
         return output;
     }
 
-    public void type(char key, int kc){
+    public void type(char key){
         if (key == '\b') { // BACKSPACE
-            if (bodyText.length() < 1) return;
-            bodyText = bodyText.substring(0, bodyText.length() - 1);
+            if (text.length() < 1) return;
+            text = text.substring(0, text.length() - 1);
         }else{
-            bodyText += key;
+            text += key;
         }
     }
 
@@ -83,5 +76,5 @@ public abstract class Scrawler extends Monad implements Clickable {
         focused = bool;
     }
 
-    public void commit(){}
+    public void commit(Callosum c){}
 }

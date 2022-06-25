@@ -45,6 +45,7 @@ public class Vision extends Monad{
         float vy = pillow;
         vi.findSize(w - pillow*2, y + h - minGraffitoH - pillow*3);
         vi.findPos(pillow, y + h - minGraffitoH - pillow*2);
+        graffito.c = clip;
         graffito.setBounds(x + pillow + w/2 - graffito.gW/2, y + h - pillow - minGraffitoH, graffito.gW, minGraffitoH);
     }
 

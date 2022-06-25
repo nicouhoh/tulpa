@@ -14,7 +14,6 @@ public class Callosum {
     EventEar ear;
     Operator operator;
     Vision vision;
-    Graffito graffito;
 
     String path;
 
@@ -44,7 +43,6 @@ public class Callosum {
         operator = new Operator(this);
         ear.operator = operator;
         vision = field.vision;
-        graffito = vision.graffito;
 
         debugInit(path); // outmoded once we have a persistent library.
     }
@@ -309,6 +307,17 @@ public class Callosum {
     public void search(String s){
         field.sheet.filterSpegels(library.search(s));
         cockpit.cascadeUpdate();
+    }
+
+    public Clipping getSelectedClip(){
+        if(library.selected.size() == 1) {
+            return library.selected.get(0);
+        }
+        else return null;
+    }
+
+    public Graffito getGraffito(){
+        return field.vision.graffito;
     }
 
 }

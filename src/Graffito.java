@@ -3,7 +3,7 @@ public class Graffito extends Scrawler {
 
     float gW = 950;
     Vision v;
-    String bodyText;
+    Clipping c;
 
     public Graffito(Vision parent){
         this.parent = parent;
@@ -16,9 +16,9 @@ public class Graffito extends Scrawler {
     @Override
     public void drawText(PGraphics g){
         g.textSize(textSize);
-        if(v.clip.bodyText.length() > 0){
+        if(c.bodyText.length() > 0){
             g.fill(bodyTextColor);
-            g.text(v.clip.bodyText, x, y, w, h);
+            g.text(c.bodyText, x, y, w, h);
         }else{
             g.fill(blankTextColor);
             g.text(blankText, x, y, w, h);
@@ -26,12 +26,12 @@ public class Graffito extends Scrawler {
     }
 
     @Override
-    public void type(char key, int kc) {
+    public void type(char key) {
         if (key == '\b') {  // BACKSPACE
-            if (v.clip.bodyText.length() < 1) return;
-            v.clip.bodyText = v.clip.bodyText.substring(0, v.clip.bodyText.length() - 1);
+            if (c.bodyText.length() < 1) return;
+            c.bodyText = c.bodyText.substring(0, c.bodyText.length() - 1);
         } else {
-            v.clip.bodyText += key;
+            c.bodyText += key;
         }
     }
 }

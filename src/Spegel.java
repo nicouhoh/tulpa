@@ -5,14 +5,12 @@ public class Spegel extends Monad implements Clickable{
 
     ContactSheet cs;
     Clipping clipping;
-    Vision cv;
     float displayW;
     float displayH;
     float airW;
     float airH;
     TagBubble tagBubble;
     float tagbH = 30;
-    boolean casper;
 
     public Spegel(ContactSheet parent, Clipping clipping){
         this.parent = parent;
@@ -72,9 +70,13 @@ public class Spegel extends Monad implements Clickable{
                 && pinY >= y + airH && pinY <= y + airH + displayH;
     }
 
-    public void createTagBubble(){
-        tagBubble = new TagBubble(this, x+airW, y + airH + displayH - 30, w - airW * 2, 30);
-        children.add(tagBubble);
+    public void openTagBubble(){
+        if (tagBubble == null) {
+            tagBubble = new TagBubble(this, x + airW, y + airH + displayH - 30, w - airW * 2, 30);
+            children.add(tagBubble);
+        } else{
+            tagBubble.enable();
+        }
     }
 
     public Scrawler getScrawler(){

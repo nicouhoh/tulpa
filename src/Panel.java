@@ -70,7 +70,7 @@ public class Panel extends Monad {
 
     public void close(){
         panelOpen = false;
-        rum.searchBar.bodyText = "";
+        rum.searchBar.text = "";
     }
 
     public void toggleOpen(){

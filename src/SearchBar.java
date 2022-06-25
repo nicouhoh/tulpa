@@ -1,15 +1,13 @@
 public class SearchBar extends Scrawler {
 
-    Callosum callosum;
-
     public SearchBar(Rummager parent, float x, float y, float w, float h, Callosum c){
         this.parent = parent;
         parent.children.add(this);
-        callosum = c;
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
+        this.text = "";
         this.blankText = "Type to search";
     }
 
@@ -20,15 +18,15 @@ public class SearchBar extends Scrawler {
     }
 
     @Override
-    public void type(char key, int kc){
+    public void type(char key){
         if (key == '\t') return;
-        super.type(key, kc);
+        super.type(key);
     }
 
     @Override
-    public void commit(){
-        callosum.search(bodyText);
+    public void commit(Callosum c){
+        c.search(text);
     }
 
-    // search as you type
+    // TODO incremental search
 }

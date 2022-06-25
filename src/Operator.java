@@ -106,7 +106,15 @@ public class Operator {
                         }
                     }
                 } else if (act == KeyEvent.TYPE) {
-                    openTagBubbleOnType(key);
+                    if (key == '#'){
+                        openTagBubbleOnType('#');
+                        return;
+                    }
+                    if (key == '\n' || key == '\t' || key == ' ') return;
+                    callosum.viewClipping();
+                    Graffito g = callosum.getGraffito();
+                    callosum.focusText(g);
+                    g.type(key);
                 }
                 break;
 
@@ -125,23 +133,23 @@ public class Operator {
                 }
                 else if (act == KeyEvent.TYPE){
                     if (key == '\n' || key == '\t' || key == ' ') return;
-                    callosum.focusText(callosum.graffito);
-                    callosum.graffito.type(key, kc);
+                    Graffito g = callosum.getGraffito();
+                    callosum.focusText(g);
+                    g.type(key);
                 }
+
                 break;
 
             case TEXT:
-                if (kc == TAB && callosum.getCurrentText() instanceof SearchBar) {
+                Scrawler cur = callosum.getCurrentText();
+                if (kc == TAB && cur instanceof SearchBar) {
                     callosum.togglePanel();
                 } else if (kc == ENTER) {
-                    if (callosum.getCurrentText() instanceof TagBubble) {
-                        callosum.library.tagClipping(callosum.library.selected.get(0), callosum.getCurrentText().parseTags());
-                    }
-                    callosum.getCurrentText().commit();
+                    cur.commit(callosum);
                     changeState(State.LIBRARY);
                     callosum.unfocusText();
-                } else if (act == KeyEvent.TYPE && callosum.getCurrentText() != null) {
-                    callosum.getCurrentText().type(key, kc);
+                } else if (act == KeyEvent.TYPE && cur != null) {
+                    cur.type(key);
                 }
                 break;
         }
@@ -242,13 +250,17 @@ public class Operator {
     public void openTagBubbleOnType(char key){
         if (key == '\n' || key == '\t' || key == ' ') return; // let's not open it up on ENTER, SPACE or TAB
         if (callosum.library.selected.size() == 1) {
-            Spegel s = callosum.library.selected.get(0).spegel;
-            if (s.tagBubble == null) {
-                s.createTagBubble();
-                s.tagBubble.bodyText += key;
+            Clipping c = callosum.getSelectedClip();
+            if (c.spegel.tagBubble == null) {
+                c.spegel.openTagBubble();
+                c.spegel.tagBubble.type(key);
+            } else {
+                c.spegel.tagBubble.enable();
+                c.spegel.tagBubble.type(key);
             }
-            callosum.focusText(s.getScrawler());
+            callosum.focusText(c.spegel.getScrawler());
         }
     }
+
 
 }
