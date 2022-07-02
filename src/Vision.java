@@ -36,8 +36,8 @@ public class Vision extends Monad{
     // TODO Maybe blur everything underneath
     @Override
     public void draw(PGraphics g){
-            g.fill(0, bgAlpha);
-            g.rect(x, y, w, h);
+        g.fill(0, bgAlpha);
+        g.rect(x, y, w, h);
     }
 
     public void setUpVision(){

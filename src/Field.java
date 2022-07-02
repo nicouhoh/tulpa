@@ -99,7 +99,7 @@ public class Field extends Monad implements Scrollable, Clickable {
 
     public void setLatitude(float latY){
         latitude = PApplet.constrain(latY, 0, foot - h);
-        if(scroller.grip.grabbed) return;
+        if(scroller.grip.inClutches) return;
         scroller.updateGrip(latitude, foot);
     }
 
@@ -115,13 +115,13 @@ public class Field extends Monad implements Scrollable, Clickable {
 
     public void stepLatitude(float step){
         setLatitude(latitude += step);
-        if(scroller.grip.grabbed) return;
+        if(scroller.grip.inClutches) return;
         scroller.updateGrip(latitude, foot);
     }
 
     public void setFoot(float f){
        foot = f;
-       if(scroller.grip.grabbed) return;
+       if(scroller.grip.inClutches) return;
        scroller.updateGrip(latitude, foot);
     }
 
@@ -141,8 +141,8 @@ public class Field extends Monad implements Scrollable, Clickable {
         if (casper != null){
             g.tint(255, 130);
             g.image(casper.clipping.img,
-                    tulpa.SOLE.mouseX + casperX,
-                    tulpa.SOLE.mouseY + casperY - latitude,
+                    casperX,
+                    casperY - latitude,
                     casper.displayW, casper.displayH);
             g.tint(255);
         }
@@ -161,14 +161,6 @@ public class Field extends Monad implements Scrollable, Clickable {
     public void clearCasper(){
         setCasper(null);
         setBetweenClips(null);
-    }
-
-    public void enableClippingView(){
-        vision.enable();
-    }
-
-    public void disableClippingView(){
-        vision.disable();
     }
 
     public void drawBetweener(PGraphics g, Clipping[] chums){
@@ -192,7 +184,7 @@ public class Field extends Monad implements Scrollable, Clickable {
     }
 
     @Override
-    public void hoveredWithGift(Operator operator, int mod, float hoverX, float hoverY, Clickable gift, float lockedX, float lockedY, Callosum c){
+    public void hoveredWithGift(Operator operator, int mod, float hoverX, float hoverY, Draggable gift, float lockedX, float lockedY, Callosum c){
         if(gift instanceof Spegel) {
             setBetweenClips(c.getBetweenClippings(hoverX, hoverY)); // ONLY on hoverWithGift
             // for right now we clear betweenClips in Operator under the RELEASED section. is there a better way?
@@ -200,13 +192,10 @@ public class Field extends Monad implements Scrollable, Clickable {
     }
 
     @Override
-    public void offeredGift(Operator operator, int mod, float giftX, float giftY, Clickable gift, Callosum c){
+    public void offeredGift(Operator operator, int mod, float giftX, float giftY, Draggable gift, Callosum c){
         if (gift instanceof Spegel && betweenClips != null) {
-            c.moveClipping(gift.getClipping(), betweenClips[1]);
+            c.moveClipping(((Spegel) gift).clipping, betweenClips[1]);
         }
     }
 
-    public float getOffset(){
-        return offset;
-    }
 }

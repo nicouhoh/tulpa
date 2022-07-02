@@ -1,7 +1,7 @@
 import processing.core.PGraphics;
 import processing.event.KeyEvent;
 
-public class Spegel extends Monad implements Clickable{
+public class Spegel extends Monad implements Clickable, Draggable{
 
     ContactSheet cs;
     Clipping clipping;
@@ -108,15 +108,9 @@ public class Spegel extends Monad implements Clickable{
     }
 
     @Override
-    public void grabbed(Operator operator, int mod, float grabX, float grabY, Callosum c){
-        System.out.println("Spegel grabbed");
-        float l = c.field.latitude;
-    }
-
-    @Override
-    public void dragged(Operator operator, int mod, float dragX, float dragY, float lockedX, float lockedY, Callosum c){
+    public void dragged(Operator operator, int mod, float dragX, float dragY, float anchorX, float anchorY, Callosum c){
         if(c.field.casper == null) c.field.setCasper(this);
-        c.field.setCasperPos(lockedX + airW, lockedY + airH);
+        c.field.setCasperPos(dragX + anchorX + airW,dragY + anchorY + airH);
     }
 
     @Override

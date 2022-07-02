@@ -1,3 +1,4 @@
+import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 import drop.DropEvent;
@@ -7,11 +8,14 @@ public class Operator {
     // operator sends our input information to wherever it's going... Cockpit, Scroller, etc....
 
     Callosum callosum;
-    Clickable lockedClickable;
-    float lockedX;
-    float lockedY;
+    Draggable heldDraggable;
+    Draggable toGrab;
     State state;
 
+    float anchorx;
+    float anchory;
+    float distX;
+    float distY;
 
     int LMB = 37;
     int RMB = 39;
@@ -28,6 +32,8 @@ public class Operator {
 
     public void interpretMouseySqueaks(Cockpit cockpit, int button, int act, int count, int x, int y, int mod) {
 
+//        if (act == MouseEvent.PRESS) System.out.println("PRESS");
+
         Clickable target = cockpit.getClickableAtPoint(x, y, cockpit.field.latitude);
         if (target == null) return;
 
@@ -35,35 +41,89 @@ public class Operator {
 
             case TEXT:
                 checkClickOutsideText(target, cockpit, button, act, count, x, y, mod);
-                return;
-
+                break;
 
             case LIBRARY:
-                if (act == MouseEvent.WHEEL) {
-                    libraryWheel(cockpit, count, x, y);
-                    return;
-                }
 
                 switch (act) {
+                    case MouseEvent.WHEEL:
+                        libraryWheel(cockpit, count, x, y);
+                        break;
+
                     case MouseEvent.DRAG:
                         libraryDrag(target, x, y, mod);
+                        break;
 
                     case MouseEvent.RELEASE:
                         libraryRelease(target, x, y, mod);
+                        break;
 
-                    case MouseEvent.PRESS:
+                    case 1:
+                        System.out.println("PRESS");
                         libraryPress(target, x, y, mod);
-
-                    break;
+                        break;
                 }
+                break;
 
             case CLIPPING:
                 if (act == MouseEvent.RELEASE){
                     clippingClick(target, mod, x, y, callosum);
                 }
+                break;
         }
     }
 
+    public void libraryWheel(Cockpit cockpit, int count, int x, int y) {
+        Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
+        if (sTarget != null) sTarget.scroll(this, count);
+    }
+
+    public void libraryDrag(Clickable target, int x, int y, int mod){
+
+        // if we're preparing to grab something, TODO grab it when we exceed the anchor distance
+        if(toGrab != null){
+            if(grabDistCheck((Monad)target, distX, distY, x, y)) {
+                toGrab.grabbed(this, mod, x, y, callosum);
+                setHeldDraggable(toGrab);
+                setToGrab(null);
+            }
+
+            // if we're holding something, drag it around
+        }else if (heldDraggable != null){
+
+            heldDraggable.dragged(this, mod, x, y, anchorx, anchory, callosum); // TODO figure out the anchoring
+
+            target.hoveredWithGift(this, mod, x, y, heldDraggable, anchorx, anchory, callosum);
+            if (target != callosum.field)
+                callosum.field.setBetweenClips(null);// cheating... is there a better way
+        }
+    }
+
+    public void libraryRelease(Clickable target, int x, int y, int mod){
+        if (toGrab != null) setToGrab(null);
+
+        if (heldDraggable != null) {
+            target.offeredGift(this, mod, x, y, heldDraggable, callosum);
+            heldDraggable.dropped(this, mod, x, y, callosum);
+            clearHeldDraggable();
+        }else{
+            target.clicked(this, mod, x, y, callosum);
+        }
+        callosum.field.clearCasper();
+    }
+
+    public void libraryPress(Clickable target, float x, float y, int mod){
+
+        target.pressed(this, mod, x, y, callosum);
+
+        if (target instanceof Draggable){
+            if(heldDraggable != null || toGrab != null) return;
+            Draggable d = (Draggable)target;
+            setAnchor((Monad)target, x, y);
+            setupDistCheck(x, y);
+            setToGrab(d);
+        }
+    }
 
 // ----------------------------------- KEYBOARD INFERNO ---------------------------------------
 
@@ -106,6 +166,7 @@ public class Operator {
                         }
                     }
                 } else if (act == KeyEvent.TYPE) {
+                    if (mod == CTRL) return;
                     if (key == '#'){
                         openTagBubbleOnType('#');
                         return;
@@ -168,22 +229,8 @@ public class Operator {
         }
     }
 
-    public void setLockedClickable(Clickable c) {
-        lockedClickable = c;
-    }
-
-    public void setLockedPos(Monad target, float x, float y) {
-        lockedX = target.x - x;
-        lockedY = target.y - y;
-    }
-
-    public void unFocusScrawler() {
-        callosum.focusText(null);
-        changeState(State.LIBRARY);
-    }
-
-    public void unlock() {
-        lockedClickable = null;
+    public void clearHeldDraggable() {
+        heldDraggable = null;
     }
 
     public State getState() {
@@ -200,39 +247,6 @@ public class Operator {
             changeState(State.LIBRARY);
             interpretMouseySqueaks(cockpit, button, act, count, x, y, mod);
         }
-    }
-
-    public void libraryWheel(Cockpit cockpit, int count, int x, int y) {
-        Scrollable sTarget = cockpit.getScrollableAtPoint(x, y, cockpit.field.latitude);
-        if (sTarget != null) sTarget.scroll(this, count);
-    }
-
-    public void libraryDrag(Clickable target, int x, int y, int mod){
-        if (lockedClickable != null) {
-            lockedClickable.dragged(this, mod, x, y, lockedX, lockedY, callosum);
-            target.hoveredWithGift(this, mod, x, y, lockedClickable, lockedX, lockedY, callosum);
-            if (target != callosum.field)
-                callosum.field.setBetweenClips(null); // TODO cheating... is there a better way
-        }
-    }
-
-    public void libraryRelease(Clickable target, int x, int y, int mod){
-        if (lockedClickable != null) {
-            target.offeredGift(this, mod, x, y, lockedClickable, callosum);
-            lockedClickable.dropped(this, mod, x, y, callosum);
-            unlock();
-//                    } else { // TODO commenting this out for now to make clicking and dragging work at the same time-ish. Someday will have to actually reckon w it
-            target.clicked(this, mod, x, y, callosum);
-        }
-        callosum.field.clearCasper(); // clear casper & betweener
-
-    }
-
-    public void libraryPress(Clickable target, int x, int y, int mod){
-        target.pressed(this, mod, x, y, callosum);
-        setLockedClickable(target);
-        setLockedPos((Monad) target, x, y);
-        target.grabbed(this, mod, x, y, callosum);
     }
 
     public void clippingClick(Clickable target, int mod, int x, int y, Callosum callosum){
@@ -260,6 +274,31 @@ public class Operator {
             }
             callosum.focusText(c.spegel.getScrawler());
         }
+    }
+
+    public void setHeldDraggable(Draggable d){
+        heldDraggable = d;
+    }
+
+    public void setToGrab(Draggable d) { toGrab = d;}
+
+    public void setAnchor(Monad target, float x, float y){
+        anchorx = target.x - x;
+        anchory = target.y - y;
+    }
+
+    public void setupDistCheck(float x, float y){
+        distX = x;
+        distY = y;
+    }
+
+    public void setDragXYCheck(float x, float y){
+
+    }
+
+    public boolean grabDistCheck(Monad target, float distX, float distY, float mouseX, float mouseY){
+        if (PApplet.dist(distX, distY, mouseX, mouseY) >= target.grabDist) return true;
+        else return false;
     }
 
 

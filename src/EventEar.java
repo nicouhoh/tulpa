@@ -21,7 +21,7 @@ public class EventEar {
             case MouseEvent.ENTER:
             case MouseEvent.EXIT:
             case MouseEvent.MOVE:
-//            case MouseEvent.DRAG:
+            // case MouseEvent.DRAG:
                 return;
         }
 

@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class Grip extends Monad implements Clickable{
+public class Grip extends Monad implements Clickable, Draggable{
 
     int color;
 
@@ -16,6 +16,7 @@ public class Grip extends Monad implements Clickable{
         setPos(parent.x, parent.y);
         w = parent.parent.scrollWidth();
         color = 0xff6C6C6C;
+        grabDist = 0;
     }
 
     @Override
@@ -54,14 +55,13 @@ public class Grip extends Monad implements Clickable{
 
     // normally the grip's position is determined by latitude.
     // but when the grip be gripped, the flow reverses.
-    public void grabGrip(Operator operator, float mouseGrabY){
-        grabbed = true;
+    public void setGrabY(Operator operator, float mouseGrabY){
         grabY = mouseGrabY - y;
     }
 
     @Override
     public void grabbed(Operator operator, int mod, float grabbedX, float grabbedY, Callosum c){
-        grabGrip(operator, grabbedY);
+        setGrabY(operator, grabbedY);
     }
 
     @Override
@@ -72,6 +72,6 @@ public class Grip extends Monad implements Clickable{
 
     @Override
     public void dropped(Operator operator, int mod, float dropX, float dropY, Callosum c){
-        grabbed = false;
+        inClutches = false;
     }
 }

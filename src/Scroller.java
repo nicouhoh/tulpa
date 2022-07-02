@@ -1,7 +1,4 @@
-import processing.core.PApplet;
 import processing.core.PGraphics;
-
-import java.util.ArrayList;
 
 
 public class Scroller extends Monad implements Clickable{
@@ -56,7 +53,7 @@ public class Scroller extends Monad implements Clickable{
   @Override
   public void pressed(Operator operator, int mod, float pressedX, float pressedY, Callosum c){
     grip.setGripPos(pressedY, grip.h / 2);
-    grip.grabGrip(operator, pressedY);
+    grip.setGrabY(operator, pressedY);
     Field field = (Field)parent; // surely there must be a way to do this without such bloodshed
     field.followScroller();
   }

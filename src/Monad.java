@@ -10,7 +10,8 @@ public abstract class Monad {
 
     boolean enabled = true;
     boolean onscreen;
-    boolean grabbed;
+    boolean inClutches;
+    int grabDist = 10;
 
     ArrayList<Monad> children = new ArrayList<Monad>();
     Monad parent;
@@ -139,5 +140,10 @@ public abstract class Monad {
     public void disable(){
         enabled = false;
     }
+
+    public void grab() {
+        inClutches = true;}
+    public void drop() {
+        inClutches = false;}
 
 }
