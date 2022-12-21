@@ -12,7 +12,7 @@ public class Grip extends Monad implements Clickable, Draggable{
 
         this.parent = parent;
         parent.children.add(this);
-        field = (Field)parent.parent; //TODO What an eyesore. Smite this one day. yeah we gettin fascist up in here
+        field = (Field)parent.parent; //TODO What an eyesore. Smite this one day.
         setPos(parent.x, parent.y);
         w = parent.parent.scrollWidth();
         color = 0xff6C6C6C;

@@ -180,7 +180,7 @@ public class Field extends Monad implements Scrollable, Clickable {
 
     @Override
     public void scroll(Operator operator, int count){
-       stepLatitude(count * scrollAmount);
+        stepLatitude(count * scrollAmount);
     }
 
     @Override

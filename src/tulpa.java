@@ -1,8 +1,5 @@
 import drop.*;
-
 import processing.core.PApplet;
-
-import drop.DropEvent;
 
 
 public class tulpa  extends PApplet  {
