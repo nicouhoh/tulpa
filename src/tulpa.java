@@ -5,7 +5,9 @@ import processing.core.PApplet;
 public class tulpa  extends PApplet  {
 SDrop sdrop;
 
-public Callosum callosum;
+public Library lib;
+public Visipalp vis;
+
 int w, h;
 public boolean resized = false;
 
@@ -18,29 +20,31 @@ public void setup(){
   surface.setResizable(true);
 
   sdrop = new SDrop(this);
-  callosum = new Callosum(); // callosum is where we truly kick everything off. check constructor and bigBang();
 
-  registerMethod("keyEvent", callosum.ear);
-  registerMethod("mouseEvent", callosum.ear);
+  lib = new Library();
+  vis = new Visipalp();
+
+//  registerMethod("keyEvent", callosum.ear);
+//  registerMethod("mouseEvent", callosum.ear);
 }
 
 public void draw(){
   checkResize();
-  callosum.showtime(this.g);
+//  callosum.showtime(this.g);
   resized = false;
 }
   
 public void checkResize(){
     if (w != width || h != height){
-    w = width;
-    h = height;
-    resized = true;
-  }
+        w = width;
+        h = height;
+        resized = true;
+    }
 }
 
-public void dropEvent(DropEvent dropEvent){
-    callosum.ear.dropEvent(dropEvent);
-}
+//public void dropEvent(DropEvent dropEvent){
+//    callosum.ear.dropEvent(dropEvent);
+//}
 
     // STARTING (YER) ENGINES
 public static void main (String av[])

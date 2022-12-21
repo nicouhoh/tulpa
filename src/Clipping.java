@@ -16,7 +16,7 @@ public class Clipping {
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 
-    Spegel spegel;
+//    Spegel spegel;
 
     boolean selected;
 
