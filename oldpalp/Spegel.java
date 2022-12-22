@@ -35,6 +35,7 @@ public class Spegel extends Monad implements Clickable, Draggable{
     public void setSize(float clipW, float clipH) {
         float wid = clipping.img.width;
         float hei = clipping.img.height;
+
         if (clipping.img.width >= clipping.img.height) {
             wid = clipW;
             hei = clipping.img.height / (clipping.img.width / clipW);
@@ -44,6 +45,7 @@ public class Spegel extends Monad implements Clickable, Draggable{
             wid = clipping.img.width / (clipping.img.height / clipH);
             airW = (clipW - wid) / 2;
         }
+
         displayW = wid;
         w = clipW;
         displayH = hei;

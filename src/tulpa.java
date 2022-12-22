@@ -22,7 +22,7 @@ public void setup(){
   sdrop = new SDrop(this);
 
   lib = new Library();
-  vis = new Visipalp();
+  vis = new Visipalp(this, lib);
 
 //  registerMethod("keyEvent", callosum.ear);
 //  registerMethod("mouseEvent", callosum.ear);
@@ -30,7 +30,7 @@ public void setup(){
 
 public void draw(){
   checkResize();
-//  callosum.showtime(this.g);
+  vis.showtime(this.g, mouseButton);
   resized = false;
 }
   
