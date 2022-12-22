@@ -30,7 +30,7 @@ public void setup(){
 
 public void draw(){
   checkResize();
-  vis.showtime(this.g, mouseButton);
+  vis.showtime(this.g, mousePressed? mouseButton : 0);
   resized = false;
 }
   
