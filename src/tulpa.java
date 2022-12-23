@@ -1,5 +1,6 @@
 import drop.*;
 import processing.core.PApplet;
+import processing.event.MouseEvent;
 
 
 public class tulpa  extends PApplet  {
@@ -30,7 +31,7 @@ public void setup(){
 
 public void draw(){
   checkResize();
-  vis.showtime(this.g, mousePressed? mouseButton : 0);
+  vis.showtime(this.g, mousePressed? mouseButton : 0, keyPressed? keyCode : 0);
   resized = false;
 }
   
