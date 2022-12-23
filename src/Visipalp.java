@@ -46,11 +46,11 @@ public class Visipalp {
     }
 
     // This is the main update method, called every draw frame.
-    void showtime(PGraphics g, int mouseInput, int keycode){
+    void showtime(PGraphics g, int mouseInput, KeyInput ki){
         prepare();
 
         mInput(t.mouseX, t.mouseY, mouseInput);
-        keyInput(keycode);
+        keyInput(ki);
 
         g.background(bgColor);
         contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude);
@@ -95,11 +95,17 @@ public class Visipalp {
         else mouseButton = 0;
     }
 
-    public void keyInput(int kc){
-        if (kc == 38){ // UP
+//    public void keyInput(){
+//
+//    }
+
+
+    public void keyInput(KeyInput ki){
+        if (ki == null) return;
+        if (ki.kc == 38){ // UP
             changeLatitude(-scrollSpeed);
         }
-        if (kc == 40){ // DOWN
+        if (ki.kc == 40){ // DOWN
             changeLatitude(scrollSpeed);
         }
     }

@@ -1,6 +1,6 @@
 import drop.*;
 import processing.core.PApplet;
-import processing.event.MouseEvent;
+import processing.event.KeyEvent;
 
 
 public class tulpa  extends PApplet  {
@@ -8,6 +8,8 @@ SDrop sdrop;
 
 public Library lib;
 public Visipalp vis;
+
+public KeyInput ki;
 
 int w, h;
 public boolean resized = false;
@@ -25,16 +27,18 @@ public void setup(){
   lib = new Library();
   vis = new Visipalp(this, lib);
 
-//  registerMethod("keyEvent", callosum.ear);
+registerMethod("keyEvent", this);
 //  registerMethod("mouseEvent", callosum.ear);
 }
 
 public void draw(){
   checkResize();
-  vis.showtime(this.g, mousePressed? mouseButton : 0, keyPressed? keyCode : 0);
+  vis.showtime(this.g, mousePressed? mouseButton : 0, ki);
   resized = false;
+
+  ki = null;
 }
-  
+
 public void checkResize(){
     if (w != width || h != height){
         w = width;
@@ -42,6 +46,19 @@ public void checkResize(){
         resized = true;
     }
 }
+
+public void keyEvent(KeyEvent e){
+  ki = new KeyInput(e.getAction(), e.getKey(), e.getKeyCode(), e.getModifiers());
+    if (ki.action == 1) {
+        System.out.println("KEY EVENT");
+        System.out.println("action: " + ki.action);
+        System.out.println("key: " + ki.key);
+        System.out.println("keycode: " + ki.kc);
+        System.out.println("modifiers: " + ki.mod);
+        System.out.println("");
+    }
+}
+
 
 //public void dropEvent(DropEvent dropEvent){
 //    callosum.ear.dropEvent(dropEvent);
