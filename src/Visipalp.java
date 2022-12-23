@@ -36,6 +36,7 @@ public class Visipalp {
     float latitude = 0;
     float foot = 0;
     int scrollSpeed = 20;
+    float scrollGrabY = 0;
 
 
     Visipalp(tulpa t, Library lib){
@@ -197,7 +198,13 @@ public class Visipalp {
 
     public boolean grip(PGraphics g, int id, float gripX, float gripW, float scrollerH){
         float gripH = setGripSize(foot, scrollerH);
-        float gripY = setGripPos(latitude, foot, scrollerH, gripH);
+        float gripY;
+
+        if(activeItem == id){
+            gripY = PApplet.constrain( mouseY - scrollGrabY,0, scrollerH - gripH);
+            latitude = gripY / scrollerH * foot;
+        }
+        else gripY = setGripPos(latitude, foot, scrollerH, gripH);
 
         g.noStroke();
         if (activeItem == id) g.fill(gripActiveColor);
@@ -208,6 +215,7 @@ public class Visipalp {
             hotItem = id;
             if(activeItem == 0 && mouseButton == 1){
                 activeItem = id;
+                scrollGrabY = mouseY - gripY;
             }
         }
 
