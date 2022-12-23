@@ -1,5 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import processing.core.PVector;
 
 public class Visipalp {
 
@@ -17,8 +18,7 @@ public class Visipalp {
 
     int zoomLevel = 7;
 
-    float mouseX;
-    float mouseY;
+    PVector mousePos = new PVector(0, 0);
     int mouseButton;
 
     int LEFT = 37;
@@ -48,10 +48,11 @@ public class Visipalp {
     // This is the main update method, called every draw frame.
     void showtime(PGraphics g, int mouseInput, int keycode){
         prepare();
+
         mInput(t.mouseX, t.mouseY, mouseInput);
         keyInput(keycode);
-        g.background(bgColor);
 
+        g.background(bgColor);
         contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude);
 
         finish();
@@ -77,18 +78,18 @@ public class Visipalp {
     // INPUT
 
     public boolean mouseOver(float x, float y, float w, float h){
-        if (mouseX < x ||
-                mouseY < y ||
-                mouseX >= x + w ||
-                mouseY >= y + h){
+        if (    mousePos.x < x ||
+                mousePos.y < y ||
+                mousePos.x >= x + w ||
+                mousePos.y >= y + h){
             return false;
         }
         return true;
     }
 
     public void mInput(float mx, float my, int mouseInput){
-        mouseX = mx;
-        mouseY = my;
+        mousePos.x = mx;
+        mousePos.y = my;
         if (mouseInput == 37) mouseButton = 1;
         else if (mouseInput == 39) mouseButton = 2;
         else mouseButton = 0;
@@ -135,47 +136,65 @@ public class Visipalp {
     // CLIPPINGS
 
     boolean clipping(PGraphics g, int id, Clipping c, float clipX, float clipY, float lat){
-        float wid = c.img.width;
-        float hei = c.img.height;
-        float offX = 0;
-        float offY = 0;
-        float displayX = 0;
-        float displayY = 0;
 
-        if (wid >= hei){
-            wid = clipSize;
-            hei = c.img.height / (c.img.width / clipSize);
-            offY = (clipSize - hei) / 2;
-        } else {
-            hei = clipSize;
-            wid = c.img.width / (c.img.height / clipSize);
-            offX = (clipSize - wid) / 2;
+        foot = clipY + clipSize + gutter;
+
+        if(clipY < lat - clipSize) return false;
+        if(clipY > lat + t.h) return false;
+
+        PVector size = findDisplaySize(c);
+        PVector offset = findOffset(c, size.x, size.y);
+
+        if(mouseOver(clipX + offset.x, clipY + offset.y - lat, size.x, size.y)){
+            hotItem = id;
+            if(activeItem == 0 && mouseButton == 1){
+                activeItem = id;
+                lib.select(c);
+            }
         }
 
-        displayX = clipX + offX;
-        displayY = clipY + offY;
+        g.image(c.img, clipX + offset.x, clipY + offset.y, size.x, size.y);
+        if (c.isSelected()) drawClippingSelect(g, clipX + offset.x, clipY + offset.y, size.x, size.y);
 
-        if (mouseOver(displayX, displayY - lat, wid, hei)){
+        return false;
+
+//        if(mouseButton == 0 &&
+//            hotItem == id &&
+//            activeItem == id){
+//            return true;
+//        }
+//        return false;
+    }
+
+    void checkTemperature(int id, float x, float y, float w, float h){
+        if (mouseOver(x, y, w, h)){
             hotItem = id;
             if(activeItem == 0 && mouseButton == 1){
                 activeItem = id;
             }
         }
+    }
 
-        g.image(c.img, displayX, displayY, wid, hei);
+    PVector findDisplaySize(Clipping c) {
+        float wid = c.img.width;
+        float hei = c.img.height;
 
-        foot = clipY + clipSize + gutter;
-
-        if(activeItem == id){
-            drawClippingSelect(g, clipX + offX, clipY + offY, wid, hei);
+        if (wid >= hei) {
+            wid = clipSize;
+            hei = c.img.height / (c.img.width / clipSize);
+        } else {
+            hei = clipSize;
+            wid = c.img.width / (c.img.height / clipSize);
         }
+        return new PVector(wid, hei);
+    }
 
-        if(mouseButton == 0 &&
-            hotItem == id &&
-            activeItem == id){
-            return true;
-        }
-        return false;
+    PVector findOffset(Clipping c, float wid, float hei){
+        float offX = 0;
+        float offY = 0;
+        if (wid >= hei) offY = (clipSize - hei) / 2;
+        else offX = (clipSize - wid) / 2;
+        return new PVector(offX, offY);
     }
 
     public void drawClippingSelect(PGraphics g, float x, float y, float w, float h){
@@ -201,7 +220,7 @@ public class Visipalp {
         float gripY;
 
         if(activeItem == id){
-            gripY = PApplet.constrain( mouseY - scrollGrabY,0, scrollerH - gripH);
+            gripY = PApplet.constrain( mousePos.y - scrollGrabY,0, scrollerH - gripH);
             latitude = gripY / scrollerH * foot;
         }
         else gripY = setGripPos(latitude, foot, scrollerH, gripH);
@@ -215,7 +234,7 @@ public class Visipalp {
             hotItem = id;
             if(activeItem == 0 && mouseButton == 1){
                 activeItem = id;
-                scrollGrabY = mouseY - gripY;
+                scrollGrabY = mousePos.y - gripY;
             }
         }
 
