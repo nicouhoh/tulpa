@@ -18,7 +18,6 @@ public class Visipalp {
 
     int zoomLevel = 7;
 
-    PVector mousePos = new PVector(0, 0);
     int mouseButton;
 
     int LEFT = 37;
@@ -46,25 +45,42 @@ public class Visipalp {
     }
 
     // This is the main update method, called every draw frame.
-    void showtime(PGraphics g, int mouseInput, KeyInput ki){
+    void showtime(PGraphics g, MouseInput mi, KeyInput ki){
         prepare();
 
-        mInput(t.mouseX, t.mouseY, mouseInput);
-        keyInput(ki);
+       // keyInput(ki);
 
         g.background(bgColor);
-        contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude);
+        contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi);
+        debugMouseInput(g, mi);
 
-        finish();
+        finish(mi);
     }
 
     // VISIPALP BUSINESS
 
+    public void debugMouseInput(PGraphics g, MouseInput mi){
+        if(mi == null) {
+            System.out.println("Mouse input is NULL");
+            return;
+        }
+        g.textSize(36);
+        g.fill(255, 0, 255);
+        g.text("button :" + mi.button +
+                        "\nx: " + mi.x +
+                        "\ny: " + mi.y +
+                        "\nwheel: " + mi.wheel +
+                        "\nmod: " + mi.mod +
+                        "\nhot: " + hotItem +
+                        "\nactive: " + activeItem,
+                100, 100);
+    }
+
     public void prepare(){
         hotItem = 0;
     }
-    public void finish(){
-        if (mouseButton == 0) activeItem = 0;
+    public void finish(MouseInput mi){
+        if (mi.button == 0) activeItem = 0;
         else if (activeItem == 0) activeItem = -1; //If the mouse button is still held down, but the button isn't active, we lock the activeItem variable so we don't pick up other elements with the mouse
         nextID = 1;
     }
@@ -77,28 +93,15 @@ public class Visipalp {
 
     // INPUT
 
-    public boolean mouseOver(float x, float y, float w, float h){
-        if (    mousePos.x < x ||
-                mousePos.y < y ||
-                mousePos.x >= x + w ||
-                mousePos.y >= y + h){
+    public boolean mouseOver(float x, float y, float w, float h, MouseInput mi){
+        if (    mi.x < x ||
+                mi.y < y ||
+                mi.x >= x + w ||
+                mi.y >= y + h){
             return false;
         }
         return true;
     }
-
-    public void mInput(float mx, float my, int mouseInput){
-        mousePos.x = mx;
-        mousePos.y = my;
-        if (mouseInput == 37) mouseButton = 1;
-        else if (mouseInput == 39) mouseButton = 2;
-        else mouseButton = 0;
-    }
-
-//    public void keyInput(){
-//
-//    }
-
 
     public void keyInput(KeyInput ki){
         if (ki == null) return;
@@ -118,7 +121,7 @@ public class Visipalp {
     // CONTACT SHEET
     // makes all the clippings
 
-    void contactSheet(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat){
+    void contactSheet(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi){
         clipSize = (sheetW - ((zoomLevel + 1) * gutter)) / zoomLevel;
         x = sheetX + gutter;
         y = sheetY + gutter;
@@ -129,19 +132,19 @@ public class Visipalp {
             }
             g.push();
             g.translate(0, -lat);
-            clipping(g, getID(), c, x, y, lat);
+            clipping(g, getID(), c, x, y, lat, mi);
             g.pop();
             x += clipSize + gutter;
         }
         x = gutter;
         y = gutter;
 
-        scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH);
+        scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
     // CLIPPINGS
 
-    boolean clipping(PGraphics g, int id, Clipping c, float clipX, float clipY, float lat){
+    boolean clipping(PGraphics g, int id, Clipping c, float clipX, float clipY, float lat, MouseInput mi){
 
         foot = clipY + clipSize + gutter;
 
@@ -151,9 +154,9 @@ public class Visipalp {
         PVector size = findDisplaySize(c);
         PVector offset = findOffset(c, size.x, size.y);
 
-        if(mouseOver(clipX + offset.x, clipY + offset.y - lat, size.x, size.y)){
+        if(mouseOver(clipX + offset.x, clipY + offset.y - lat, size.x, size.y, mi)){
             hotItem = id;
-            if(activeItem == 0 && mouseButton == 1){
+            if(activeItem == 0 && mi.button == LEFT){
                 activeItem = id;
                 lib.select(c);
             }
@@ -164,6 +167,7 @@ public class Visipalp {
 
         return false;
 
+        // FOR SAFE KEEPING THIS IS "BUTTON" BEHAVIOR
 //        if(mouseButton == 0 &&
 //            hotItem == id &&
 //            activeItem == id){
@@ -172,10 +176,10 @@ public class Visipalp {
 //        return false;
     }
 
-    void checkTemperature(int id, float x, float y, float w, float h){
-        if (mouseOver(x, y, w, h)){
+    void checkTemperature(int id, float x, float y, float w, float h, MouseInput mi){
+        if (mouseOver(x, y, w, h, mi)){
             hotItem = id;
-            if(activeItem == 0 && mouseButton == 1){
+            if(activeItem == 0 && mi.button == LEFT){
                 activeItem = id;
             }
         }
@@ -211,22 +215,22 @@ public class Visipalp {
 
     // SCROLLER
 
-    public boolean scroller(PGraphics g, int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH){
+    public boolean scroller(PGraphics g, int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH, MouseInput mi){
         g.noStroke();
         g.fill(scrollerColor);
         g.rect(scrollerX, scrollerY, scrollerW, scrollerH);
 
-        grip(g, getID(), scrollerX, scrollerW, scrollerH);
+        grip(g, getID(), scrollerX, scrollerW, scrollerH, mi);
 
         return false;
     }
 
-    public boolean grip(PGraphics g, int id, float gripX, float gripW, float scrollerH){
+    public boolean grip(PGraphics g, int id, float gripX, float gripW, float scrollerH, MouseInput mi){
         float gripH = setGripSize(foot, scrollerH);
         float gripY;
 
         if(activeItem == id){
-            gripY = PApplet.constrain( mousePos.y - scrollGrabY,0, scrollerH - gripH);
+            gripY = PApplet.constrain( mi.y - scrollGrabY,0, scrollerH - gripH);
             latitude = gripY / scrollerH * foot;
         }
         else gripY = setGripPos(latitude, foot, scrollerH, gripH);
@@ -236,11 +240,11 @@ public class Visipalp {
         else g.fill(gripColor);
         g.rect(gripX, gripY, gripW, gripH);
 
-        if (mouseOver(gripX, gripY, gripW, gripH)){
+        if (mouseOver(gripX, gripY, gripW, gripH, mi)){
             hotItem = id;
-            if(activeItem == 0 && mouseButton == 1){
+            if(activeItem == 0 && mi.button == LEFT){
                 activeItem = id;
-                scrollGrabY = mousePos.y - gripY;
+                scrollGrabY = mi.y - gripY;
             }
         }
 
@@ -254,8 +258,4 @@ public class Visipalp {
     public float setGripPos(float scrollValue, float bottomOfScroll, float scrollerH, float gripH){
         return PApplet.constrain(scrollValue / bottomOfScroll * scrollerH, 0, scrollerH - gripH);
     }
-
-
-
-
 }
