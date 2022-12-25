@@ -18,10 +18,9 @@ public class Visipalp {
 
     int zoomLevel = 7;
 
-    int mouseButton;
 
-    int LEFT = 37;
-    int RIGHT = 39;
+    int MOUSE1 = 37;
+    int MOUSE2 = 39;
 
     int hotItem = 0;
     int activeItem = 0;
@@ -53,6 +52,7 @@ public class Visipalp {
         g.background(bgColor);
         contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi);
         debugMouseInput(g, mi);
+        debugKeyInput(g, ki);
 
         finish(mi);
     }
@@ -60,20 +60,34 @@ public class Visipalp {
     // VISIPALP BUSINESS
 
     public void debugMouseInput(PGraphics g, MouseInput mi){
-        if(mi == null) {
-            System.out.println("Mouse input is NULL");
-            return;
-        }
         g.textSize(36);
         g.fill(255, 0, 255);
+        if(mi == null) {
+            g.text("MouseInput is NULL", 100, 100);
+            return;
+        }
         g.text("button :" + mi.button +
-                        "\nx: " + mi.x +
-                        "\ny: " + mi.y +
-                        "\nwheel: " + mi.wheel +
-                        "\nmod: " + mi.mod +
-                        "\nhot: " + hotItem +
-                        "\nactive: " + activeItem,
-                100, 100);
+                    "\nx: " + mi.x +
+                    "\ny: " + mi.y +
+                    "\nwheel: " + mi.wheel +
+                    "\nmod: " + mi.mod +
+                    "\nhot: " + hotItem +
+                    "\nactive: " + activeItem,
+                    100, 100);
+    }
+
+    public void debugKeyInput(PGraphics g, KeyInput ki){
+        g.textSize(36);
+        g.fill(255,0, 255);
+        if (ki == null){
+            g.text("KeyInput is NULL", 400, 100);
+            return;
+        }
+        g.text("action: " + ki.action +
+                "\nkey: " + ki.key +
+                "\nkeycode: " + ki.kc +
+                "\nmodifiers: " + ki.mod,
+                400, 100);
     }
 
     public void prepare(){
@@ -151,12 +165,12 @@ public class Visipalp {
         if(clipY < lat - clipSize) return false;
         if(clipY > lat + t.h) return false;
 
-        PVector size = findDisplaySize(c);
+        PVector size = SizeThumbnail(c);
         PVector offset = findOffset(c, size.x, size.y);
 
         if(mouseOver(clipX + offset.x, clipY + offset.y - lat, size.x, size.y, mi)){
             hotItem = id;
-            if(activeItem == 0 && mi.button == LEFT){
+            if(activeItem == 0 && mi.button == MOUSE1){
                 activeItem = id;
                 lib.select(c);
             }
@@ -179,13 +193,13 @@ public class Visipalp {
     void checkTemperature(int id, float x, float y, float w, float h, MouseInput mi){
         if (mouseOver(x, y, w, h, mi)){
             hotItem = id;
-            if(activeItem == 0 && mi.button == LEFT){
+            if(activeItem == 0 && mi.button == MOUSE1){
                 activeItem = id;
             }
         }
     }
 
-    PVector findDisplaySize(Clipping c) {
+    PVector SizeThumbnail(Clipping c) {
         float wid = c.img.width;
         float hei = c.img.height;
 
@@ -242,7 +256,7 @@ public class Visipalp {
 
         if (mouseOver(gripX, gripY, gripW, gripH, mi)){
             hotItem = id;
-            if(activeItem == 0 && mi.button == LEFT){
+            if(activeItem == 0 && mi.button == MOUSE1){
                 activeItem = id;
                 scrollGrabY = mi.y - gripY;
             }

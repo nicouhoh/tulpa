@@ -11,7 +11,7 @@ public class tulpa  extends PApplet  {
     public Library lib;
     public Visipalp vis;
 
-    public KeyInput ki;
+    public KeyInput ki = new KeyInput(0, '0', 0, 0);
     public MouseInput mi = new MouseInput(0, 0, 0, 0, 0);
 
     int w, h;
@@ -36,11 +36,8 @@ public class tulpa  extends PApplet  {
 
     public void draw(){
       checkResize();
-      vis.showtime(this.g, getMouseInput(), ki);
-      ki = null;
+      vis.showtime(this.g, mi, ki);
       resized = false;
-//      printMouseDebug();
-
     }
 
     public void checkResize(){
@@ -51,16 +48,18 @@ public class tulpa  extends PApplet  {
         }
     }
 
+    // INPUT -----------------------------------------------------------------
+
     public void keyEvent(KeyEvent e){
-      ki = new KeyInput(e.getAction(), e.getKey(), e.getKeyCode(), e.getModifiers());
-        if (ki.action == 1) {
-            System.out.println("KEY EVENT");
-            System.out.println("action: " + ki.action);
-            System.out.println("key: " + ki.key);
-            System.out.println("keycode: " + ki.kc);
-            System.out.println("modifiers: " + ki.mod);
-            System.out.println("");
-        }
+      ki.action = e.getAction();
+      if (e.getAction() == 1 || e.getAction() == 3){
+          ki.key = e.getKey();
+          ki.kc = e.getKeyCode();
+      }else if (e.getAction() == 2){
+          ki.key = '\0';
+          ki.kc = 0;
+      }
+      ki.mod = e.getModifiers();
     }
 
     public void mouseEvent(MouseEvent e){
@@ -88,26 +87,11 @@ public class tulpa  extends PApplet  {
 
     }
 
-//    public void printMouseDebug(){
-//        g.textSize(72);
-//        g.fill(255, 0, 255);
-//        g.text("button :" + mi.button +
-//                "\nx: " + mi.x +
-//                "\ny: " + mi.y +
-//                "\nwheel: " + mi.wheel +
-//                "\nmod: " + mi.mod,
-//                100, 100);
-//    }
-
-    public MouseInput getMouseInput(){
-        MouseInput squeaks = mi;
-        return squeaks;
-    }
-
-
     //public void dropEvent(DropEvent dropEvent){
     //    callosum.ear.dropEvent(dropEvent);
     //}
+
+    // -----------------------------------------------------------------
 
         // STARTING (YER) ENGINES
     public static void main (String av[])
