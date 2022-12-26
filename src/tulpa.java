@@ -37,6 +37,9 @@ public class tulpa  extends PApplet  {
     public void draw(){
       checkResize();
       vis.showtime(this.g, mi, ki);
+      ki.key = '\0';
+      ki.kc = 0;
+      mi.wheel = 0; // we have to reset mouse wheel input because of the way it works
       resized = false;
     }
 
@@ -61,6 +64,8 @@ public class tulpa  extends PApplet  {
       }
       ki.mod = e.getModifiers();
     }
+
+
 
     public void mouseEvent(MouseEvent e){
 

@@ -2,6 +2,8 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
+import java.awt.event.KeyEvent;
+
 public class Visipalp {
 
     tulpa t;
@@ -16,7 +18,7 @@ public class Visipalp {
     float y = gutter;
     float clipSize = 200;
 
-    int zoomLevel = 7;
+    int columns = 7;
 
 
     int MOUSE1 = 37;
@@ -33,8 +35,12 @@ public class Visipalp {
 
     float latitude = 0;
     float foot = 0;
-    int scrollSpeed = 20;
+    int scrollSpeed = 200;
     float scrollGrabY = 0;
+    Clipping goTo = null;
+
+    char keyDebugKey;
+    int keyDebugKC;
 
 
     Visipalp(tulpa t, Library lib){
@@ -47,10 +53,13 @@ public class Visipalp {
     void showtime(PGraphics g, MouseInput mi, KeyInput ki){
         prepare();
 
-       // keyInput(ki);
+        readKeyInput(ki);
+        if (mi.wheel != 0){
+           changeLatitude(mi.wheel * scrollSpeed);
+        }
 
         g.background(bgColor);
-        contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi);
+        contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
         debugMouseInput(g, mi);
         debugKeyInput(g, ki);
 
@@ -83,9 +92,13 @@ public class Visipalp {
             g.text("KeyInput is NULL", 400, 100);
             return;
         }
+        if(ki.key != '\0'){
+            keyDebugKey = ki.key;
+            keyDebugKC = ki.kc;
+        }
         g.text("action: " + ki.action +
-                "\nkey: " + ki.key +
-                "\nkeycode: " + ki.kc +
+                "\nkey: " + keyDebugKey +
+                "\nkeycode: " + keyDebugKC +
                 "\nmodifiers: " + ki.mod,
                 400, 100);
     }
@@ -95,7 +108,7 @@ public class Visipalp {
     }
     public void finish(MouseInput mi){
         if (mi.button == 0) activeItem = 0;
-        else if (activeItem == 0) activeItem = -1; //If the mouse button is still held down, but the button isn't active, we lock the activeItem variable so we don't pick up other elements with the mouse
+        else if (activeItem == 0) activeItem = -1; //If the mouse button is still held down, but the button isn't active, we make activeItem unavailable so we don't pick up other elements with the mouse
         nextID = 1;
     }
 
@@ -117,32 +130,46 @@ public class Visipalp {
         return true;
     }
 
-    public void keyInput(KeyInput ki){
+    public void readKeyInput(KeyInput ki){
         if (ki == null) return;
-        if (ki.kc == 38){ // UP
-            changeLatitude(-scrollSpeed);
+
+        else if (ki.kc == KeyEvent.VK_RIGHT) directionalSelect(1);
+        else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
+        else if (ki.kc == KeyEvent.VK_UP) {
+            directionalSelect(-1 * columns);
         }
-        if (ki.kc == 40){ // DOWN
-            changeLatitude(scrollSpeed);
-        }
+        else if (ki.kc == KeyEvent.VK_DOWN) directionalSelect(columns);
+        else if (ki.key == '\b') {
+            if (lib.selected.size() == 1) {
+                lib.whackClipping(lib.selected.get(0));
+                System.out.println("BACKSPACE");
+            }
+        }else if (ki.key == '-') columns--;
+        else if (ki.key == '=') columns++;
     }
 
     public void changeLatitude(int l){
         latitude = PApplet.constrain(latitude + l, 0, foot - t.h);
     }
 
-
     // CONTACT SHEET
     // makes all the clippings
 
-    void contactSheet(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi){
-        clipSize = (sheetW - ((zoomLevel + 1) * gutter)) / zoomLevel;
+    void contactSheet(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki){
+        clipSize = (sheetW - ((columns + 1) * gutter)) / columns;
         x = sheetX + gutter;
         y = sheetY + gutter;
+        int count = 0;
         for (Clipping c : lib.clippings){
-            if (x + clipSize + gutter > sheetW){
+//            if (x + clipSize + gutter > sheetW){
+            if (count == columns) { //TODO something screwy is going on here, check your rows. Clippings lost between rows
                 x = gutter;
                 y += clipSize + gutter;
+                count = 0;
+            }
+            count++;
+            if (c == goTo){
+                goToThumbnail(y, lat, sheetY, sheetH);
             }
             g.push();
             g.translate(0, -lat);
@@ -271,5 +298,30 @@ public class Visipalp {
 
     public float setGripPos(float scrollValue, float bottomOfScroll, float scrollerH, float gripH){
         return PApplet.constrain(scrollValue / bottomOfScroll * scrollerH, 0, scrollerH - gripH);
+    }
+
+    public void directionalSelect(int amount) {
+        if (lib.selected.size() == 1) {
+            Clipping selClip = lib.selected.get(0);
+            int index = lib.clippings.indexOf(selClip);
+            lib.select(lib.clippings.get(PApplet.constrain(index + amount,0,lib.clippings.size() - 1)));
+            goTo = lib.selected.get(0);
+        }
+    }
+
+    public void setLatitude(float y){
+        latitude = y;
+    }
+
+    public void goToThumbnail(float thumbY, float lat, float sheetY, float sheetH){
+        if (thumbY - gutter < lat) {
+            System.out.println("thumbnail above screen at " + thumbY + ". Setting latitude to" + (thumbY - gutter));
+            setLatitude(thumbY - gutter);
+        }
+        else if (thumbY + clipSize + gutter > lat + sheetH) {
+            System.out.println("thumbnail below screen at " + thumbY + ". Setting latitude to" + ((thumbY + clipSize + gutter) - sheetH));
+            setLatitude((thumbY + clipSize + gutter) - sheetH);
+        }
+        goTo = null;
     }
 }
