@@ -152,8 +152,8 @@ public class Visipalp {
                 lib.whackClipping(lib.selected.get(0));
                 System.out.println("BACKSPACE");
             }
-        } else if (ki.key == '-') columns--;
-        else if (ki.key == '=') columns++;
+        } else if (ki.key == '-') columns++;
+        else if (ki.key == '=') columns--;
         else if (ki.key == '0') puzzleView = !puzzleView;
     }
 
@@ -176,9 +176,7 @@ public class Visipalp {
                 count = 0;
             }
             count++;
-            if (c == goTo) {
-                goToThumbnail(y, lat, sheetY, sheetH);
-            }
+            followClippingOffscreen(c, y, lat, sheetY, sheetH);
             g.push();
             g.translate(0, -lat);
             PVector size = sizeThumbnail(c);
@@ -353,10 +351,10 @@ public class Visipalp {
                 row.add(c);
                 rowWidth += adjustedW + puzzleGutter;
 
-            } else { // if it doesn't fit, we set it aside for later and resize the row we just finished
+            } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(g, row, ratio, minH, py, lat, mi);
+                puzzleRow(g, row, ratio, minH, py, sheetH, lat, mi);
                 rowH = minH * ratio;
 
                 // reset for the next row
@@ -369,6 +367,10 @@ public class Visipalp {
                 rowWidth += adjustedW + puzzleGutter;
             }
         }
+        // finish off the last row
+        float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
+        puzzleRow(g, row, ratio, minH, py, sheetH, lat, mi);
+
         scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
@@ -380,11 +382,12 @@ public class Visipalp {
 //        }
 //    }
 
-    public void puzzleRow(PGraphics g, ArrayList<Clipping> row, float ratio, float minH, float rowY, float lat, MouseInput mi) {
+    public void puzzleRow(PGraphics g, ArrayList<Clipping> row, float ratio, float minH, float rowY, float sheetH, float lat, MouseInput mi) {
         float px = puzzleGutter;
         for (Clipping clip : row) {
             float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
             float displayH = minH * ratio;
+            followClippingOffscreen(clip, rowY, lat, 0, sheetH);
             clippingPuzzle(g, getID(), clip, px, rowY, displayW, displayH, lat, mi);
             px += displayW + puzzleGutter;
             foot = rowY + displayH + puzzleGutter;
@@ -394,7 +397,7 @@ public class Visipalp {
     boolean clippingPuzzle(PGraphics g, int id, Clipping c, float clipX, float clipY, float thumbW, float thumbH,
                            float lat, MouseInput mi) {
 
-        if (clipY < lat - getClipSize()) return false;
+        if (clipY < lat - thumbH) return false;
         if (clipY > lat + t.h) return false;
 
         if (mouseOver(clipX, clipY - lat, thumbW, thumbH, mi)) {
@@ -421,6 +424,12 @@ public class Visipalp {
 
     public float getSheetWidth() {
         return t.w - scrollerW;
+    }
+
+    public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetY, float sheetH){
+        if (c == goTo) {
+            goToThumbnail(thumbY, lat, sheetY, sheetH);
+        }
     }
 }
 
