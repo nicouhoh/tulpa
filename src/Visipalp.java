@@ -2,7 +2,6 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -45,9 +44,10 @@ public class Visipalp {
     char keyDebugKey;
     int keyDebugKC;
 
+    // Puzzle View
     boolean puzzleView = true;
     float puzzleGutter = 2;
-
+    PVector upDownSelect = new PVector(0,0);
 
     Visipalp(tulpa t, Library lib) {
 
@@ -59,13 +59,13 @@ public class Visipalp {
     void showtime(PGraphics g, MouseInput mi, KeyInput ki) {
         prepare();
 
-        readKeyInput(ki);
+       readKeyInput(ki);
         if (mi.wheel != 0) {
             changeLatitude(mi.wheel * scrollSpeed);
         }
 
         g.background(bgColor);
-        if (puzzleView) puzzleView(g, t.w - scrollerW, t.h, latitude, mi);
+        if (puzzleView) puzzleView(g, 0, t.w - scrollerW, t.h, latitude, mi, ki);
         else contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
         debugMouseInput(g, mi);
         debugKeyInput(g, ki);
@@ -75,40 +75,6 @@ public class Visipalp {
 
     // VISIPALP BUSINESS
 
-    public void debugMouseInput(PGraphics g, MouseInput mi) {
-        g.textSize(36);
-        g.fill(255, 0, 255);
-        if (mi == null) {
-            g.text("MouseInput is NULL", 100, 100);
-            return;
-        }
-        g.text("button :" + mi.button +
-                        "\nx: " + mi.x +
-                        "\ny: " + mi.y +
-                        "\nwheel: " + mi.wheel +
-                        "\nmod: " + mi.mod +
-                        "\nhot: " + hotItem +
-                        "\nactive: " + activeItem,
-                100, 100);
-    }
-
-    public void debugKeyInput(PGraphics g, KeyInput ki) {
-        g.textSize(36);
-        g.fill(255, 0, 255);
-        if (ki == null) {
-            g.text("KeyInput is NULL", 400, 100);
-            return;
-        }
-        if (ki.key != '\0') {
-            keyDebugKey = ki.key;
-            keyDebugKC = ki.kc;
-        }
-        g.text("action: " + ki.action +
-                        "\nkey: " + keyDebugKey +
-                        "\nkeycode: " + keyDebugKC +
-                        "\nmodifiers: " + ki.mod,
-                400, 100);
-    }
 
     public void prepare() {
         hotItem = 0;
@@ -117,7 +83,7 @@ public class Visipalp {
     public void finish(MouseInput mi) {
         if (mi.button == 0) activeItem = 0;
         else if (activeItem == 0)
-            activeItem = -1; //If the mouse button is still held down, but the button isn't active, we make activeItem unavailable so we don't pick up other elements with the mouse
+            activeItem = -1; //If the mouse button is still held down, but the button isn't active, we make activeItem unavailable, so we don't pick up other elements with the mouse
         nextID = 1;
     }
 
@@ -127,26 +93,32 @@ public class Visipalp {
         return newID;
     }
 
+    public float getClipSize() {
+        return (getSheetWidth() - (gutter * (columns + 1))) / columns;
+    }
+
+    public float getSheetWidth() {
+        return t.w - scrollerW;
+    }
+
     // INPUT
 
     public boolean mouseOver(float x, float y, float w, float h, MouseInput mi) {
-        if (mi.x < x ||
-                mi.y < y ||
-                mi.x >= x + w ||
-                mi.y >= y + h) {
-            return false;
-        }
-        return true;
+        return !(mi.x < x) &&
+                !(mi.y < y) &&
+                !(mi.x >= x + w) &&
+                !(mi.y >= y + h);
     }
 
     public void readKeyInput(KeyInput ki) {
         if (ki == null) return;
-
         else if (ki.kc == KeyEvent.VK_RIGHT) directionalSelect(1);
         else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
         else if (ki.kc == KeyEvent.VK_UP) {
-            directionalSelect(-1 * columns);
-        } else if (ki.kc == KeyEvent.VK_DOWN) directionalSelect(columns);
+            if (!puzzleView) directionalSelect(-1 * columns);
+        } else if (ki.kc == KeyEvent.VK_DOWN){
+            if (!puzzleView) directionalSelect(columns);
+        }
         else if (ki.key == '\b') {
             if (lib.selected.size() == 1) {
                 lib.whackClipping(lib.selected.get(0));
@@ -157,9 +129,6 @@ public class Visipalp {
         else if (ki.key == '0') puzzleView = !puzzleView;
     }
 
-    public void changeLatitude(int l) {
-        latitude = PApplet.constrain(latitude + l, 0, foot - t.h);
-    }
 
     // CONTACT SHEET
     // makes all the clippings
@@ -200,7 +169,7 @@ public class Visipalp {
         if (clipY > lat + t.h) return false;
 
         PVector size = sizeThumbnail(c);
-        PVector offset = findOffset(c, size.x, size.y);
+        PVector offset = findOffset(size.x, size.y);
 
         if (mouseOver(clipX + offset.x, clipY + offset.y - lat, thumbW, thumbH, mi)) {
             hotItem = id;
@@ -214,14 +183,6 @@ public class Visipalp {
         if (c.isSelected()) drawClippingSelect(g, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
 
         return false;
-
-        // FOR SAFE KEEPING THIS IS "BUTTON" BEHAVIOR
-//        if(mouseButton == 0 &&
-//            hotItem == id &&
-//            activeItem == id){
-//            return true;
-//        }
-//        return false;
     }
 
     void checkTemperature(int id, float x, float y, float w, float h, MouseInput mi) {
@@ -247,8 +208,7 @@ public class Visipalp {
         return new PVector(wid, hei);
     }
 
-
-    PVector findOffset(Clipping c, float wid, float hei) {
+    PVector findOffset(float wid, float hei) {
         float offX = 0;
         float offY = 0;
         if (wid >= hei) offY = (getClipSize() - hei) / 2;
@@ -307,6 +267,8 @@ public class Visipalp {
         return PApplet.constrain(scrollValue / bottomOfScroll * scrollerH, 0, scrollerH - gripH);
     }
 
+    // THUMBNAIL MODE
+
     public void directionalSelect(int amount) {
         if (lib.selected.size() == 1) {
             Clipping selClip = lib.selected.get(0);
@@ -316,11 +278,17 @@ public class Visipalp {
         }
     }
 
+    // LATITUDE AND SCROLLING
+
     public void setLatitude(float y) {
         latitude = y;
     }
 
-    public void goToThumbnail(float thumbY, float lat, float sheetY, float sheetH) {
+    public void changeLatitude(int l) {
+        latitude = PApplet.constrain(latitude + l, 0, foot - t.h);
+    }
+
+    public void goToThumbnail(float thumbY, float lat, float sheetH) {
         if (thumbY - gutter < lat) {
             System.out.println("thumbnail above screen at " + thumbY + ". Setting latitude to" + (thumbY - gutter));
             setLatitude(thumbY - gutter);
@@ -331,17 +299,19 @@ public class Visipalp {
         goTo = null;
     }
 
+    // PUZZLE VIEW
+
     // i hate this method :(
     //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
-    public void puzzleView(PGraphics g, float sheetW, float sheetH, float lat, MouseInput mi) {
+    public void puzzleView(PGraphics g, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         // set up
         float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
         ArrayList<Clipping> row = new ArrayList<Clipping>();
         float rowWidth = 0;
         Clipping pocketedClipping = null;
-        float px = puzzleGutter;
         float py = puzzleGutter;
         float rowH = 0;
+        int rowNum = 1;
 
         for (Clipping c : lib.clippings) {
 
@@ -354,7 +324,8 @@ public class Visipalp {
             } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(g, row, ratio, minH, py, sheetH, lat, mi);
+                puzzleRow(g, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
+                rowNum++;
                 rowH = minH * ratio;
 
                 // reset for the next row
@@ -369,36 +340,51 @@ public class Visipalp {
         }
         // finish off the last row
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(g, row, ratio, minH, py, sheetH, lat, mi);
+        puzzleRow(g, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
 
         scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-//    public void puzzleRow(PGraphics g, ArrayList<Clipping> row){
-//        float px = puzzleGutter;
-//        float BW = puzzleGutter;
-//        for (Clipping clip : row){
-//            BW += clip.img.width + puzzleGutter;
-//        }
-//    }
-
-    public void puzzleRow(PGraphics g, ArrayList<Clipping> row, float ratio, float minH, float rowY, float sheetH, float lat, MouseInput mi) {
+    public void puzzleRow(PGraphics g, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         float px = puzzleGutter;
         for (Clipping clip : row) {
             float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
             float displayH = minH * ratio;
             followClippingOffscreen(clip, rowY, lat, 0, sheetH);
-            clippingPuzzle(g, getID(), clip, px, rowY, displayW, displayH, lat, mi);
+            clippingPuzzle(g, getID(), rowNum, clip, px, rowY, displayW, displayH, lat, sheetY, sheetH, mi, ki);
             px += displayW + puzzleGutter;
             foot = rowY + displayH + puzzleGutter;
         }
     }
 
-    boolean clippingPuzzle(PGraphics g, int id, Clipping c, float clipX, float clipY, float thumbW, float thumbH,
-                           float lat, MouseInput mi) {
+    void clippingPuzzle(PGraphics g, int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW, float thumbH,
+                           float lat, float sheetY, float sheetH, MouseInput mi, KeyInput ki) {
 
-        if (clipY < lat - thumbH) return false;
-        if (clipY > lat + t.h) return false;
+        // Up and down arrow key selection. this goes before the offscreen check so we can select offscreen
+        if (lib.selected.size() == 1 ){
+            if (upDownSelect.x != 0 && clipX <= upDownSelect.x && clipX + thumbW > upDownSelect.x) {
+                if(rowNum == upDownSelect.y){
+                    lib.select(c);
+                    goTo = c;
+                    followClippingOffscreen(c, clipY, lat, sheetY, sheetH);
+                    upDownSelect.x = 0;
+                    upDownSelect.y = 0;
+                }
+            }
+            if(lib.selected.get(0) == c) {
+                if (ki.kc == KeyEvent.VK_UP) {
+                    puzzleSelectUpDown(clipX, rowNum - 1, thumbW);
+                    ki.kc = 0;
+                }
+                if (ki.kc == KeyEvent.VK_DOWN) {
+                    puzzleSelectUpDown(clipX, rowNum + 1, thumbW);
+                    ki.kc = 0;
+                }
+            }
+        }
+
+        if (clipY < lat - thumbH) return;
+        if (clipY > lat + t.h) return;
 
         if (mouseOver(clipX, clipY - lat, thumbW, thumbH, mi)) {
             hotItem = id;
@@ -408,29 +394,63 @@ public class Visipalp {
             }
         }
 
+
         g.push();
         g.translate(0, -latitude);
         g.image(c.img, clipX, clipY, thumbW, thumbH);
         if (c.isSelected()) drawClippingSelect(g, clipX, clipY, thumbW, thumbH);
         g.pop();
-
-        return false;
-
     }
 
-    public float getClipSize() {
-        return (getSheetWidth() - (gutter * (columns + 1))) / columns;
-    }
-
-    public float getSheetWidth() {
-        return t.w - scrollerW;
-    }
 
     public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetY, float sheetH){
         if (c == goTo) {
-            goToThumbnail(thumbY, lat, sheetY, sheetH);
+            goToThumbnail(thumbY, lat, sheetH);
         }
     }
+
+    public void puzzleSelectUpDown(float clipX, int row, float clipW){
+        upDownSelect.x = clipX + (clipW / 2);
+        upDownSelect.y = row;
+    }
+
+    //region DEBUG --------------------------------------------------
+
+    public void debugMouseInput(PGraphics g, MouseInput mi) {
+        g.textSize(36);
+        g.fill(255, 0, 255);
+        if (mi == null) {
+            g.text("MouseInput is NULL", 100, 100);
+            return;
+        }
+        g.text("button :" + mi.button +
+                        "\nx: " + mi.x +
+                        "\ny: " + mi.y +
+                        "\nwheel: " + mi.wheel +
+                        "\nmod: " + mi.mod +
+                        "\nhot: " + hotItem +
+                        "\nactive: " + activeItem,
+                100, 100);
+    }
+
+    public void debugKeyInput(PGraphics g, KeyInput ki) {
+        g.textSize(36);
+        g.fill(255, 0, 255);
+        if (ki == null) {
+            g.text("KeyInput is NULL", 400, 100);
+            return;
+        }
+        if (ki.key != '\0') {
+            keyDebugKey = ki.key;
+            keyDebugKC = ki.kc;
+        }
+        g.text("action: " + ki.action +
+                        "\nkey: " + keyDebugKey +
+                        "\nkeycode: " + keyDebugKC +
+                        "\nmodifiers: " + ki.mod,
+                400, 100);
+    }
+    //endregion
 }
 
 //TODO panel
