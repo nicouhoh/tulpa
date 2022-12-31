@@ -66,7 +66,7 @@ public class Visipalp {
 
         g.background(bgColor);
         if (puzzleView) puzzleView(g, 0, t.w - scrollerW, t.h, latitude, mi, ki);
-        else contactSheet(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
+        else thumbnailView(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
         debugMouseInput(g, mi);
         debugKeyInput(g, ki);
 
@@ -114,11 +114,6 @@ public class Visipalp {
         if (ki == null) return;
         else if (ki.kc == KeyEvent.VK_RIGHT) directionalSelect(1);
         else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
-        else if (ki.kc == KeyEvent.VK_UP) {
-            if (!puzzleView) directionalSelect(-1 * columns);
-        } else if (ki.kc == KeyEvent.VK_DOWN){
-            if (!puzzleView) directionalSelect(columns);
-        }
         else if (ki.key == '\b') {
             if (lib.selected.size() == 1) {
                 lib.whackClipping(lib.selected.get(0));
@@ -133,63 +128,56 @@ public class Visipalp {
     // CONTACT SHEET
     // makes all the clippings
 
-    void contactSheet(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    void thumbnailView(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         float clipSize = (sheetW - ((columns + 1) * gutter)) / columns;
         x = sheetX + gutter;
         y = sheetY + gutter;
         int count = 0;
+        int rowNum = 1;
+
         for (Clipping c : lib.clippings) {
             if (count == columns) {
                 x = gutter;
                 y += clipSize + gutter;
                 count = 0;
+                rowNum++;
             }
             count++;
             followClippingOffscreen(c, y, lat, sheetY, sheetH);
             g.push();
             g.translate(0, -lat);
             PVector size = sizeThumbnail(c);
-            clipping(g, getID(), c, x, y, size.x, size.y, lat, mi);
+            PVector offset = findOffset(size.x, size.y);
+            clipping(g, getID(), rowNum, c, x, y, size.x, size.y, offset, lat, sheetY, sheetH, mi, ki);
             g.pop();
             x += clipSize + gutter;
         }
-        x = gutter;
-        y = gutter;
 
         scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    // CLIPPINGS
-
-    boolean clipping(PGraphics g, int id, Clipping c, float clipX, float clipY, float thumbW, float thumbH, float lat, MouseInput mi) {
+    void clipping(PGraphics g, int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
+                  float thumbH, PVector offset, float lat, float sheetY, float sheetH, MouseInput mi, KeyInput ki) {
 
         foot = clipY + thumbH + gutter;
+        upDownSelect(c, rowNum, sheetY, sheetH, clipX, clipY, thumbW, lat, ki);
 
-        if (clipY < lat - thumbH) return false;
-        if (clipY > lat + t.h) return false;
+        // don't draw or bother with mouse interaction if offscreen
+        if (clipY < lat - thumbH) return;
+        if (clipY > lat + t.h) return;
 
-        PVector size = sizeThumbnail(c);
-        PVector offset = findOffset(size.x, size.y);
-
-        if (mouseOver(clipX + offset.x, clipY + offset.y - lat, thumbW, thumbH, mi)) {
-            hotItem = id;
-            if (activeItem == 0 && mi.button == MOUSE1) {
-                activeItem = id;
-                lib.select(c);
-            }
-        }
+        clippingMouseInteract(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
         if (c.isSelected()) drawClippingSelect(g, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-
-        return false;
     }
 
-    void checkTemperature(int id, float x, float y, float w, float h, MouseInput mi) {
+    void clippingMouseInteract(int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
         if (mouseOver(x, y, w, h, mi)) {
             hotItem = id;
             if (activeItem == 0 && mi.button == MOUSE1) {
                 activeItem = id;
+                lib.select(c);
             }
         }
     }
@@ -270,12 +258,11 @@ public class Visipalp {
     // THUMBNAIL MODE
 
     public void directionalSelect(int amount) {
-        if (lib.selected.size() == 1) {
-            Clipping selClip = lib.selected.get(0);
-            int index = lib.clippings.indexOf(selClip);
-            lib.select(lib.clippings.get(PApplet.constrain(index + amount, 0, lib.clippings.size() - 1)));
-            goTo = lib.selected.get(0); // mark this clipping to follow the selection offscreen if we need to
-        }
+        if (lib.selected.size() != 1) return;
+        Clipping selClip = lib.selected.get(0);
+        int index = lib.clippings.indexOf(selClip);
+        lib.select(lib.clippings.get(PApplet.constrain(index + amount, 0, lib.clippings.size() - 1)));
+        goTo = lib.selected.get(0); // mark this clipping to follow the selection offscreen if we need to
     }
 
     // LATITUDE AND SCROLLING
@@ -313,6 +300,9 @@ public class Visipalp {
         float rowH = 0;
         int rowNum = 1;
 
+        g.push();
+        g.translate(0, -latitude);
+
         for (Clipping c : lib.clippings) {
 
             float adjustedW = (minH * c.img.width) / c.img.height;      // find the new width if scaled to minH
@@ -342,6 +332,8 @@ public class Visipalp {
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
         puzzleRow(g, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
 
+        g.pop();
+
         scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
@@ -351,55 +343,38 @@ public class Visipalp {
             float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
             float displayH = minH * ratio;
             followClippingOffscreen(clip, rowY, lat, 0, sheetH);
-            clippingPuzzle(g, getID(), rowNum, clip, px, rowY, displayW, displayH, lat, sheetY, sheetH, mi, ki);
+            PVector offset = new PVector(0,0);
+
+            clipping(g, getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, mi, ki);
+
             px += displayW + puzzleGutter;
             foot = rowY + displayH + puzzleGutter;
         }
     }
 
-    void clippingPuzzle(PGraphics g, int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW, float thumbH,
-                           float lat, float sheetY, float sheetH, MouseInput mi, KeyInput ki) {
+    public void upDownSelect(Clipping c, int rowNum, float sheetY, float sheetH, float clipX, float clipY, float thumbW, float lat, KeyInput ki) {
+        if (lib.selected.size() != 1) return;
 
-        // Up and down arrow key selection. this goes before the offscreen check so we can select offscreen
-        if (lib.selected.size() == 1 ){
-            if (upDownSelect.x != 0 && clipX <= upDownSelect.x && clipX + thumbW > upDownSelect.x) {
-                if(rowNum == upDownSelect.y){
-                    lib.select(c);
-                    goTo = c;
-                    followClippingOffscreen(c, clipY, lat, sheetY, sheetH);
-                    upDownSelect.x = 0;
-                    upDownSelect.y = 0;
-                }
-            }
-            if(lib.selected.get(0) == c) {
-                if (ki.kc == KeyEvent.VK_UP) {
-                    puzzleSelectUpDown(clipX, rowNum - 1, thumbW);
-                    ki.kc = 0;
-                }
-                if (ki.kc == KeyEvent.VK_DOWN) {
-                    puzzleSelectUpDown(clipX, rowNum + 1, thumbW);
-                    ki.kc = 0;
-                }
-            }
-        }
-
-        if (clipY < lat - thumbH) return;
-        if (clipY > lat + t.h) return;
-
-        if (mouseOver(clipX, clipY - lat, thumbW, thumbH, mi)) {
-            hotItem = id;
-            if (activeItem == 0 && mi.button == MOUSE1) {
-                activeItem = id;
+        if (upDownSelect.x != 0 && clipX <= upDownSelect.x && clipX + thumbW > upDownSelect.x) {
+            if (rowNum == upDownSelect.y) {
                 lib.select(c);
+                goTo = c;
+                followClippingOffscreen(c, clipY, lat, sheetY, sheetH);
+                upDownSelect.x = 0;
+                upDownSelect.y = 0;
             }
         }
 
-
-        g.push();
-        g.translate(0, -latitude);
-        g.image(c.img, clipX, clipY, thumbW, thumbH);
-        if (c.isSelected()) drawClippingSelect(g, clipX, clipY, thumbW, thumbH);
-        g.pop();
+        // Keyboard input for updown selection
+        if (lib.selected.get(0) != c) return;
+        if (ki.kc == KeyEvent.VK_UP) {
+                setUpDownSelect(clipX, rowNum - 1, thumbW);
+            ki.kc = 0;
+        }
+        if (ki.kc == KeyEvent.VK_DOWN) {
+                setUpDownSelect(clipX, rowNum + 1, thumbW);
+            ki.kc = 0;
+        }
     }
 
 
@@ -409,7 +384,7 @@ public class Visipalp {
         }
     }
 
-    public void puzzleSelectUpDown(float clipX, int row, float clipW){
+    public void setUpDownSelect(float clipX, int row, float clipW){
         upDownSelect.x = clipX + (clipW / 2);
         upDownSelect.y = row;
     }
