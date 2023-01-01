@@ -4,7 +4,7 @@ import processing.core.PVector;
 
 import java.util.ArrayList;
 
-
+import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 
 public class Visipalp {
@@ -28,6 +28,13 @@ public class Visipalp {
 
     int hotItem = 0;
     int activeItem = 0;
+
+    // Casper
+    PVector casperPos;
+    PVector casperSize;
+    PVector casperOffset;
+    Clipping casperClipping;
+
 
     // Scroller
     int scrollerColor = 0xff1A1A1A;
@@ -67,8 +74,9 @@ public class Visipalp {
         g.background(bgColor);
         if (puzzleView) puzzleView(g, 0, t.w - scrollerW, t.h, latitude, mi, ki);
         else thumbnailView(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
-        debugMouseInput(g, mi);
-        debugKeyInput(g, ki);
+        if (casperClipping != null) casper(g, casperClipping, casperSize.x, casperSize.y, mi);
+//        debugMouseInput(g, mi);
+//        debugKeyInput(g, ki);
 
         finish(mi);
     }
@@ -115,8 +123,8 @@ public class Visipalp {
         else if (ki.kc == KeyEvent.VK_RIGHT) directionalSelect(1);
         else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
         else if (ki.key == '\b') {
-            if (lib.selected.size() == 1) {
-                lib.whackClipping(lib.selected.get(0));
+            if (lib.selected.size() > 0) {
+                lib.whackClipping(lib.selected);
                 System.out.println("BACKSPACE");
             }
         } else if (ki.key == '-') columns++;
@@ -166,20 +174,38 @@ public class Visipalp {
         if (clipY < lat - thumbH) return;
         if (clipY > lat + t.h) return;
 
-        clippingMouseInteract(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
+        clippingMouseInteract(g, id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
         if (c.isSelected()) drawClippingSelect(g, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
     }
 
-    void clippingMouseInteract(int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
+    void clippingMouseInteract(PGraphics g, int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
         if (mouseOver(x, y, w, h, mi)) {
             hotItem = id;
             if (activeItem == 0 && mi.button == MOUSE1) {
                 activeItem = id;
-                lib.select(c);
+                casperOffset = new PVector(mi.x - x, mi.y - y - latitude);
+                if (mi.mod == 0) lib.select(c);
+                else if (mi.mod == MouseEvent.CTRL_MASK) lib.addSelect(c);
             }
         }
+        else if (activeItem == id){
+            System.out.println("Dragging");
+            casperPos = new PVector(mi.x - casperOffset.x, mi.y - latitude - casperOffset.y);
+            casperSize = new PVector(w, h);
+            casperClipping = c;
+        }
+    }
+
+    void casper(PGraphics g, Clipping c, float w, float h, MouseInput mi){
+        if (activeItem == 0) {
+            casperClipping = null;
+            return;
+        }
+        g.tint(255, 128);
+        g.image(c.img, mi.x - casperOffset.x, mi.y - latitude - casperOffset.y, w, h);
+        g.tint(255);
     }
 
     PVector sizeThumbnail(Clipping c) {
@@ -430,9 +456,7 @@ public class Visipalp {
 
 //TODO panel
 //TODO view
-//TODO drag thumbnails
-//TODO multiple select
-//TODO multiple delete
+//TODO rearrange on drag
 //TODO multiple drag
 //TODO typing
 //TODO tags
