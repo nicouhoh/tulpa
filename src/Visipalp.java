@@ -3,6 +3,8 @@ import processing.core.PGraphics;
 import processing.core.PVector;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
@@ -33,7 +35,7 @@ public class Visipalp {
     PVector casperPos;
     PVector casperSize;
     PVector casperOffset;
-    Clipping casperClipping;
+    Clipping draggedClipping;
 
 
     // Scroller
@@ -74,7 +76,7 @@ public class Visipalp {
         g.background(bgColor);
         if (puzzleView) puzzleView(g, 0, t.w - scrollerW, t.h, latitude, mi, ki);
         else thumbnailView(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
-        if (casperClipping != null) casper(g, casperClipping, casperSize.x, casperSize.y, mi);
+        if (draggedClipping != null) casper(g, draggedClipping, casperSize.x, casperSize.y, mi);
 //        debugMouseInput(g, mi);
 //        debugKeyInput(g, ki);
 
@@ -137,31 +139,36 @@ public class Visipalp {
     // makes all the clippings
 
     void thumbnailView(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
-        float clipSize = (sheetW - ((columns + 1) * gutter)) / columns;
+        List<Clipping> row;
         x = sheetX + gutter;
         y = sheetY + gutter;
         int count = 0;
         int rowNum = 1;
 
-        for (Clipping c : lib.clippings) {
-            if (count == columns) {
-                x = gutter;
-                y += clipSize + gutter;
-                count = 0;
-                rowNum++;
-            }
-            count++;
+        g.push();
+        g.translate(0, -lat);
+
+        while(count <= lib.clippings.size()){
+            row = lib.clippings.subList(count, PApplet.constrain(count + columns, 0, lib.clippings.size()));
+            thumbnailRow(g, row, rowNum, y, sheetX, sheetY, sheetH, lat, mi, ki);
+            count += columns;
+            y += getClipSize() + gutter;
+            rowNum++;
+        }
+        g.pop();
+
+        scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
+    }
+
+    void thumbnailRow(PGraphics g, List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki){
+        x = sheetX + gutter;
+        for (Clipping c : row){
             followClippingOffscreen(c, y, lat, sheetY, sheetH);
-            g.push();
-            g.translate(0, -lat);
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
             clipping(g, getID(), rowNum, c, x, y, size.x, size.y, offset, lat, sheetY, sheetH, mi, ki);
-            g.pop();
-            x += clipSize + gutter;
+            x += getClipSize() + gutter;
         }
-
-        scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
     void clipping(PGraphics g, int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
@@ -175,6 +182,7 @@ public class Visipalp {
         if (clipY > lat + t.h) return;
 
         clippingMouseInteract(g, id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
+        dropZones(g, clipX + offset.x, clipY + offset.y - lat, clipY + offset.y - lat + thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
         if (c.isSelected()) drawClippingSelect(g, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
@@ -187,25 +195,36 @@ public class Visipalp {
                 activeItem = id;
                 casperOffset = new PVector(mi.x - x, mi.y - y - latitude);
                 if (mi.mod == 0) lib.select(c);
-                else if (mi.mod == MouseEvent.CTRL_MASK) lib.addSelect(c);
+                else if (mi.mod == MouseEvent.CTRL_DOWN_MASK) lib.addSelect(c);
             }
         }
         else if (activeItem == id){
-            System.out.println("Dragging");
-            casperPos = new PVector(mi.x - casperOffset.x, mi.y - latitude - casperOffset.y);
-            casperSize = new PVector(w, h);
-            casperClipping = c;
+            dragClipping(c, w, h, mi);
         }
+    }
+
+    void dragClipping(Clipping c, float w, float h, MouseInput mi){
+        casperPos = new PVector(mi.x - casperOffset.x, mi.y - latitude - casperOffset.y);
+        casperSize = new PVector(w, h);
+        draggedClipping = c;
+    }
+
+    void dropZones(PGraphics g, float x, float y, float y2, MouseInput mi){
+        if (mi.y > y && mi.y < y2) g.line(x - 5, y, x - 5, y2);
     }
 
     void casper(PGraphics g, Clipping c, float w, float h, MouseInput mi){
         if (activeItem == 0) {
-            casperClipping = null;
+            draggedClipping = null;
             return;
         }
         g.tint(255, 128);
         g.image(c.img, mi.x - casperOffset.x, mi.y - latitude - casperOffset.y, w, h);
         g.tint(255);
+    }
+
+    void betweener(PGraphics g, MouseInput mi){
+
     }
 
     PVector sizeThumbnail(Clipping c) {
@@ -238,17 +257,15 @@ public class Visipalp {
 
     // SCROLLER
 
-    public boolean scroller(PGraphics g, int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH, MouseInput mi) {
+    public void scroller(PGraphics g, int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH, MouseInput mi) {
         g.noStroke();
         g.fill(scrollerColor);
         g.rect(scrollerX, scrollerY, scrollerW, scrollerH);
 
         grip(g, getID(), scrollerX, scrollerW, scrollerH, mi);
-
-        return false;
     }
 
-    public boolean grip(PGraphics g, int id, float gripX, float gripW, float scrollerH, MouseInput mi) {
+    void grip(PGraphics g, int id, float gripX, float gripW, float scrollerH, MouseInput mi) {
         float gripH = setGripSize(foot, scrollerH);
         float gripY;
 
@@ -269,8 +286,6 @@ public class Visipalp {
                 scrollGrabY = mi.y - gripY;
             }
         }
-
-        return false;
     }
 
     public float setGripSize(float bottomOfScroll, float scrollerH) {
@@ -450,6 +465,14 @@ public class Visipalp {
                         "\nkeycode: " + keyDebugKC +
                         "\nmodifiers: " + ki.mod,
                 400, 100);
+    }
+
+    public void debugCasper(PGraphics g){
+        g.textSize(36);
+        g.fill(255,0,255);
+        if (draggedClipping != null){
+            g.text(draggedClipping.toString(), 100, 700);
+        }
     }
     //endregion
 }
