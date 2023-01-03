@@ -2,6 +2,7 @@ import processing.core.PApplet;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class Library {
@@ -196,7 +197,14 @@ public class Library {
 //  }
 
   // move Clipping c before clipping c2
-  public void moveClipping(Clipping c, Clipping c2){
+  public void moveClipping(Clipping c1, Clipping c2){
+    int ci = clippings.indexOf(c1);
+    int c2i = clippings.indexOf(c2);
+    if (ci < c2i){
+      Collections.rotate(clippings.subList(ci, c2i), -1);
+    } else if( ci > c2i){
+      Collections.rotate(clippings.subList(c2i, ci+1), 1);
+    }
   }
 
   public void whackClipping(Clipping c){

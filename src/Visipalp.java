@@ -32,7 +32,6 @@ public class Visipalp {
     int activeItem = 0;
 
     // Casper
-    PVector casperPos;
     PVector casperSize;
     PVector casperOffset;
     Clipping draggedClipping;
@@ -76,7 +75,7 @@ public class Visipalp {
         g.background(bgColor);
         if (puzzleView) puzzleView(g, 0, t.w - scrollerW, t.h, latitude, mi, ki);
         else thumbnailView(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
-        if (draggedClipping != null) casper(g, draggedClipping, casperSize.x, casperSize.y, mi);
+        drawOnTop(g, mi);
 //        debugMouseInput(g, mi);
 //        debugKeyInput(g, ki);
 
@@ -88,6 +87,10 @@ public class Visipalp {
 
     public void prepare() {
         hotItem = 0;
+    }
+
+    public void drawOnTop(PGraphics g, MouseInput mi){
+        if (draggedClipping != null) casper(g, draggedClipping, casperSize.x, casperSize.y, mi);
     }
 
     public void finish(MouseInput mi) {
@@ -134,7 +137,6 @@ public class Visipalp {
         else if (ki.key == '0') puzzleView = !puzzleView;
     }
 
-
     // CONTACT SHEET
     // makes all the clippings
 
@@ -162,11 +164,14 @@ public class Visipalp {
 
     void thumbnailRow(PGraphics g, List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki){
         x = sheetX + gutter;
+        float rightEdge = 0;
         for (Clipping c : row){
             followClippingOffscreen(c, y, lat, sheetY, sheetH);
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
             clipping(g, getID(), rowNum, c, x, y, size.x, size.y, offset, lat, sheetY, sheetH, mi, ki);
+            dropZone(g, c, (rightEdge + x + offset.x) / 2, 50,rowY, getClipSize(), lat, mi);
+            rightEdge = x + size.x + offset.x;
             x += getClipSize() + gutter;
         }
     }
@@ -182,7 +187,6 @@ public class Visipalp {
         if (clipY > lat + t.h) return;
 
         clippingMouseInteract(g, id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
-        dropZones(g, clipX + offset.x, clipY + offset.y - lat, clipY + offset.y - lat + thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
         if (c.isSelected()) drawClippingSelect(g, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
@@ -193,24 +197,33 @@ public class Visipalp {
             hotItem = id;
             if (activeItem == 0 && mi.button == MOUSE1) {
                 activeItem = id;
-                casperOffset = new PVector(mi.x - x, mi.y - y - latitude);
+                casperOffset = new PVector(mi.x - x, mi.y - y);
                 if (mi.mod == 0) lib.select(c);
                 else if (mi.mod == MouseEvent.CTRL_DOWN_MASK) lib.addSelect(c);
             }
         }
         else if (activeItem == id){
-            dragClipping(c, w, h, mi);
+            setDraggedClipping(c, w, h, mi);
         }
     }
 
-    void dragClipping(Clipping c, float w, float h, MouseInput mi){
-        casperPos = new PVector(mi.x - casperOffset.x, mi.y - latitude - casperOffset.y);
+    void setDraggedClipping(Clipping c, float w, float h, MouseInput mi){
         casperSize = new PVector(w, h);
         draggedClipping = c;
     }
 
-    void dropZones(PGraphics g, float x, float y, float y2, MouseInput mi){
-        if (mi.y > y && mi.y < y2) g.line(x - 5, y, x - 5, y2);
+    void dropZone(PGraphics g, Clipping c, float dropX, float range, float rowY, float rowH, float lat, MouseInput mi){
+        if (mi.y < rowY - lat || mi.y > rowY + rowH - lat) return;
+        if (PApplet.dist(mi.x, mi.y, dropX, mi.y) > range)return;
+        g.stroke(255, 0, 255);
+        g.strokeWeight(2);
+        g.line(dropX, rowY, dropX, rowY + rowH);
+        if(draggedClipping != null && mi.button == 0){
+            lib.moveClipping(draggedClipping, c);
+            draggedClipping = null;
+            activeItem = 0;
+        }
+        g.strokeWeight(1);
     }
 
     void casper(PGraphics g, Clipping c, float w, float h, MouseInput mi){
@@ -218,13 +231,12 @@ public class Visipalp {
             draggedClipping = null;
             return;
         }
+        g.push();
+        g.translate(0, -latitude);
         g.tint(255, 128);
-        g.image(c.img, mi.x - casperOffset.x, mi.y - latitude - casperOffset.y, w, h);
+        g.image(c.img, mi.x - casperOffset.x, mi.y + latitude - casperOffset.y, w, h);
         g.tint(255);
-    }
-
-    void betweener(PGraphics g, MouseInput mi){
-
+        g.pop();
     }
 
     PVector sizeThumbnail(Clipping c) {
@@ -388,11 +400,14 @@ public class Visipalp {
 
             clipping(g, getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, mi, ki);
 
+            dropZone(g, clip, px - puzzleGutter/2, 50, rowY, displayH,lat, mi);
+
             px += displayW + puzzleGutter;
             foot = rowY + displayH + puzzleGutter;
         }
     }
 
+    // FIXME having problems arrowing up or down to a particular clipping... it's the tall text screenshot, between some flowers and a mansion
     public void upDownSelect(Clipping c, int rowNum, float sheetY, float sheetH, float clipX, float clipY, float thumbW, float lat, KeyInput ki) {
         if (lib.selected.size() != 1) return;
 
@@ -477,10 +492,13 @@ public class Visipalp {
     //endregion
 }
 
-//TODO panel
-//TODO view
+
 //TODO rearrange on drag
 //TODO multiple drag
+
+//TODO view
+
+//TODO panel
 //TODO typing
 //TODO tags
 
