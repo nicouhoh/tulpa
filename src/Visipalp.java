@@ -4,7 +4,6 @@ import processing.core.PVector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
@@ -34,7 +33,7 @@ public class Visipalp {
     // Casper
     PVector casperSize;
     PVector casperOffset;
-    Clipping draggedClipping;
+    ArrayList<Clipping> heldClippings = new ArrayList<Clipping>();
 
 
     // Scroller
@@ -90,7 +89,7 @@ public class Visipalp {
     }
 
     public void drawOnTop(PGraphics g, MouseInput mi){
-        if (draggedClipping != null) casper(g, draggedClipping, casperSize.x, casperSize.y, mi);
+        if (heldClippings.size() > 0) casper(g, heldClippings, casperSize.x, casperSize.y, mi);
     }
 
     public void finish(MouseInput mi) {
@@ -193,23 +192,37 @@ public class Visipalp {
     }
 
     void clippingMouseInteract(PGraphics g, int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
+        //if the mouse is around
         if (mouseOver(x, y, w, h, mi)) {
             hotItem = id;
+            // and we're not active yet and we have the button clicked
             if (activeItem == 0 && mi.button == MOUSE1) {
-                activeItem = id;
-                casperOffset = new PVector(mi.x - x, mi.y - y);
-                if (mi.mod == 0) lib.select(c);
-                else if (mi.mod == MouseEvent.CTRL_DOWN_MASK) lib.addSelect(c);
+                    activeItem = id;
+                    casperOffset = new PVector(mi.x - x, mi.y - y);
+                    if (!c.isSelected() && mi.mod == 0) lib.select(c);
+                    else if (mi.mod == 2)
+                        lib.addSelect(c);
             }
         }
+
+        // if the mouse is NOT around but we have this clipping in hand:
         else if (activeItem == id){
-            setDraggedClipping(c, w, h, mi);
+            if(c.isSelected() && lib.selected.size() > 1){
+                setDraggedClippings(lib.selected, w, h, mi);
+            }
+            setDraggedClippings(c, w, h, mi);
         }
     }
 
-    void setDraggedClipping(Clipping c, float w, float h, MouseInput mi){
+    void setDraggedClippings(Clipping c, float w, float h, MouseInput mi){
         casperSize = new PVector(w, h);
-        draggedClipping = c;
+        heldClippings.clear();
+        heldClippings.add(c);
+    }
+
+    void setDraggedClippings(ArrayList<Clipping> c, float w, float h, MouseInput mi){
+        casperSize = new PVector(w, h);
+        heldClippings = c;
     }
 
     void dropZone(PGraphics g, Clipping c, float dropX, float range, float rowY, float rowH, float lat, MouseInput mi){
@@ -218,23 +231,23 @@ public class Visipalp {
         g.stroke(255, 0, 255);
         g.strokeWeight(2);
         g.line(dropX, rowY, dropX, rowY + rowH);
-        if(draggedClipping != null && mi.button == 0){
-            lib.moveClipping(draggedClipping, c);
-            draggedClipping = null;
+        if(heldClippings.size() > 0 && mi.button == 0){
+            lib.moveClipping(heldClippings, c);
+            heldClippings.clear();
             activeItem = 0;
         }
         g.strokeWeight(1);
     }
 
-    void casper(PGraphics g, Clipping c, float w, float h, MouseInput mi){
+    void casper(PGraphics g, ArrayList<Clipping> c, float w, float h, MouseInput mi){
         if (activeItem == 0) {
-            draggedClipping = null;
+            heldClippings.clear();
             return;
         }
         g.push();
         g.translate(0, -latitude);
         g.tint(255, 128);
-        g.image(c.img, mi.x - casperOffset.x, mi.y + latitude - casperOffset.y, w, h);
+        g.image(c.get(0).img, mi.x - casperOffset.x, mi.y + latitude - casperOffset.y, w, h);
         g.tint(255);
         g.pop();
     }
@@ -485,15 +498,14 @@ public class Visipalp {
     public void debugCasper(PGraphics g){
         g.textSize(36);
         g.fill(255,0,255);
-        if (draggedClipping != null){
-            g.text(draggedClipping.toString(), 100, 700);
+        if (heldClippings.size() > 0){
+            g.text(heldClippings.toString(), 100, 700);
         }
     }
     //endregion
 }
 
 
-//TODO rearrange on drag
 //TODO multiple drag
 
 //TODO view

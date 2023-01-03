@@ -207,6 +207,12 @@ public class Library {
     }
   }
 
+  public void moveClipping(ArrayList<Clipping> c, Clipping c2){
+    for (Clipping clip : c){
+      moveClipping(clip, c2);
+    }
+  }
+
   public void whackClipping(Clipping c){
     clippings.remove(c);
   }
