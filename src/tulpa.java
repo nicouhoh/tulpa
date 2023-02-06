@@ -28,7 +28,7 @@ public class tulpa  extends PApplet  {
       sdrop = new SDrop(this);
 
       lib = new Library();
-      vis = new Visipalp(this, lib);
+      vis = new Visipalp(this, g, lib);
 
     registerMethod("keyEvent", this);
     registerMethod("mouseEvent", this);
@@ -36,7 +36,7 @@ public class tulpa  extends PApplet  {
 
     public void draw(){
       checkResize();
-      vis.showtime(this.g, mi, ki);
+      vis.showtime(mi, ki);
       ki.key = '\0';
       ki.kc = 0;
       mi.wheel = 0; // we have to reset mouse wheel input because of the way it works

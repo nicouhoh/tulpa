@@ -13,6 +13,8 @@ public class Visipalp {
     tulpa t;
     Library lib;
 
+    PGraphics g;
+
     int bgColor = 49;
 
     int nextID;
@@ -56,14 +58,15 @@ public class Visipalp {
     float puzzleGutter = 2;
     PVector upDownSelect = new PVector(0,0);
 
-    Visipalp(tulpa t, Library lib) {
+    Visipalp(tulpa t, PGraphics g, Library lib) {
 
         this.lib = lib;
+        this.g = g;
         this.t = t;
     }
 
     // This is the main update method, called every draw frame.
-    void showtime(PGraphics g, MouseInput mi, KeyInput ki) {
+    void showtime(MouseInput mi, KeyInput ki) {
         prepare();
 
        readKeyInput(ki);
@@ -72,9 +75,9 @@ public class Visipalp {
         }
 
         g.background(bgColor);
-        if (puzzleView) puzzleView(g, 0, t.w - scrollerW, t.h, latitude, mi, ki);
-        else thumbnailView(g, getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
-        drawOnTop(g, mi);
+        if (puzzleView) puzzleView(0, t.w - scrollerW, t.h, latitude, mi, ki);
+        else thumbnailView(getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
+        drawOnTop(mi);
 //        debugMouseInput(g, mi);
 //        debugKeyInput(g, ki);
 
@@ -88,8 +91,8 @@ public class Visipalp {
         hotItem = 0;
     }
 
-    public void drawOnTop(PGraphics g, MouseInput mi){
-        if (heldClippings.size() > 0) casper(g, heldClippings, casperSize.x, casperSize.y, mi);
+    public void drawOnTop(MouseInput mi){
+        if (heldClippings.size() > 0) casper(heldClippings, casperSize.x, casperSize.y, mi);
     }
 
     public void finish(MouseInput mi) {
@@ -139,7 +142,7 @@ public class Visipalp {
     // CONTACT SHEET
     // makes all the clippings
 
-    void thumbnailView(PGraphics g, int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    void thumbnailView(int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         List<Clipping> row;
         x = sheetX + gutter;
         y = sheetY + gutter;
@@ -151,31 +154,31 @@ public class Visipalp {
 
         while(count <= lib.clippings.size()){
             row = lib.clippings.subList(count, PApplet.constrain(count + columns, 0, lib.clippings.size()));
-            thumbnailRow(g, row, rowNum, y, sheetX, sheetY, sheetH, lat, mi, ki);
+            thumbnailRow(row, rowNum, y, sheetX, sheetY, sheetH, lat, mi, ki);
             count += columns;
             y += getClipSize() + gutter;
             rowNum++;
         }
         g.pop();
 
-        scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
+        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    void thumbnailRow(PGraphics g, List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki){
+    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki){
         x = sheetX + gutter;
         float rightEdge = 0;
         for (Clipping c : row){
             followClippingOffscreen(c, y, lat, sheetY, sheetH);
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
-            clipping(g, getID(), rowNum, c, x, y, size.x, size.y, offset, lat, sheetY, sheetH, mi, ki);
-            dropZone(g, c, (rightEdge + x + offset.x) / 2, 50,rowY, getClipSize(), lat, mi);
+            clipping(getID(), rowNum, c, x, y, size.x, size.y, offset, lat, sheetY, sheetH, mi, ki);
+            dropZone(c, (rightEdge + x + offset.x) / 2, 50,rowY, getClipSize(), lat, mi);
             rightEdge = x + size.x + offset.x;
             x += getClipSize() + gutter;
         }
     }
 
-    void clipping(PGraphics g, int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
+    void clipping(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
                   float thumbH, PVector offset, float lat, float sheetY, float sheetH, MouseInput mi, KeyInput ki) {
 
         foot = clipY + thumbH + gutter;
@@ -185,13 +188,13 @@ public class Visipalp {
         if (clipY < lat - thumbH) return;
         if (clipY > lat + t.h) return;
 
-        clippingMouseInteract(g, id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
+        clippingMouseInteract(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-        if (c.isSelected()) drawClippingSelect(g, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+        if (c.isSelected()) drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
     }
 
-    void clippingMouseInteract(PGraphics g, int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
+    void clippingMouseInteract(int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
         //if the mouse is around
         if (mouseOver(x, y, w, h, mi)) {
             hotItem = id;
@@ -225,7 +228,7 @@ public class Visipalp {
         heldClippings = c;
     }
 
-    void dropZone(PGraphics g, Clipping c, float dropX, float range, float rowY, float rowH, float lat, MouseInput mi){
+    void dropZone(Clipping c, float dropX, float range, float rowY, float rowH, float lat, MouseInput mi){
         if (mi.y < rowY - lat || mi.y > rowY + rowH - lat) return;
         if (PApplet.dist(mi.x, mi.y, dropX, mi.y) > range)return;
         g.stroke(255, 0, 255);
@@ -239,7 +242,7 @@ public class Visipalp {
         g.strokeWeight(1);
     }
 
-    void casper(PGraphics g, ArrayList<Clipping> c, float w, float h, MouseInput mi){
+    void casper(ArrayList<Clipping> c, float w, float h, MouseInput mi){
         if (activeItem == 0) {
             heldClippings.clear();
             return;
@@ -274,7 +277,7 @@ public class Visipalp {
         return new PVector(offX, offY);
     }
 
-    public void drawClippingSelect(PGraphics g, float x, float y, float w, float h) {
+    public void drawClippingSelect(float x, float y, float w, float h) {
         g.stroke(255);
         g.noFill();
         g.rect(x, y, w, h);
@@ -282,15 +285,15 @@ public class Visipalp {
 
     // SCROLLER
 
-    public void scroller(PGraphics g, int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH, MouseInput mi) {
+    public void scroller(int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH, MouseInput mi) {
         g.noStroke();
         g.fill(scrollerColor);
         g.rect(scrollerX, scrollerY, scrollerW, scrollerH);
 
-        grip(g, getID(), scrollerX, scrollerW, scrollerH, mi);
+        grip(getID(), scrollerX, scrollerW, scrollerH, mi);
     }
 
-    void grip(PGraphics g, int id, float gripX, float gripW, float scrollerH, MouseInput mi) {
+    void grip(int id, float gripX, float gripW, float scrollerH, MouseInput mi) {
         float gripH = setGripSize(foot, scrollerH);
         float gripY;
 
@@ -356,7 +359,7 @@ public class Visipalp {
 
     // i hate this method :(
     //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
-    public void puzzleView(PGraphics g, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    public void puzzleView(float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         // set up
         float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
         ArrayList<Clipping> row = new ArrayList<Clipping>();
@@ -380,7 +383,7 @@ public class Visipalp {
             } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(g, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
+                puzzleRow(row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
                 rowNum++;
                 rowH = minH * ratio;
 
@@ -396,14 +399,14 @@ public class Visipalp {
         }
         // finish off the last row
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(g, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
+        puzzleRow(row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
 
         g.pop();
 
-        scroller(g, getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
+        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    public void puzzleRow(PGraphics g, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    public void puzzleRow(ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         float px = puzzleGutter;
         for (Clipping clip : row) {
             float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
@@ -411,9 +414,9 @@ public class Visipalp {
             followClippingOffscreen(clip, rowY, lat, 0, sheetH);
             PVector offset = new PVector(0,0);
 
-            clipping(g, getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, mi, ki);
+            clipping(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, mi, ki);
 
-            dropZone(g, clip, px - puzzleGutter/2, 50, rowY, displayH,lat, mi);
+            dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat, mi);
 
             px += displayW + puzzleGutter;
             foot = rowY + displayH + puzzleGutter;
@@ -460,7 +463,7 @@ public class Visipalp {
 
     //region DEBUG --------------------------------------------------
 
-    public void debugMouseInput(PGraphics g, MouseInput mi) {
+    public void debugMouseInput(MouseInput mi) {
         g.textSize(36);
         g.fill(255, 0, 255);
         if (mi == null) {
@@ -477,7 +480,7 @@ public class Visipalp {
                 100, 100);
     }
 
-    public void debugKeyInput(PGraphics g, KeyInput ki) {
+    public void debugKeyInput(KeyInput ki) {
         g.textSize(36);
         g.fill(255, 0, 255);
         if (ki == null) {
@@ -495,7 +498,7 @@ public class Visipalp {
                 400, 100);
     }
 
-    public void debugCasper(PGraphics g){
+    public void debugCasper(){
         g.textSize(36);
         g.fill(255,0,255);
         if (heldClippings.size() > 0){
