@@ -148,14 +148,17 @@ public class Visipalp {
         y = sheetY + gutter;
         int count = 0;
         int rowNum = 1;
+        float lastRowY = 0;
+        Clipping lastClipping = null;
 
         g.push();
         g.translate(0, -lat);
 
         while(count <= lib.clippings.size()){
             row = lib.clippings.subList(count, PApplet.constrain(count + columns, 0, lib.clippings.size()));
-            thumbnailRow(row, rowNum, y, sheetX, sheetY, sheetH, lat, mi, ki);
+            thumbnailRow(row, rowNum, y, lastRowY, sheetX, sheetY, sheetH, lat, mi, ki);
             count += columns;
+            lastRowY = y;
             y += getClipSize() + gutter;
             rowNum++;
         }
@@ -164,7 +167,7 @@ public class Visipalp {
         scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki){
+    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float lastRowY, float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki){
         x = sheetX + gutter;
         float rightEdge = 0;
         for (Clipping c : row){
@@ -172,9 +175,19 @@ public class Visipalp {
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
             clipping(getID(), rowNum, c, x, y, size.x, size.y, offset, lat, sheetY, sheetH, mi, ki);
-            dropZone(c, (rightEdge + x + offset.x) / 2, 50,rowY, getClipSize(), lat, mi);
+            //if (rowNum 1=)
+            dropZone(c, (rightEdge + x + offset.x) / 2, 50, rowY, getClipSize(), lat, mi);
             rightEdge = x + size.x + offset.x;
             x += getClipSize() + gutter;
+
+            // prepare extra dropzone for first clipping of next row
+            if (lib.clippings.indexOf(c) + 1 == lib.clippings.size()){
+                    dropZone(c, (rightEdge + getSheetWidth()) / 2, 50, rowY, getClipSize(), lat, mi);
+                    continue;
+            }
+            if (row.indexOf(c) != row.size() - 1) continue;
+            dropZone(lib.clippings.get(lib.clippings.indexOf(c) + 1), (rightEdge + getSheetWidth()) / 2, 50, rowY, getClipSize(), lat, mi);
+
         }
     }
 
