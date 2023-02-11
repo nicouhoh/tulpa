@@ -16,18 +16,14 @@ public class Clipping {
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 
-//    Spegel spegel;
-
-    boolean selected;
-
     public Clipping(File file, String idIn) {
         id = idIn;
         imgPath = file.getAbsolutePath();
         img = tulpa.SOLE.loadImage(imgPath);
     }
 
-    public boolean isSelected() {
-        return selected;
+    public boolean isSelected(Library lib) {
+        return lib.selected.contains(this);
     }
 
     public void addTag(Tag t){
@@ -54,9 +50,5 @@ public class Clipping {
 
     public ArrayList<Tag> getTags(){
         return tags;
-    }
-
-    public void setSelected(boolean set){
-        selected = set;
     }
 }

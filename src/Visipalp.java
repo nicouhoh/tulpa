@@ -20,8 +20,6 @@ public class Visipalp {
     int nextID;
 
     float gutter = 10;
-    float x = gutter;
-    float y = gutter;
 
     int columns = 7;
 
@@ -33,10 +31,10 @@ public class Visipalp {
     int activeItem = 0;
 
     // Casper
-    PVector casperSize;
+    PVector casperSize = new PVector(0, 0);
     PVector casperOffset;
+    Clipping casperClipping;
     ArrayList<Clipping> heldClippings = new ArrayList<Clipping>();
-
 
     // Scroller
     int scrollerColor = 0xff1A1A1A;
@@ -67,39 +65,41 @@ public class Visipalp {
 
     // This is the main update method, called every draw frame.
     void showtime(MouseInput mi, KeyInput ki) {
-        prepare();
+        prepare(mi);
 
-       readKeyInput(ki);
+        readKeyInput(ki);
+
         if (mi.wheel != 0) {
             changeLatitude(mi.wheel * scrollSpeed);
         }
 
         g.background(bgColor);
         if (puzzleView) puzzleView(0, t.w - scrollerW, t.h, latitude, mi, ki);
-        else thumbnailView(getID(), 0, 0, t.w - scrollerW, t.h, latitude, mi, ki);
+        else thumbnailView(0, 0, t.h, latitude, mi, ki);
         drawOnTop(mi);
-//        debugMouseInput(g, mi);
-//        debugKeyInput(g, ki);
-
         finish(mi);
+        debugMouseInput(mi);
+//        debugKeyInput(g, ki);
     }
 
     // VISIPALP BUSINESS
 
-
-    public void prepare() {
+    public void prepare(MouseInput mi) {
         hotItem = 0;
+        nextID = 1;
+    }
+
+    public void finish(MouseInput mi){
+        if (mi.button == 0){
+            heldClippings.clear();
+            activeItem = 0;
+        }else if (mi.button == 1 && activeItem == 0) activeItem = -1;
     }
 
     public void drawOnTop(MouseInput mi){
-        if (heldClippings.size() > 0) casper(heldClippings, casperSize.x, casperSize.y, mi);
-    }
-
-    public void finish(MouseInput mi) {
-        if (mi.button == 0) activeItem = 0;
-        else if (activeItem == 0)
-            activeItem = -1; //If the mouse button is still held down, but the button isn't active, we make activeItem unavailable, so we don't pick up other elements with the mouse
-        nextID = 1;
+        if (!heldClippings.isEmpty()){
+            casper(heldClippings.get(0), casperSize.x, casperSize.y, mi);
+        }
     }
 
     public int getID() {
@@ -142,57 +142,39 @@ public class Visipalp {
     // CONTACT SHEET
     // makes all the clippings
 
-    void thumbnailView(int id, float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    // FIXME doesn't set foot correctly at all zoom levels
+
+    void thumbnailView(float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         List<Clipping> row;
-        x = sheetX + gutter;
-        y = sheetY + gutter;
-        int count = 0;
-        int rowNum = 1;
-        float lastRowY = 0;
-        Clipping lastClipping = null;
 
         g.push();
         g.translate(0, -lat);
-
-        while(count <= lib.clippings.size()){
-            row = lib.clippings.subList(count, PApplet.constrain(count + columns, 0, lib.clippings.size()));
-            thumbnailRow(row, rowNum, y, lastRowY, sheetX, sheetY, sheetH, lat, mi, ki);
-            count += columns;
-            lastRowY = y;
-            y += getClipSize() + gutter;
-            rowNum++;
+        for (int i = 0; i < lib.clippings.size() / columns; i++){
+            row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)) , 0, lib.clippings.size()));
+            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX, sheetY, sheetH, mi, ki);
         }
         g.pop();
 
         scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float lastRowY, float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki){
-        x = sheetX + gutter;
-        float rightEdge = 0;
-        for (Clipping c : row){
-            followClippingOffscreen(c, y, lat, sheetY, sheetH);
+    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, MouseInput mi, KeyInput ki){
+        float previousRightEdge = 0;
+//        Clipping nextRowClipping = row.get(-1)
+        for (int i = 0; i < row.size(); i++){
+            Clipping c = row.get(i);
+            float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
-            clipping(getID(), rowNum, c, x, y, size.x, size.y, offset, lat, sheetY, sheetH, mi, ki);
-            //if (rowNum 1=)
-            dropZone(c, (rightEdge + x + offset.x) / 2, 50, rowY, getClipSize(), lat, mi);
-            rightEdge = x + size.x + offset.x;
-            x += getClipSize() + gutter;
-
-            // prepare extra dropzone for first clipping of next row
-            if (lib.clippings.indexOf(c) + 1 == lib.clippings.size()){
-                    dropZone(c, (rightEdge + getSheetWidth()) / 2, 50, rowY, getClipSize(), lat, mi);
-                    continue;
-            }
-            if (row.indexOf(c) != row.size() - 1) continue;
-            dropZone(lib.clippings.get(lib.clippings.indexOf(c) + 1), (rightEdge + getSheetWidth()) / 2, 50, rowY, getClipSize(), lat, mi);
-
+            clipping(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, sheetY, sheetH, previousRightEdge, mi, ki);
+            previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
         }
+        dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetWidth()) / 2, 50, rowY, getClipSize(), latitude, mi);
+        //TODO I think I still need to do a special case for the very last clipping in the library
     }
 
     void clipping(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
-                  float thumbH, PVector offset, float lat, float sheetY, float sheetH, MouseInput mi, KeyInput ki) {
+                  float thumbH, PVector offset, float lat, float sheetY, float sheetH, float previousRightEdge, MouseInput mi, KeyInput ki) {
 
         foot = clipY + thumbH + gutter;
         upDownSelect(c, rowNum, sheetY, sheetH, clipX, clipY, thumbW, lat, ki);
@@ -204,66 +186,65 @@ public class Visipalp {
         clippingMouseInteract(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-        if (c.isSelected()) drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+        if (c.isSelected(lib)) drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+
+        dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat, mi);
     }
 
     void clippingMouseInteract(int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
-        //if the mouse is around
+        // MOUSEOVER
         if (mouseOver(x, y, w, h, mi)) {
             hotItem = id;
-            // and we're not active yet and we have the button clicked
+
+            // MOUSE DOWN
             if (activeItem == 0 && mi.button == MOUSE1) {
-                    activeItem = id;
-                    casperOffset = new PVector(mi.x - x, mi.y - y);
-                    if (!c.isSelected() && mi.mod == 0) lib.select(c);
-                    else if (mi.mod == 2)
-                        lib.addSelect(c);
+                activeItem = id;
+                casperOffset = new PVector(mi.x - x, mi.y - y);
+                casperSize = new PVector(w, h);
+                if (!c.isSelected(lib) && mi.mod == 0) lib.select(c);
+                else if (mi.mod == 2)
+                    lib.addSelect(c);
             }
+            return;
         }
 
-        // if the mouse is NOT around but we have this clipping in hand:
-        else if (activeItem == id){
-            if(c.isSelected() && lib.selected.size() > 1){
-                setDraggedClippings(lib.selected, w, h, mi);
-            }
-            setDraggedClippings(c, w, h, mi);
-        }
+        // DRAGGING CLIPPING
+        if (activeItem != id) return;
+        if(c.isSelected(lib) && lib.selected.size() > 1)
+            setDraggedClippings(lib.selected, w, h, mi);
+        else setDraggedClippings(c, w, h, mi);
     }
 
     void setDraggedClippings(Clipping c, float w, float h, MouseInput mi){
-        casperSize = new PVector(w, h);
         heldClippings.clear();
         heldClippings.add(c);
     }
 
+    // FIXME multiple select & drag fixed, but selection seems to be broken after moving multiple clippings
+
     void setDraggedClippings(ArrayList<Clipping> c, float w, float h, MouseInput mi){
-        casperSize = new PVector(w, h);
+        heldClippings.clear();
         heldClippings = c;
     }
 
     void dropZone(Clipping c, float dropX, float range, float rowY, float rowH, float lat, MouseInput mi){
+        if (heldClippings.isEmpty()) return;
         if (mi.y < rowY - lat || mi.y > rowY + rowH - lat) return;
         if (PApplet.dist(mi.x, mi.y, dropX, mi.y) > range)return;
         g.stroke(255, 0, 255);
         g.strokeWeight(2);
         g.line(dropX, rowY, dropX, rowY + rowH);
-        if(heldClippings.size() > 0 && mi.button == 0){
-            lib.moveClipping(heldClippings, c);
-            heldClippings.clear();
-            activeItem = 0;
-        }
         g.strokeWeight(1);
+        if(mi.button == 0){
+            lib.moveClipping(heldClippings, c);
+        }
     }
 
-    void casper(ArrayList<Clipping> c, float w, float h, MouseInput mi){
-        if (activeItem == 0) {
-            heldClippings.clear();
-            return;
-        }
+    void casper(Clipping c, float w, float h, MouseInput mi){
         g.push();
         g.translate(0, -latitude);
         g.tint(255, 128);
-        g.image(c.get(0).img, mi.x - casperOffset.x, mi.y + latitude - casperOffset.y, w, h);
+        g.image(c.img, mi.x - casperOffset.x, mi.y + latitude - casperOffset.y, w, h);
         g.tint(255);
         g.pop();
     }
@@ -427,7 +408,7 @@ public class Visipalp {
             followClippingOffscreen(clip, rowY, lat, 0, sheetH);
             PVector offset = new PVector(0,0);
 
-            clipping(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, mi, ki);
+            clipping(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, 0, mi, ki);
 
             dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat, mi);
 
@@ -489,7 +470,9 @@ public class Visipalp {
                         "\nwheel: " + mi.wheel +
                         "\nmod: " + mi.mod +
                         "\nhot: " + hotItem +
-                        "\nactive: " + activeItem,
+                        "\nactive: " + activeItem +
+                        "\nselected: " + lib.selected +
+                        "\nheld: " + heldClippings,
                 100, 100);
     }
 

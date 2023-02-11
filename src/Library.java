@@ -133,19 +133,14 @@ public class Library {
   }
 
   public void addSelect(Clipping clipping) {
-    clipping.setSelected(true);
     selected.add(clipping);
   }
 
   public void removeSelect(Clipping clipping) {
-    clipping.setSelected(false);
     selected.remove(clipping);
   }
 
   public void clearSelection() {
-    for (Clipping clipping : selected) {
-      clipping.setSelected(false);
-    }
     selected.clear();
   }
 
@@ -155,7 +150,7 @@ public class Library {
   }
 
   public void toggleSelect(Clipping c){
-    if (c.isSelected()) removeSelect(c);
+    if (c.isSelected(this)) removeSelect(c);
     else addSelect(c);
   }
 

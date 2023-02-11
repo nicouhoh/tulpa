@@ -1,5 +1,11 @@
 public class Conductor {
 
+    //
+    // This class is an artifact of some work I was doing a bit ago
+    // I'm leaving it here in case, but it doesn't do anything right now
+    //
+
+
     tulpa t;
     Library lib;
     Visipalp vis;
@@ -22,8 +28,8 @@ public class Conductor {
         if (ki.key == '0') puzzle = !puzzle;
 
         //vis.background();
-        if (puzzle) vis.puzzleView(0, t.width, t.height, vis.latitude, mi, ki);
-        else vis.thumbnailView(vis.getID(), 0, 0, t.w, t.h, vis.latitude, mi, ki);
+//        if (puzzle) vis.puzzleView(0, t.width, t.height, vis.latitude, mi, ki);
+//        else vis.thumbnailView(0, 0, t.w, t.h, vis.latitude, mi, ki);
 
         finish();
     }
