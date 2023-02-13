@@ -1,11 +1,11 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
+import processing.core.PImage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 
 public class Visipalp {
@@ -14,6 +14,8 @@ public class Visipalp {
     Library lib;
 
     PGraphics g;
+
+    Mode mode = Mode.CONTACTSHEET;
 
     int bgColor = 49;
 
@@ -55,6 +57,9 @@ public class Visipalp {
     float puzzleGutter = 2;
     PVector upDownSelect = new PVector(0,0);
 
+    // Clipping View
+
+
     Visipalp(tulpa t, PGraphics g, Library lib) {
 
         this.lib = lib;
@@ -75,9 +80,10 @@ public class Visipalp {
         g.background(bgColor);
         if (puzzleView) puzzleView(0, t.w - scrollerW, t.h, latitude, mi, ki);
         else thumbnailView(0, 0, t.h, latitude, mi, ki);
-        drawOnTop(mi);
+        casperLayer(mi);
+        if (mode == Mode.CLIPPINGVIEW) clippingView();
         finish(mi);
-        debugMouseInput(mi);
+//        debugMouseInput(mi);
 //        debugKeyInput(g, ki);
     }
 
@@ -95,7 +101,7 @@ public class Visipalp {
         }else if (mi.button == 1 && activeItem == 0) activeItem = -1;
     }
 
-    public void drawOnTop(MouseInput mi){
+    public void casperLayer(MouseInput mi){
         if (!heldClippings.isEmpty()){
             casper(heldClippings.get(0), casperSize.x, casperSize.y, mi);
         }
@@ -126,16 +132,25 @@ public class Visipalp {
 
     public void readKeyInput(KeyInput ki) {
         if (ki == null) return;
-        else if (ki.kc == KeyEvent.VK_RIGHT) directionalSelect(1);
-        else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
-        else if (ki.key == '\b') {
-            if (lib.selected.size() > 0) {
-                lib.whackClipping(lib.selected);
-                System.out.println("BACKSPACE");
-            }
-        } else if (ki.key == '-') columns++;
-        else if (ki.key == '=') columns--;
-        else if (ki.key == '0') puzzleView = !puzzleView;
+
+        if (mode == Mode.CONTACTSHEET){
+            if (ki.kc == KeyEvent.VK_RIGHT) directionalSelect(1);
+            else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
+            else if (ki.key == '\b') {
+                if (lib.selected.size() > 0) {
+                    lib.whackClipping(lib.selected);
+                    System.out.println("BACKSPACE");
+                }
+            } else if (ki.key == '-') columns++;
+            else if (ki.key == '=') columns--;
+            else if (ki.key == '0') puzzleView = !puzzleView;
+            else if (ki.key == KeyEvent.VK_SPACE && lib.selected.size() == 1) mode = Mode.CLIPPINGVIEW;
+
+        } else if(mode == Mode.CLIPPINGVIEW){
+            if (ki. kc == KeyEvent.VK_RIGHT) directionalSelect(1);
+            else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
+            else if (ki.key == KeyEvent.VK_SPACE) mode = Mode.CONTACTSHEET;
+        }
     }
 
     // CONTACT SHEET
@@ -205,7 +220,7 @@ public class Visipalp {
                 System.out.println("Casper set: " + heldClippings);
                 if (!c.isSelected(lib) && mi.mod == 0) {
                     System.out.println("before: " + heldClippings);
-                    lib.select(c); //FIXME Somehow, in this line of code, this clipping gets added to heldClippings
+                    lib.select(c);
                     System.out.println("Selected: " + heldClippings);
                 }
                 else if (mi.mod == 2)
@@ -227,8 +242,6 @@ public class Visipalp {
         heldClippings.clear();
         heldClippings.add(c);
     }
-
-    // FIXME multiple select & drag fixed, but selection seems to be broken after moving multiple clippings
 
     void setDraggedClippings(ArrayList<Clipping> c, float w, float h, MouseInput mi){
         heldClippings.clear();
@@ -326,8 +339,6 @@ public class Visipalp {
     public float setGripPos(float scrollValue, float bottomOfScroll, float scrollerH, float gripH) {
         return PApplet.constrain(scrollValue / bottomOfScroll * scrollerH, 0, scrollerH - gripH);
     }
-
-    // THUMBNAIL MODE
 
     public void directionalSelect(int amount) {
         if (lib.selected.size() != 1) return;
@@ -441,6 +452,7 @@ public class Visipalp {
         }
 
         // Keyboard input for updown selection
+        if (mode != Mode.CONTACTSHEET) return;
         if (lib.selected.get(0) != c) return;
         if (ki.kc == KeyEvent.VK_UP) {
                 setUpDownSelect(clipX, rowNum - 1, thumbW);
@@ -452,6 +464,36 @@ public class Visipalp {
         }
     }
 
+    // CLIPPING VIEW
+
+    public void clippingView(){
+        if (lib.selected.size() != 1){
+            mode = Mode.CONTACTSHEET;
+            return;
+        }
+        g.noStroke();
+        g.fill(0, 225);
+        g.rect(0, 0, t.w, t.h);
+        clippingImage(lib.selected.get(0));
+    }
+
+    public void clippingImage(Clipping c){
+        PVector size = fitImage(c.img, PApplet.constrain(t.w, 10, c.img.width), PApplet.constrain(t.h, 10, c.img.height));
+        g.image(c.img, (t.w / 2) - (size.x / 2), (t.h / 2) - (size.y / 2), size.x, size.y);
+    }
+
+    public PVector fitImage(PImage img, float w, float h){
+        float newW = 0;
+        float newH = 0;
+        if (img.width >= img.height){
+            newW = w;
+            newH = (img.height * newW) / img.width;
+        }else if (h > w){
+            newH = h;
+            newW = (img.width * newH) / img.height;
+        }
+        return new PVector(newW, newH);
+    }
 
     public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetY, float sheetH){
         if (c == goTo) {
@@ -513,9 +555,6 @@ public class Visipalp {
     //endregion
 }
 
-
-
-//TODO view
 
 //TODO panel
 //TODO typing
