@@ -154,24 +154,6 @@ public class Library {
     else addSelect(c);
   }
 
-//  public void selectUpDownSardine(int direction){
-//    Clipping selClip = selected.get(0);
-//    float bestScore = 0;
-//    Clipping best = selClip;
-//
-//    for (Clipping c : clippings){
-//      Spegel s = c.spegel;
-//      if (c == selClip) continue;
-//      if (c.spegel.y < selClip.spegel.y - s.displayH * 1.2 || s.y > selClip.spegel.y + selClip.spegel.displayH * 1.2) continue;
-//      if (findOverlap(selClip.spegel, s) > bestScore && (selClip.spegel.y - s.y) * direction < 0){
-//        bestScore = findOverlap(selClip.spegel, s);
-//        best = c;
-//      }
-//    }
-//    clearSelection();
-//    select(best);
-//  }
-
   public ArrayList<Clipping> search(String s){
     ArrayList<Clipping> output = new ArrayList<Clipping>();
     String[] terms = s.split(" ");
@@ -183,13 +165,6 @@ public class Library {
     }
     return output;
   }
-
-//  public float findOverlap(Spegel s1, Spegel s2){
-//    if (s1.x > s2.x + s2.displayW || s1.x + s1.displayW <= s2.x) return 0;
-//    float left = PApplet.max(s1.x, s2.x);
-//    float right = PApplet.min(s1.x + s1.displayW, s2.x + s2.displayW);
-//    return PApplet.max(left, right) - PApplet.min(left, right);
-//  }
 
   // move Clipping c before clipping c2
   public void moveClipping(Clipping c1, Clipping c2){

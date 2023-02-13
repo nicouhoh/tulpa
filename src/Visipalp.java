@@ -33,7 +33,6 @@ public class Visipalp {
     // Casper
     PVector casperSize = new PVector(0, 0);
     PVector casperOffset;
-    Clipping casperClipping;
     ArrayList<Clipping> heldClippings = new ArrayList<Clipping>();
 
     // Scroller
@@ -188,6 +187,7 @@ public class Visipalp {
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
         if (c.isSelected(lib)) drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
 
+        if(heldClippings.isEmpty()) return;
         dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat, mi);
     }
 
@@ -198,18 +198,26 @@ public class Visipalp {
 
             // MOUSE DOWN
             if (activeItem == 0 && mi.button == MOUSE1) {
+                System.out.println("Start: " + heldClippings);
                 activeItem = id;
                 casperOffset = new PVector(mi.x - x, mi.y - y);
                 casperSize = new PVector(w, h);
-                if (!c.isSelected(lib) && mi.mod == 0) lib.select(c);
+                System.out.println("Casper set: " + heldClippings);
+                if (!c.isSelected(lib) && mi.mod == 0) {
+                    System.out.println("before: " + heldClippings);
+                    lib.select(c); //FIXME Somehow, in this line of code, this clipping gets added to heldClippings
+                    System.out.println("Selected: " + heldClippings);
+                }
                 else if (mi.mod == 2)
                     lib.addSelect(c);
+                System.out.println("Out: " + heldClippings);
             }
             return;
         }
 
         // DRAGGING CLIPPING
         if (activeItem != id) return;
+        if (!heldClippings.isEmpty()) return;
         if(c.isSelected(lib) && lib.selected.size() > 1)
             setDraggedClippings(lib.selected, w, h, mi);
         else setDraggedClippings(c, w, h, mi);
@@ -224,7 +232,7 @@ public class Visipalp {
 
     void setDraggedClippings(ArrayList<Clipping> c, float w, float h, MouseInput mi){
         heldClippings.clear();
-        heldClippings = c;
+        heldClippings.addAll(c);
     }
 
     void dropZone(Clipping c, float dropX, float range, float rowY, float rowH, float lat, MouseInput mi){
@@ -237,6 +245,7 @@ public class Visipalp {
         g.strokeWeight(1);
         if(mi.button == 0){
             lib.moveClipping(heldClippings, c);
+            heldClippings.clear();
         }
     }
 
@@ -505,7 +514,6 @@ public class Visipalp {
 }
 
 
-//TODO multiple drag
 
 //TODO view
 
