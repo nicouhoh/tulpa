@@ -2,11 +2,13 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 import processing.core.PImage;
+import processing.core.PConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import java.awt.event.KeyEvent;
+//import processing.event.KeyEvent;
 
 public class Visipalp {
 
@@ -31,6 +33,8 @@ public class Visipalp {
 
     int hotItem = 0;
     int activeItem = 0;
+
+    Text focusText;
 
     // Casper
     PVector casperSize = new PVector(0, 0);
@@ -57,7 +61,11 @@ public class Visipalp {
     float puzzleGutter = 2;
     PVector upDownSelect = new PVector(0,0);
 
-    // Clipping View
+    // Panel
+    Text search = new Text("", "Search for tags");
+    boolean panelIsOpen;
+    float panelWidth = 300;
+    int panelColor = 30;
 
 
     Visipalp(tulpa t, PGraphics g, Library lib) {
@@ -78,13 +86,23 @@ public class Visipalp {
         }
 
         g.background(bgColor);
-        if (puzzleView) puzzleView(0, t.w - scrollerW, t.h, latitude, mi, ki);
-        else thumbnailView(0, 0, t.h, latitude, mi, ki);
+
+        if (puzzleView) puzzleView(getSheetX(), 0, getSheetWidth(), t.h, latitude, mi, ki);
+        else thumbnailView(getSheetX(), 0, t.h, latitude, mi, ki);
+
         casperLayer(mi);
+        if (panelIsOpen) panel();
+
         if (mode == Mode.CLIPPINGVIEW) clippingView();
         finish(mi);
 //        debugMouseInput(mi);
 //        debugKeyInput(g, ki);
+    }
+
+    public void casperLayer(MouseInput mi){
+        if (!heldClippings.isEmpty()){
+            casper(heldClippings.get(0), casperSize.x, casperSize.y, mi);
+        }
     }
 
     // VISIPALP BUSINESS
@@ -101,12 +119,6 @@ public class Visipalp {
         }else if (mi.button == 1 && activeItem == 0) activeItem = -1;
     }
 
-    public void casperLayer(MouseInput mi){
-        if (!heldClippings.isEmpty()){
-            casper(heldClippings.get(0), casperSize.x, casperSize.y, mi);
-        }
-    }
-
     public int getID() {
         int newID = nextID;
         nextID++;
@@ -117,8 +129,22 @@ public class Visipalp {
         return (getSheetWidth() - (gutter * (columns + 1))) / columns;
     }
 
+    public float getSheetX(){
+        if (panelIsOpen) return panelWidth;
+        else return 0;
+    }
+
     public float getSheetWidth() {
-        return t.w - scrollerW;
+        if (panelIsOpen) return t.w - scrollerW - panelWidth;
+        else return t.w - scrollerW;
+    }
+
+    public void setHotItem(int id){
+        hotItem = id;
+    }
+
+    public void setActiveItem(int id){
+        activeItem = id;
     }
 
     // INPUT
@@ -131,11 +157,16 @@ public class Visipalp {
     }
 
     public void readKeyInput(KeyInput ki) {
-        if (ki == null) return;
+        if (ki.action == 0) return;
+
+        if (focusText != null){
+            typeInput(ki);
+            return;
+        }
 
         if (mode == Mode.CONTACTSHEET){
-            if (ki.kc == KeyEvent.VK_RIGHT) directionalSelect(1);
-            else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
+            if (ki.kc == PConstants.RIGHT) directionalSelect(1);
+            else if (ki.kc == PConstants.LEFT) directionalSelect(-1);
             else if (ki.key == '\b') {
                 if (lib.selected.size() > 0) {
                     lib.whackClipping(lib.selected);
@@ -145,12 +176,22 @@ public class Visipalp {
             else if (ki.key == '=') columns--;
             else if (ki.key == '0') puzzleView = !puzzleView;
             else if (ki.key == KeyEvent.VK_SPACE && lib.selected.size() == 1) mode = Mode.CLIPPINGVIEW;
+            else if (ki.key == KeyEvent.VK_TAB) togglePanel();
 
         } else if(mode == Mode.CLIPPINGVIEW){
             if (ki. kc == KeyEvent.VK_RIGHT) directionalSelect(1);
             else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
             else if (ki.key == KeyEvent.VK_SPACE) mode = Mode.CONTACTSHEET;
         }
+    }
+
+    public void typeInput(KeyInput ki){
+        if (ki.action != 3 || ki.key == '\0') return;
+        System.out.println ("Key: " + ki.key);
+        System.out.println ("Keycode: " + ki.kc);
+        System.out.println ("Action: " + ki.action);
+        System.out.println ("Mod: " + ki.mod);
+        focusText.text += ki.key;
     }
 
     // CONTACT SHEET
@@ -197,53 +238,50 @@ public class Visipalp {
         if (clipY < lat - thumbH) return;
         if (clipY > lat + t.h) return;
 
-        clippingMouseInteract(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
+        clippingMouseInteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-        if (c.isSelected(lib)) drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+        if (lib.isSelected(c)) drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
 
         if(heldClippings.isEmpty()) return;
         dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat, mi);
     }
 
-    void clippingMouseInteract(int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
+    void clippingMouseInteraction(int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
         // MOUSEOVER
         if (mouseOver(x, y, w, h, mi)) {
-            hotItem = id;
+            setHotItem(id);
 
             // MOUSE DOWN
             if (activeItem == 0 && mi.button == MOUSE1) {
-                System.out.println("Start: " + heldClippings);
-                activeItem = id;
-                casperOffset = new PVector(mi.x - x, mi.y - y);
-                casperSize = new PVector(w, h);
-                System.out.println("Casper set: " + heldClippings);
-                if (!c.isSelected(lib) && mi.mod == 0) {
-                    System.out.println("before: " + heldClippings);
+                setActiveItem(id);
+                setCasper(new PVector(mi.x - x, mi.y - y), new PVector(w, h));
+                if (!lib.isSelected(c) && mi.mod == 0) {
                     lib.select(c);
-                    System.out.println("Selected: " + heldClippings);
                 }
                 else if (mi.mod == 2)
                     lib.addSelect(c);
-                System.out.println("Out: " + heldClippings);
             }
             return;
         }
 
-        // DRAGGING CLIPPING
-        if (activeItem != id) return;
-        if (!heldClippings.isEmpty()) return;
-        if(c.isSelected(lib) && lib.selected.size() > 1)
-            setDraggedClippings(lib.selected, w, h, mi);
-        else setDraggedClippings(c, w, h, mi);
+        dragClipping(id, c, w, h, mi);
     }
 
-    void setDraggedClippings(Clipping c, float w, float h, MouseInput mi){
+    void dragClipping(int id, Clipping c, float w, float h, MouseInput mi){
+        if (activeItem != id) return;
+        if (!heldClippings.isEmpty()) return;
+        if(lib.isSelected(c) && lib.selected.size() > 1)
+            setHeldClippings(lib.selected, w, h, mi);
+        else setHeldClippings(c, w, h, mi);
+    }
+
+    void setHeldClippings(Clipping c, float w, float h, MouseInput mi){
         heldClippings.clear();
         heldClippings.add(c);
     }
 
-    void setDraggedClippings(ArrayList<Clipping> c, float w, float h, MouseInput mi){
+    void setHeldClippings(ArrayList<Clipping> c, float w, float h, MouseInput mi){
         heldClippings.clear();
         heldClippings.addAll(c);
     }
@@ -269,6 +307,11 @@ public class Visipalp {
         g.image(c.img, mi.x - casperOffset.x, mi.y + latitude - casperOffset.y, w, h);
         g.tint(255);
         g.pop();
+    }
+
+    void setCasper(PVector offset, PVector size){
+        casperOffset = offset;
+        casperSize = size;
     }
 
     PVector sizeThumbnail(Clipping c) {
@@ -360,10 +403,8 @@ public class Visipalp {
 
     public void goToThumbnail(float thumbY, float lat, float sheetH) {
         if (thumbY - gutter < lat) {
-            System.out.println("thumbnail above screen at " + thumbY + ". Setting latitude to" + (thumbY - gutter));
             setLatitude(thumbY - gutter);
         } else if (thumbY + getClipSize() + gutter > lat + sheetH) {
-            System.out.println("thumbnail below screen at " + thumbY + ". Setting latitude to" + ((thumbY + getClipSize() + gutter) - sheetH));
             setLatitude((thumbY + getClipSize() + gutter) - sheetH);
         }
         goTo = null;
@@ -373,7 +414,9 @@ public class Visipalp {
 
     // i hate this method :(
     //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
-    public void puzzleView(float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    //FIXME I don't think this really works with opening and closing the panel -- shrink it like thumbnail view so it doesn't jostle around
+
+    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
         // set up
         float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
         ArrayList<Clipping> row = new ArrayList<Clipping>();
@@ -397,7 +440,7 @@ public class Visipalp {
             } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
+                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
                 rowNum++;
                 rowH = minH * ratio;
 
@@ -413,15 +456,15 @@ public class Visipalp {
         }
         // finish off the last row
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
+        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
 
         g.pop();
 
         scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    public void puzzleRow(ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
-        float px = puzzleGutter;
+    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+        float px = sheetX + puzzleGutter;
         for (Clipping clip : row) {
             float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
             float displayH = minH * ratio;
@@ -504,6 +547,59 @@ public class Visipalp {
     public void setUpDownSelect(float clipX, int row, float clipW){
         upDownSelect.x = clipX + (clipW / 2);
         upDownSelect.y = row;
+    }
+
+    public void panel(){
+        g.noStroke();
+        g.fill(panelColor);
+        g.rect(0, 0, panelWidth, t.h);
+        textBox(search, 20, 50, 260, 40);
+    }
+
+    public void textBox(Text text, float x, float y, float w, float h){
+        g.stroke(60);
+        g.fill(20);
+        g.rect(x, y, w, h);
+        g.fill(80);
+        g.textSize(14);
+        if (text.text != "") g.text(text.text, x + 5, y + h - 5);
+        else g.text(text.hint, x + 5, y + h - 5);
+    }
+
+    public void textBoxMouseInteraction(int id, Text text, float x, float y, float w, float h, MouseInput mi) {
+        // MOUSEOVER
+        if (mouseOver(x, y, w, h, mi)) {
+            setHotItem(id);
+
+            // MOUSE DOWN
+            if (activeItem == 0 && mi.button == MOUSE1) {
+                setActiveItem(id);
+                setFocusText(text);
+            }
+        }
+    }
+
+    public void textBoxTyping(){
+
+    }
+
+    public void setFocusText(Text text){
+        focusText = text;
+    }
+
+    public void openPanel(){
+        panelIsOpen = true;
+        setFocusText(search);
+        System.out.println("focusText: " + focusText);
+    }
+
+    public void closePanel(){
+        panelIsOpen = false;
+    }
+
+    public void togglePanel(){
+        if (panelIsOpen) closePanel();
+        else openPanel();
     }
 
     //region DEBUG --------------------------------------------------

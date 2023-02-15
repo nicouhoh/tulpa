@@ -22,10 +22,6 @@ public class Clipping {
         img = tulpa.SOLE.loadImage(imgPath);
     }
 
-    public boolean isSelected(Library lib) {
-        return lib.selected.contains(this);
-    }
-
     public void addTag(Tag t){
         tags.add(t);
     }

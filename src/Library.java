@@ -150,8 +150,12 @@ public class Library {
   }
 
   public void toggleSelect(Clipping c){
-    if (c.isSelected(this)) removeSelect(c);
+    if (isSelected(c)) removeSelect(c);
     else addSelect(c);
+  }
+
+  public boolean isSelected(Clipping c){
+    return (selected.contains(c));
   }
 
   public ArrayList<Clipping> search(String s){

@@ -55,10 +55,13 @@ public class tulpa extends PApplet {
 
     public void keyEvent(KeyEvent e) {
         ki.action = e.getAction();
-        if (e.getAction() == 1 || e.getAction() == 3) {
+//        if (e.getKeyCode() == ESC) System.out.println("ESC KEY");
+        if (e.getAction() == KeyEvent.PRESS || e.getAction() == KeyEvent.TYPE){
+            ki.action = e.getAction();
             ki.key = e.getKey();
             ki.kc = e.getKeyCode();
-        } else if (e.getAction() == 2) {
+        } else if (e.getAction() == KeyEvent.RELEASE) {
+            ki.action = 0;
             ki.key = '\0';
             ki.kc = 0;
         }
@@ -88,7 +91,6 @@ public class tulpa extends PApplet {
         if (action == MouseEvent.WHEEL) {
             mi.wheel = e.getCount();
         }
-
     }
 
     //public void dropEvent(DropEvent dropEvent){
