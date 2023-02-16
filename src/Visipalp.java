@@ -63,12 +63,13 @@ public class Visipalp {
 
 
     // Puzzle View
-    boolean puzzleView = true;
+    boolean puzzleView = false;
     float puzzleGutter = 2;
 
     // Panel
     Text search = new Text("", "Search for tags");
     boolean panelIsOpen;
+    boolean tabProtection; // This is to help keep tab from being inputed to the search bar immediately after opening the panel
     float panelWidth = 300;
     int panelColor = 30;
 
@@ -172,26 +173,45 @@ public class Visipalp {
     public void receiveKeyInput(KeyEvent e) {
         if (e.getAction() == 0) return;
 
-//        if (focusText != null){
-//            typeInput(ki);
-//            return;
-//        }
+        System.out.println();
+        System.out.println(e.getKey());
+        System.out.println(e.getAction());
+
+        if (focusText != null){
+            if (e.getAction() == KeyEvent.TYPE) {
+                typeInput(e);
+            }
+            return;
+        }
+
+        if(e.getAction() != KeyEvent.PRESS) return;
 
         if (mode == Mode.CONTACTSHEET){
-            if (e.getKeyCode() == PConstants.RIGHT) directionalSelect(1);
-            else if (e.getKeyCode() == PConstants.LEFT) directionalSelect(-1);
-            else if (e.getKeyCode() == PConstants.UP) UDDirection = -1;
-            else if (e.getKeyCode() == PConstants.DOWN) UDDirection = 1;
-            else if (e.getKey() == '\b') {
-                if (lib.selected.size() > 0) {
-                    lib.whackClipping(lib.selected);
-                    System.out.println("BACKSPACE");
+            if (e.getKey() == PConstants.CODED){
+                switch (e.getKeyCode()) {
+                    case PConstants.RIGHT -> directionalSelect(1);
+                    case PConstants.LEFT -> directionalSelect(-1);
+                    case PConstants.UP -> UDDirection = -1;
+                    case PConstants.DOWN -> UDDirection = 1;
                 }
-            } else if (e.getKey() == '-') columns++;
-            else if (e.getKey() == '=') columns--;
-            else if (e.getKey() == '0') puzzleView = !puzzleView;
-            else if (e.getKey() == ' ' && lib.selected.size() == 1) mode = Mode.CLIPPINGVIEW;
-            else if (e.getKey() == '\t') togglePanel();
+            }
+            else {
+                switch (e.getKey()) {
+                    case '\b' -> {
+                        if (lib.selected.size() > 0) {
+                            lib.whackClipping(lib.selected);
+                            System.out.println("BACKSPACE");
+                        }
+                    }
+                    case '-' -> columns++;
+                    case '=' -> columns--;
+                    case '0' -> togglePuzzleView();
+                    case ' ' -> {
+                        if (lib.selected.size() == 1) mode = Mode.CLIPPINGVIEW;
+                    }
+                    case '\t' -> togglePanel();
+                }
+            }
 
         } else if(mode == Mode.CLIPPINGVIEW){
             if (e.getKeyCode() == PConstants.RIGHT) directionalSelect(1);
@@ -200,14 +220,19 @@ public class Visipalp {
         }
     }
 
-//    public void typeInput(KeyInput ki){
-//        if (ki.action != 3 || ki.key == '\0') return;
-//        System.out.println ("Key: " + ki.key);
-//        System.out.println ("Keycode: " + ki.kc);
-//        System.out.println ("Action: " + ki.action);
-//        System.out.println ("Mod: " + ki.mod);
-//        focusText.text += ki.key;
-//    }
+    public void typeInput(KeyEvent e) {
+
+        if (tabProtection && e.getKey() == '\t'){
+            tabProtection = false;
+            return;
+        }
+
+        switch (e.getKey()) {
+            case '\b' -> { if (focusText.text.length() > 0) focusText.text = focusText.text.substring(0, focusText.text.length() - 1); }
+            case '\t' -> { if (focusText == search) closePanel(); }
+            default -> focusText.text += e.getKey();
+        }
+    }
 
     // CONTACT SHEET
     // makes all the clippings
@@ -433,7 +458,7 @@ public class Visipalp {
         latitude = y;
     }
 
-    public void changeLatitude(int l) {
+    public void changeLatitude(float l) {
         latitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
     }
 
@@ -564,10 +589,15 @@ public class Visipalp {
         g.stroke(60);
         g.fill(20);
         g.rect(x, y, w, h);
-        g.fill(80);
-        g.textSize(14);
-        if (text.text != "") g.text(text.text, x + 5, y + h - 5);
-        else g.text(text.hint, x + 5, y + h - 5);
+        g.textSize(32);
+        if (text.text != "") {
+            g.fill(225);
+            g.text(text.text, x + 5, y + h - 8);
+        }
+        else {
+            g.fill(80);
+            g.text(text.hint, x + 5, y + h - 8);
+        }
     }
 
     public void textBoxMouseInteraction(int id, Text text, float x, float y, float w, float h, MouseInput mi) {
@@ -593,17 +623,25 @@ public class Visipalp {
 
     public void openPanel(){
         panelIsOpen = true;
+        tabProtection = true;
         setFocusText(search);
         System.out.println("focusText: " + focusText);
     }
 
     public void closePanel(){
         panelIsOpen = false;
+        tabProtection = false;
+        setFocusText(null);
     }
 
     public void togglePanel(){
         if (panelIsOpen) closePanel();
         else openPanel();
+    }
+
+    public void togglePuzzleView(){
+        puzzleView = !puzzleView;
+        changeLatitude(latitude);
     }
 
     void setArrowUDTarget(int rowNum, float x){
@@ -660,10 +698,12 @@ public class Visipalp {
     //endregion
 }
 
-
+//TODO redo mouse control
 //TODO panel
 //TODO typing
 //TODO tags
+
+//FIXME I noticed funkiness when scrolling down to the bottom in puzzle view and switching back to
 
 // FOR SAFE KEEPING THIS IS "BUTTON" BEHAVIOR
 //        if(mouseButton == 0 &&

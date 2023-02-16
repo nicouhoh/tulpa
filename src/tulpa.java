@@ -54,7 +54,7 @@ public class tulpa extends PApplet {
     // INPUT -----------------------------------------------------------------
 
     public void keyEvent(KeyEvent e) {
-        if (e.getAction() != KeyEvent.PRESS) return;
+//        if (e.getAction() != KeyEvent.PRESS) return;
         vis.receiveKeyInput(e);
 //        ki.action = e.getAction();
 ////        if (e.getKeyCode() == ESC) System.out.println("ESC KEY");
