@@ -36,7 +36,7 @@ public class tulpa extends PApplet {
 
     public void draw() {
         checkResize();
-        vis.showtime(mi, ki);
+        vis.showtime(mi);
         ki.key = '\0';
         ki.kc = 0;
         mi.wheel = 0; // we have to reset mouse wheel input because of the way it works
@@ -54,18 +54,20 @@ public class tulpa extends PApplet {
     // INPUT -----------------------------------------------------------------
 
     public void keyEvent(KeyEvent e) {
-        ki.action = e.getAction();
-//        if (e.getKeyCode() == ESC) System.out.println("ESC KEY");
-        if (e.getAction() == KeyEvent.PRESS || e.getAction() == KeyEvent.TYPE){
-            ki.action = e.getAction();
-            ki.key = e.getKey();
-            ki.kc = e.getKeyCode();
-        } else if (e.getAction() == KeyEvent.RELEASE) {
-            ki.action = 0;
-            ki.key = '\0';
-            ki.kc = 0;
-        }
-        ki.mod = e.getModifiers();
+        if (e.getAction() != KeyEvent.PRESS) return;
+        vis.receiveKeyInput(e);
+//        ki.action = e.getAction();
+////        if (e.getKeyCode() == ESC) System.out.println("ESC KEY");
+//        if (e.getAction() == KeyEvent.PRESS || e.getAction() == KeyEvent.TYPE){
+//            ki.action = e.getAction();
+//            ki.key = e.getKey();
+//            ki.kc = e.getKeyCode();
+//        } else if (e.getAction() == KeyEvent.RELEASE) {
+//            ki.action = 0;
+//            ki.key = '\0';
+//            ki.kc = 0;
+//        }
+//        ki.mod = e.getModifiers();
     }
 
 

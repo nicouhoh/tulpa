@@ -7,8 +7,8 @@ import processing.core.PConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.awt.event.KeyEvent;
-//import processing.event.KeyEvent;
+//import java.awt.event.KeyEvent;
+import processing.event.KeyEvent;
 
 public class Visipalp {
 
@@ -56,10 +56,15 @@ public class Visipalp {
     char keyDebugKey;
     int keyDebugKC;
 
+    // Arrow Up/Down
+    int UDDirection = 0;
+    int arrowUDrowNum = -1;
+    float arrowUDX = 0;
+
+
     // Puzzle View
     boolean puzzleView = true;
     float puzzleGutter = 2;
-    PVector upDownSelect = new PVector(0,0);
 
     // Panel
     Text search = new Text("", "Search for tags");
@@ -76,10 +81,10 @@ public class Visipalp {
     }
 
     // This is the main update method, called every draw frame.
-    void showtime(MouseInput mi, KeyInput ki) {
+    void showtime(MouseInput mi) {
         prepare(mi);
 
-        readKeyInput(ki);
+//        readKeyInput(ki);
 
         if (mi.wheel != 0) {
             changeLatitude(mi.wheel * scrollSpeed);
@@ -87,8 +92,8 @@ public class Visipalp {
 
         g.background(bgColor);
 
-        if (puzzleView) puzzleView(getSheetX(), 0, getSheetWidth(), t.h, latitude, mi, ki);
-        else thumbnailView(getSheetX(), 0, t.h, latitude, mi, ki);
+        if (puzzleView) puzzleView(getSheetX(), 0, getSheetWidth(), t.h, latitude, mi);
+        else thumbnailView(getSheetX(), 0, t.h, latitude, mi);
 
         casperLayer(mi);
         if (panelIsOpen) panel();
@@ -134,6 +139,14 @@ public class Visipalp {
         else return 0;
     }
 
+    public float getSheetY(){
+        return 0;
+    }
+
+    public float getSheetH(){
+        return t.h;
+    }
+
     public float getSheetWidth() {
         if (panelIsOpen) return t.w - scrollerW - panelWidth;
         else return t.w - scrollerW;
@@ -156,64 +169,66 @@ public class Visipalp {
                 !(mi.y >= y + h);
     }
 
-    public void readKeyInput(KeyInput ki) {
-        if (ki.action == 0) return;
+    public void receiveKeyInput(KeyEvent e) {
+        if (e.getAction() == 0) return;
 
-        if (focusText != null){
-            typeInput(ki);
-            return;
-        }
+//        if (focusText != null){
+//            typeInput(ki);
+//            return;
+//        }
 
         if (mode == Mode.CONTACTSHEET){
-            if (ki.kc == PConstants.RIGHT) directionalSelect(1);
-            else if (ki.kc == PConstants.LEFT) directionalSelect(-1);
-            else if (ki.key == '\b') {
+            if (e.getKeyCode() == PConstants.RIGHT) directionalSelect(1);
+            else if (e.getKeyCode() == PConstants.LEFT) directionalSelect(-1);
+            else if (e.getKeyCode() == PConstants.UP) UDDirection = -1;
+            else if (e.getKeyCode() == PConstants.DOWN) UDDirection = 1;
+            else if (e.getKey() == '\b') {
                 if (lib.selected.size() > 0) {
                     lib.whackClipping(lib.selected);
                     System.out.println("BACKSPACE");
                 }
-            } else if (ki.key == '-') columns++;
-            else if (ki.key == '=') columns--;
-            else if (ki.key == '0') puzzleView = !puzzleView;
-            else if (ki.key == KeyEvent.VK_SPACE && lib.selected.size() == 1) mode = Mode.CLIPPINGVIEW;
-            else if (ki.key == KeyEvent.VK_TAB) togglePanel();
+            } else if (e.getKey() == '-') columns++;
+            else if (e.getKey() == '=') columns--;
+            else if (e.getKey() == '0') puzzleView = !puzzleView;
+            else if (e.getKey() == ' ' && lib.selected.size() == 1) mode = Mode.CLIPPINGVIEW;
+            else if (e.getKey() == '\t') togglePanel();
 
         } else if(mode == Mode.CLIPPINGVIEW){
-            if (ki. kc == KeyEvent.VK_RIGHT) directionalSelect(1);
-            else if (ki.kc == KeyEvent.VK_LEFT) directionalSelect(-1);
-            else if (ki.key == KeyEvent.VK_SPACE) mode = Mode.CONTACTSHEET;
+            if (e.getKeyCode() == PConstants.RIGHT) directionalSelect(1);
+            else if (e.getKeyCode() == PConstants.LEFT) directionalSelect(-1);
+            else if (e.getKey() == ' ') mode = Mode.CONTACTSHEET;
         }
     }
 
-    public void typeInput(KeyInput ki){
-        if (ki.action != 3 || ki.key == '\0') return;
-        System.out.println ("Key: " + ki.key);
-        System.out.println ("Keycode: " + ki.kc);
-        System.out.println ("Action: " + ki.action);
-        System.out.println ("Mod: " + ki.mod);
-        focusText.text += ki.key;
-    }
+//    public void typeInput(KeyInput ki){
+//        if (ki.action != 3 || ki.key == '\0') return;
+//        System.out.println ("Key: " + ki.key);
+//        System.out.println ("Keycode: " + ki.kc);
+//        System.out.println ("Action: " + ki.action);
+//        System.out.println ("Mod: " + ki.mod);
+//        focusText.text += ki.key;
+//    }
 
     // CONTACT SHEET
     // makes all the clippings
 
     // FIXME doesn't set foot correctly at all zoom levels
 
-    void thumbnailView(float sheetX, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    void thumbnailView(float sheetX, float sheetY, float sheetH, float lat, MouseInput mi) {
         List<Clipping> row;
 
         g.push();
         g.translate(0, -lat);
         for (int i = 0; i < lib.clippings.size() / columns; i++){
             row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)) , 0, lib.clippings.size()));
-            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX, sheetY, sheetH, mi, ki);
+            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX, sheetY, sheetH, mi);
         }
         g.pop();
 
         scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, MouseInput mi, KeyInput ki){
+    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, MouseInput mi){
         float previousRightEdge = 0;
 //        Clipping nextRowClipping = row.get(-1)
         for (int i = 0; i < row.size(); i++){
@@ -221,27 +236,32 @@ public class Visipalp {
             float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
-            clipping(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, sheetY, sheetH, previousRightEdge, mi, ki);
+            clipping(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, sheetY, sheetH, previousRightEdge, mi);
             previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
         }
         dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetWidth()) / 2, 50, rowY, getClipSize(), latitude, mi);
         //TODO I think I still need to do a special case for the very last clipping in the library
     }
 
+
     void clipping(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
-                  float thumbH, PVector offset, float lat, float sheetY, float sheetH, float previousRightEdge, MouseInput mi, KeyInput ki) {
+                  float thumbH, PVector offset, float lat, float sheetY, float sheetH, float previousRightEdge, MouseInput mi) {
 
         foot = clipY + thumbH + gutter;
-        upDownSelect(c, rowNum, sheetY, sheetH, clipX, clipY, thumbW, lat, ki);
+        arrowUpDown(c, rowNum, clipX, offset, thumbW);
+
 
         // don't draw or bother with mouse interaction if offscreen
         if (clipY < lat - thumbH) return;
-        if (clipY > lat + t.h) return;
+        if (clipY > lat + getSheetH()) return;
 
         clippingMouseInteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-        if (lib.isSelected(c)) drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+
+        if (lib.isSelected(c)) {
+            drawClippingSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+        }
 
         if(heldClippings.isEmpty()) return;
         dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat, mi);
@@ -391,6 +411,22 @@ public class Visipalp {
         goTo = lib.selected.get(0); // mark this clipping to follow the selection offscreen if we need to
     }
 
+    void arrowUpDown(Clipping c, int rowNum, float clipX, PVector offset, float thumbW){
+        if (arrowUDrowNum != -1){
+            if (rowNum == arrowUDrowNum && clipX <= arrowUDX && clipX + offset.x + thumbW > arrowUDX){
+                lib.select(c);
+                goTo = c;
+                setArrowUDTarget(-1, 0);
+                UDDirection = 0;
+            }
+        }
+        if (UDDirection != 0 && lib.isSelected(c)){
+            setArrowUDTarget(rowNum + UDDirection, clipX + offset.x + thumbW/2);
+            UDDirection = 0;
+        }
+
+    }
+
     // LATITUDE AND SCROLLING
 
     public void setLatitude(float y) {
@@ -398,7 +434,7 @@ public class Visipalp {
     }
 
     public void changeLatitude(int l) {
-        latitude = PApplet.constrain(latitude + l, 0, foot - t.h);
+        latitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
     }
 
     public void goToThumbnail(float thumbY, float lat, float sheetH) {
@@ -416,7 +452,7 @@ public class Visipalp {
     //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
     //FIXME I don't think this really works with opening and closing the panel -- shrink it like thumbnail view so it doesn't jostle around
 
-    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi) {
         // set up
         float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
         ArrayList<Clipping> row = new ArrayList<Clipping>();
@@ -440,7 +476,7 @@ public class Visipalp {
             } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
+                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi);
                 rowNum++;
                 rowH = minH * ratio;
 
@@ -456,54 +492,27 @@ public class Visipalp {
         }
         // finish off the last row
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi, ki);
+        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi);
 
         g.pop();
 
         scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
     }
 
-    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi, KeyInput ki) {
+    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi) {
         float px = sheetX + puzzleGutter;
         for (Clipping clip : row) {
             float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
             float displayH = minH * ratio;
-            followClippingOffscreen(clip, rowY, lat, 0, sheetH);
+            followClippingOffscreen(clip, rowY, lat, sheetH);
             PVector offset = new PVector(0,0);
 
-            clipping(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, 0, mi, ki);
+            clipping(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, 0, mi);
 
             dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat, mi);
 
             px += displayW + puzzleGutter;
             foot = rowY + displayH + puzzleGutter;
-        }
-    }
-
-    // FIXME having problems arrowing up or down to a particular clipping... it's the tall text screenshot, between some flowers and a mansion
-    public void upDownSelect(Clipping c, int rowNum, float sheetY, float sheetH, float clipX, float clipY, float thumbW, float lat, KeyInput ki) {
-        if (lib.selected.size() != 1) return;
-
-        if (upDownSelect.x != 0 && clipX <= upDownSelect.x && clipX + thumbW > upDownSelect.x) {
-            if (rowNum == upDownSelect.y) {
-                lib.select(c);
-                goTo = c;
-                followClippingOffscreen(c, clipY, lat, sheetY, sheetH);
-                upDownSelect.x = 0;
-                upDownSelect.y = 0;
-            }
-        }
-
-        // Keyboard input for updown selection
-        if (mode != Mode.CONTACTSHEET) return;
-        if (lib.selected.get(0) != c) return;
-        if (ki.kc == KeyEvent.VK_UP) {
-                setUpDownSelect(clipX, rowNum - 1, thumbW);
-            ki.kc = 0;
-        }
-        if (ki.kc == KeyEvent.VK_DOWN) {
-                setUpDownSelect(clipX, rowNum + 1, thumbW);
-            ki.kc = 0;
         }
     }
 
@@ -516,7 +525,7 @@ public class Visipalp {
         }
         g.noStroke();
         g.fill(0, 225);
-        g.rect(0, 0, t.w, t.h);
+        g.rect(0, 0, t.w, getSheetH());
         clippingImage(lib.selected.get(0));
     }
 
@@ -538,15 +547,10 @@ public class Visipalp {
         return new PVector(newW, newH);
     }
 
-    public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetY, float sheetH){
+    public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetH){
         if (c == goTo) {
             goToThumbnail(thumbY, lat, sheetH);
         }
-    }
-
-    public void setUpDownSelect(float clipX, int row, float clipW){
-        upDownSelect.x = clipX + (clipW / 2);
-        upDownSelect.y = row;
     }
 
     public void panel(){
@@ -600,6 +604,11 @@ public class Visipalp {
     public void togglePanel(){
         if (panelIsOpen) closePanel();
         else openPanel();
+    }
+
+    void setArrowUDTarget(int rowNum, float x){
+        arrowUDrowNum = rowNum;
+        arrowUDX = x;
     }
 
     //region DEBUG --------------------------------------------------
