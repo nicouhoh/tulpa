@@ -2,6 +2,7 @@
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+import processing.core.PConstants;
 
 
 public class tulpa extends PApplet {
@@ -36,7 +37,7 @@ public class tulpa extends PApplet {
 
     public void draw() {
         checkResize();
-        vis.showtime(mi);
+        vis.showtime();
         ki.key = '\0';
         ki.kc = 0;
         mi.wheel = 0; // we have to reset mouse wheel input because of the way it works
@@ -54,24 +55,17 @@ public class tulpa extends PApplet {
     // INPUT -----------------------------------------------------------------
 
     public void keyEvent(KeyEvent e) {
-//        if (e.getAction() != KeyEvent.PRESS) return;
         vis.receiveKeyInput(e);
-//        ki.action = e.getAction();
-////        if (e.getKeyCode() == ESC) System.out.println("ESC KEY");
-//        if (e.getAction() == KeyEvent.PRESS || e.getAction() == KeyEvent.TYPE){
-//            ki.action = e.getAction();
-//            ki.key = e.getKey();
-//            ki.kc = e.getKeyCode();
-//        } else if (e.getAction() == KeyEvent.RELEASE) {
-//            ki.action = 0;
-//            ki.key = '\0';
-//            ki.kc = 0;
-//        }
-//        ki.mod = e.getModifiers();
     }
 
 
     public void mouseEvent(MouseEvent e) {
+
+        vis.receiveMouseInput(e);
+//        System.out.println("Action: " + e.getAction());
+//        System.out.println("Button: " + e.getButton());
+//        System.out.println("Mod: " + e.getModifiers());
+//        System.out.println("Pos: " + e.getX() + ", " + e.getY());
 
         mi.x = e.getX();
         mi.y = e.getY();

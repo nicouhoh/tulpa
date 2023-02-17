@@ -7,8 +7,8 @@ import processing.core.PConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-//import java.awt.event.KeyEvent;
 import processing.event.KeyEvent;
+import processing.event.MouseEvent;
 
 public class Visipalp {
 
@@ -27,9 +27,9 @@ public class Visipalp {
 
     int columns = 7;
 
-
+    MouseInput mi;
+    MouseEvent me;
     int MOUSE1 = 37;
-    int MOUSE2 = 39;
 
     int hotItem = 0;
     int activeItem = 0;
@@ -39,7 +39,7 @@ public class Visipalp {
     // Casper
     PVector casperSize = new PVector(0, 0);
     PVector casperOffset;
-    ArrayList<Clipping> heldClippings = new ArrayList<Clipping>();
+    ArrayList<Clipping> heldClippings = new ArrayList<>();
 
     // Scroller
     int scrollerColor = 0xff1A1A1A;
@@ -82,47 +82,50 @@ public class Visipalp {
     }
 
     // This is the main update method, called every draw frame.
-    void showtime(MouseInput mi) {
-        prepare(mi);
+    void showtime() {
+        prepare();
 
 //        readKeyInput(ki);
 
-        if (mi.wheel != 0) {
-            changeLatitude(mi.wheel * scrollSpeed);
-        }
 
         g.background(bgColor);
 
-        if (puzzleView) puzzleView(getSheetX(), 0, getSheetWidth(), t.h, latitude, mi);
-        else thumbnailView(getSheetX(), 0, t.h, latitude, mi);
+        if (puzzleView) puzzleView(getSheetX(), 0, getSheetWidth(), t.h, latitude);
+        else thumbnailView(getSheetX(), 0, t.h, latitude);
 
-        casperLayer(mi);
+        casperLayer();
         if (panelIsOpen) panel();
 
         if (mode == Mode.CLIPPINGVIEW) clippingView();
-        finish(mi);
-//        debugMouseInput(mi);
-//        debugKeyInput(g, ki);
+        finish();
     }
 
-    public void casperLayer(MouseInput mi){
+    private void scrollWheel() {
+        if (me == null) return;
+        if (me.getAction() == MouseEvent.WHEEL) {
+            changeLatitude(me.getCount() * scrollSpeed);
+        }
+    }
+
+    public void casperLayer(){
         if (!heldClippings.isEmpty()){
-            casper(heldClippings.get(0), casperSize.x, casperSize.y, mi);
+            casper(heldClippings.get(0), casperSize.x, casperSize.y);
         }
     }
 
     // VISIPALP BUSINESS
 
-    public void prepare(MouseInput mi) {
+    public void prepare() {
         hotItem = 0;
         nextID = 1;
     }
 
-    public void finish(MouseInput mi){
-        if (mi.button == 0){
+    public void finish(){
+        if (me == null) return;
+        if (me.getButton() == 0){
             heldClippings.clear();
             activeItem = 0;
-        }else if (mi.button == 1 && activeItem == 0) activeItem = -1;
+        }else if (me.getButton() == 1 && activeItem == 0) activeItem = -1;
     }
 
     public int getID() {
@@ -163,11 +166,26 @@ public class Visipalp {
 
     // INPUT
 
-    public boolean mouseOver(float x, float y, float w, float h, MouseInput mi) {
-        return !(mi.x < x) &&
-                !(mi.y < y) &&
-                !(mi.x >= x + w) &&
-                !(mi.y >= y + h);
+    public boolean mouseOver(float x, float y, float w, float h) {
+        return !(me.getX() < x) &&
+                !(me.getY() < y) &&
+                !(me.getX() >= x + w) &&
+                !(me.getY() >= y + h);
+    }
+
+    public void receiveMouseInput(MouseEvent e){
+        me = e;
+
+        scrollWheel();
+
+//        switch (e.getAction()) {
+//            case MouseEvent.PRESS -> System.out.println("Press");
+//            case MouseEvent.RELEASE -> System.out.println("Release");
+//            case MouseEvent.CLICK -> System.out.println("Click");
+//            case MouseEvent.DRAG -> System.out.println("Drag");
+//            case MouseEvent.WHEEL -> System.out.println("Wheel");
+//
+//        }
     }
 
     public void receiveKeyInput(KeyEvent e) {
@@ -239,21 +257,21 @@ public class Visipalp {
 
     // FIXME doesn't set foot correctly at all zoom levels
 
-    void thumbnailView(float sheetX, float sheetY, float sheetH, float lat, MouseInput mi) {
+    void thumbnailView(float sheetX, float sheetY, float sheetH, float lat) {
         List<Clipping> row;
 
         g.push();
         g.translate(0, -lat);
         for (int i = 0; i < lib.clippings.size() / columns; i++){
             row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)) , 0, lib.clippings.size()));
-            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX, sheetY, sheetH, mi);
+            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX, sheetY, sheetH);
         }
         g.pop();
 
-        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
+        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH);
     }
 
-    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH, MouseInput mi){
+    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY, float sheetH){
         float previousRightEdge = 0;
 //        Clipping nextRowClipping = row.get(-1)
         for (int i = 0; i < row.size(); i++){
@@ -261,16 +279,16 @@ public class Visipalp {
             float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
-            clipping(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, sheetY, sheetH, previousRightEdge, mi);
+            clipping(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, sheetY, sheetH, previousRightEdge);
             previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
         }
-        dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetWidth()) / 2, 50, rowY, getClipSize(), latitude, mi);
+        dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetWidth()) / 2, 50, rowY, getClipSize(), latitude);
         //TODO I think I still need to do a special case for the very last clipping in the library
     }
 
 
     void clipping(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
-                  float thumbH, PVector offset, float lat, float sheetY, float sheetH, float previousRightEdge, MouseInput mi) {
+                  float thumbH, PVector offset, float lat, float sheetY, float sheetH, float previousRightEdge) {
 
         foot = clipY + thumbH + gutter;
         arrowUpDown(c, rowNum, clipX, offset, thumbW);
@@ -280,7 +298,7 @@ public class Visipalp {
         if (clipY < lat - thumbH) return;
         if (clipY > lat + getSheetH()) return;
 
-        clippingMouseInteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH, mi);
+        clippingMouseInteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH);
 
         g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
 
@@ -289,67 +307,68 @@ public class Visipalp {
         }
 
         if(heldClippings.isEmpty()) return;
-        dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat, mi);
+        dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat);
     }
 
-    void clippingMouseInteraction(int id, Clipping c, float x, float y, float w, float h, MouseInput mi) {
+    void clippingMouseInteraction(int id, Clipping c, float x, float y, float w, float h) {
+        if (me == null) return;
         // MOUSEOVER
-        if (mouseOver(x, y, w, h, mi)) {
+        if (mouseOver(x, y, w, h)) {
             setHotItem(id);
 
             // MOUSE DOWN
-            if (activeItem == 0 && mi.button == MOUSE1) {
+            if (activeItem == 0 && me.getAction() == MouseEvent.PRESS && me.getButton() == PConstants.LEFT) {
                 setActiveItem(id);
-                setCasper(new PVector(mi.x - x, mi.y - y), new PVector(w, h));
-                if (!lib.isSelected(c) && mi.mod == 0) {
+                setCasper(new PVector(me.getX() - x, me.getY() - y), new PVector(w, h));
+                if (!lib.isSelected(c) && me.getModifiers() == 0) {
                     lib.select(c);
                 }
-                else if (mi.mod == 2)
+                else if (me.getModifiers() == MouseEvent.CTRL)
                     lib.addSelect(c);
             }
-            return;
+            else if (activeItem == id && me.getAction() == MouseEvent.DRAG && me.getButton() == PConstants.LEFT){
+                dragClipping(id, c);
+            }
         }
-
-        dragClipping(id, c, w, h, mi);
     }
 
-    void dragClipping(int id, Clipping c, float w, float h, MouseInput mi){
+    void dragClipping(int id, Clipping c){
         if (activeItem != id) return;
         if (!heldClippings.isEmpty()) return;
         if(lib.isSelected(c) && lib.selected.size() > 1)
-            setHeldClippings(lib.selected, w, h, mi);
-        else setHeldClippings(c, w, h, mi);
+            setHeldClippings(lib.selected);
+        else setHeldClippings(c);
     }
 
-    void setHeldClippings(Clipping c, float w, float h, MouseInput mi){
+    void setHeldClippings(Clipping c){
         heldClippings.clear();
         heldClippings.add(c);
     }
 
-    void setHeldClippings(ArrayList<Clipping> c, float w, float h, MouseInput mi){
+    void setHeldClippings(ArrayList<Clipping> c){
         heldClippings.clear();
         heldClippings.addAll(c);
     }
 
-    void dropZone(Clipping c, float dropX, float range, float rowY, float rowH, float lat, MouseInput mi){
+    void dropZone(Clipping c, float dropX, float range, float rowY, float rowH, float lat){
         if (heldClippings.isEmpty()) return;
-        if (mi.y < rowY - lat || mi.y > rowY + rowH - lat) return;
-        if (PApplet.dist(mi.x, mi.y, dropX, mi.y) > range)return;
+        if (me.getY() < rowY - lat || me.getY() > rowY + rowH - lat) return;
+        if (PApplet.dist(me.getX(), me.getY(), dropX, me.getY()) > range)return;
         g.stroke(255, 0, 255);
         g.strokeWeight(2);
         g.line(dropX, rowY, dropX, rowY + rowH);
         g.strokeWeight(1);
-        if(mi.button == 0){
+        if(me.getAction() == MouseEvent.RELEASE && me.getButton() == PConstants.LEFT){
             lib.moveClipping(heldClippings, c);
             heldClippings.clear();
         }
     }
 
-    void casper(Clipping c, float w, float h, MouseInput mi){
+    void casper(Clipping c, float w, float h){
         g.push();
         g.translate(0, -latitude);
         g.tint(255, 128);
-        g.image(c.img, mi.x - casperOffset.x, mi.y + latitude - casperOffset.y, w, h);
+        g.image(c.img, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h);
         g.tint(255);
         g.pop();
     }
@@ -389,21 +408,24 @@ public class Visipalp {
 
     // SCROLLER
 
-    public void scroller(int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH, MouseInput mi) {
+    public void scroller(int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH) {
         g.noStroke();
         g.fill(scrollerColor);
         g.rect(scrollerX, scrollerY, scrollerW, scrollerH);
 
-        grip(getID(), scrollerX, scrollerW, scrollerH, mi);
+        grip(getID(), scrollerX, scrollerW, scrollerH);
     }
 
-    void grip(int id, float gripX, float gripW, float scrollerH, MouseInput mi) {
+    void grip(int id, float gripX, float gripW, float scrollerH) {
+        if (me == null) return;
+
         float gripH = setGripSize(foot, scrollerH);
         float gripY;
 
         if (activeItem == id) {
-            gripY = PApplet.constrain(mi.y - scrollGrabY, 0, scrollerH - gripH);
+            gripY = PApplet.constrain(me.getY() - scrollGrabY, 0, scrollerH - gripH);
             latitude = gripY / scrollerH * foot;
+            if (me.getAction() == MouseEvent.RELEASE && me.getButton() == PConstants.LEFT) activeItem = 0;
         } else gripY = setGripPos(latitude, foot, scrollerH, gripH);
 
         g.noStroke();
@@ -411,11 +433,11 @@ public class Visipalp {
         else g.fill(gripColor);
         g.rect(gripX, gripY, gripW, gripH);
 
-        if (mouseOver(gripX, gripY, gripW, gripH, mi)) {
+        if (mouseOver(gripX, gripY, gripW, gripH)) {
             hotItem = id;
-            if (activeItem == 0 && mi.button == MOUSE1) {
+            if (activeItem == 0 && me.getAction() == MouseEvent.PRESS && me.getButton() == PConstants.LEFT) {
                 activeItem = id;
-                scrollGrabY = mi.y - gripY;
+                scrollGrabY = me.getY() - gripY;
             }
         }
     }
@@ -477,14 +499,14 @@ public class Visipalp {
     //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
     //FIXME I don't think this really works with opening and closing the panel -- shrink it like thumbnail view so it doesn't jostle around
 
-    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH, float lat, MouseInput mi) {
+    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH, float lat) {
         // set up
         float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
-        ArrayList<Clipping> row = new ArrayList<Clipping>();
+        ArrayList<Clipping> row = new ArrayList<>();
         float rowWidth = 0;
-        Clipping pocketedClipping = null;
+        Clipping pocketedClipping;
         float py = puzzleGutter;
-        float rowH = 0;
+        float rowH;
         int rowNum = 1;
 
         g.push();
@@ -501,7 +523,7 @@ public class Visipalp {
             } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi);
+                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat);
                 rowNum++;
                 rowH = minH * ratio;
 
@@ -517,14 +539,14 @@ public class Visipalp {
         }
         // finish off the last row
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat, mi);
+        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat);
 
         g.pop();
 
-        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH, mi);
+        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH);
     }
 
-    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat, MouseInput mi) {
+    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat) {
         float px = sheetX + puzzleGutter;
         for (Clipping clip : row) {
             float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
@@ -532,9 +554,9 @@ public class Visipalp {
             followClippingOffscreen(clip, rowY, lat, sheetH);
             PVector offset = new PVector(0,0);
 
-            clipping(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, 0, mi);
+            clipping(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, sheetH, 0);
 
-            dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat, mi);
+            dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat);
 
             px += displayW + puzzleGutter;
             foot = rowY + displayH + puzzleGutter;
@@ -582,15 +604,16 @@ public class Visipalp {
         g.noStroke();
         g.fill(panelColor);
         g.rect(0, 0, panelWidth, t.h);
-        textBox(search, 20, 50, 260, 40);
+        textBox(getID(), search, 20, 50, 260, 40);
     }
 
-    public void textBox(Text text, float x, float y, float w, float h){
+    public void textBox(int id, Text text, float x, float y, float w, float h){
         g.stroke(60);
         g.fill(20);
         g.rect(x, y, w, h);
         g.textSize(32);
-        if (text.text != "") {
+        textBoxMouseInteraction(id, text, x, y, w, h);
+        if (!text.text.equals("")) {
             g.fill(225);
             g.text(text.text, x + 5, y + h - 8);
         }
@@ -600,16 +623,19 @@ public class Visipalp {
         }
     }
 
-    public void textBoxMouseInteraction(int id, Text text, float x, float y, float w, float h, MouseInput mi) {
+    public void textBoxMouseInteraction(int id, Text text, float x, float y, float w, float h) {
         // MOUSEOVER
-        if (mouseOver(x, y, w, h, mi)) {
+        if (mouseOver(x, y, w, h)) {
             setHotItem(id);
 
             // MOUSE DOWN
-            if (activeItem == 0 && mi.button == MOUSE1) {
+            if (activeItem == 0 && me.getButton() == MOUSE1) {
                 setActiveItem(id);
                 setFocusText(text);
             }
+        }
+        else if (me.getButton() == 1){
+            setFocusText(null);
         }
     }
 
@@ -648,54 +674,6 @@ public class Visipalp {
         arrowUDrowNum = rowNum;
         arrowUDX = x;
     }
-
-    //region DEBUG --------------------------------------------------
-
-    public void debugMouseInput(MouseInput mi) {
-        g.textSize(36);
-        g.fill(255, 0, 255);
-        if (mi == null) {
-            g.text("MouseInput is NULL", 100, 100);
-            return;
-        }
-        g.text("button :" + mi.button +
-                        "\nx: " + mi.x +
-                        "\ny: " + mi.y +
-                        "\nwheel: " + mi.wheel +
-                        "\nmod: " + mi.mod +
-                        "\nhot: " + hotItem +
-                        "\nactive: " + activeItem +
-                        "\nselected: " + lib.selected +
-                        "\nheld: " + heldClippings,
-                100, 100);
-    }
-
-    public void debugKeyInput(KeyInput ki) {
-        g.textSize(36);
-        g.fill(255, 0, 255);
-        if (ki == null) {
-            g.text("KeyInput is NULL", 400, 100);
-            return;
-        }
-        if (ki.key != '\0') {
-            keyDebugKey = ki.key;
-            keyDebugKC = ki.kc;
-        }
-        g.text("action: " + ki.action +
-                        "\nkey: " + keyDebugKey +
-                        "\nkeycode: " + keyDebugKC +
-                        "\nmodifiers: " + ki.mod,
-                400, 100);
-    }
-
-    public void debugCasper(){
-        g.textSize(36);
-        g.fill(255,0,255);
-        if (heldClippings.size() > 0){
-            g.text(heldClippings.toString(), 100, 700);
-        }
-    }
-    //endregion
 }
 
 //TODO redo mouse control
