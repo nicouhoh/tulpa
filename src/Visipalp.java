@@ -27,7 +27,6 @@ public class Visipalp {
 
     int columns = 7;
 
-    MouseInput mi;
     MouseEvent me;
     int MOUSE1 = 37;
 
