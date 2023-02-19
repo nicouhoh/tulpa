@@ -132,6 +132,15 @@ public class Library {
     return false;
   }
 
+  public ArrayList<Tag> parseTags(Text text){
+    ArrayList<Tag> output = new ArrayList<Tag>();
+    if (!text.bodyText.contains("#")) return output;
+    for (String word : text.getWords()){
+      if (word.startsWith("#")) output.add(new Tag(word));
+    }
+    return output;
+  }
+
   public void addSelect(Clipping clipping) {
     selected.add(clipping);
   }

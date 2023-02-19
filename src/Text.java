@@ -1,9 +1,13 @@
 public class Text {
-    String text;
+    String bodyText;
     String hint;
 
-    public Text(String text, String hint){
-        this.text = text;
+    public Text(String bodyText, String hint){
+        this.bodyText = bodyText;
         this.hint = hint;
+    }
+
+    public String[] getWords(){
+        return bodyText.split(" ");
     }
 }

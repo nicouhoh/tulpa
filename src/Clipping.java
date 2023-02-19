@@ -12,7 +12,7 @@ public class Clipping {
     PImage img;
     String imgPath;
 
-    String bodyText = "";
+    Text text;
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 
@@ -20,6 +20,7 @@ public class Clipping {
         id = idIn;
         imgPath = file.getAbsolutePath();
         img = tulpa.SOLE.loadImage(imgPath);
+        text = new Text("", "Type here");
     }
 
     public void addTag(Tag t){
