@@ -2,7 +2,7 @@
 import processing.core.PApplet;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
-import processing.core.PConstants;
+//import processing.core.PConstants;
 
 
 public class tulpa extends PApplet {
@@ -58,35 +58,8 @@ public class tulpa extends PApplet {
         vis.receiveKeyInput(e);
     }
 
-
     public void mouseEvent(MouseEvent e) {
-
         vis.receiveMouseInput(e);
-//        System.out.println("Action: " + e.getAction());
-//        System.out.println("Button: " + e.getButton());
-//        System.out.println("Mod: " + e.getModifiers());
-//        System.out.println("Pos: " + e.getX() + ", " + e.getY());
-
-        mi.x = e.getX();
-        mi.y = e.getY();
-        mi.mod = e.getModifiers();
-
-        int action = e.getAction();
-
-        if (action == MouseEvent.ENTER ||
-                action == MouseEvent.EXIT) {
-            return;
-        }
-
-        if (action == MouseEvent.PRESS) {
-            mi.button = e.getButton();
-        } else if (action == MouseEvent.RELEASE) {
-            mi.button = 0;
-        }
-
-        if (action == MouseEvent.WHEEL) {
-            mi.wheel = e.getCount();
-        }
     }
 
     //public void dropEvent(DropEvent dropEvent){

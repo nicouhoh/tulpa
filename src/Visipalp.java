@@ -1,8 +1,4 @@
-import processing.core.PApplet;
-import processing.core.PGraphics;
-import processing.core.PVector;
-import processing.core.PImage;
-import processing.core.PConstants;
+import processing.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +20,31 @@ public class Visipalp {
 
     int nextID;
 
-    float gutter = 10;
+    // Contact Sheet
+        float gutter = 10;
+        int columns = 7;
+        float latitude = 0;
+        float foot = 0;
+        Clipping goTo = null;
 
-    int columns = 7;
+        // Puzzle View
+        boolean puzzleView = false;
+        float puzzleGutter = 2;
 
+        // Arrow Up/Down
+        int UDDirection = 0;
+        int arrowUDrowNum = -1;
+        float arrowUDX = 0;
+
+    // Mouse Input
     MouseEvent me;
-
     int hotItem = 0;
     int activeItem = 0;
 
     // Text Boxes
     Text focusText;
-    float minBoxH = 40;
+    PFont duo;
+    float minBoxH = 50;
     int cornerRadius = 5;
     int hintColor = 70;
     int bodyTextColor = 225;
@@ -50,35 +59,26 @@ public class Visipalp {
     int gripColor = 0xff6C6C6C;
     int gripActiveColor = 225;
     int scrollerW = 20;
-
-    float latitude = 0;
-    float foot = 0;
     int scrollSpeed = 200;
     float scrollGrabY = 0;
-    Clipping goTo = null;
-
-    // Arrow Up/Down
-    int UDDirection = 0;
-    int arrowUDrowNum = -1;
-    float arrowUDX = 0;
-
-
-    // Puzzle View
-    boolean puzzleView = false;
-    float puzzleGutter = 2;
 
     // Clipping View
     int clippingBackgroundAlpha = 235;
     float minClippingSize = 10;
     float clippingViewCushion = 20;
 
-
+    // Text Editor
+    float textEditorWidth = 1500;
+    float textEditorHeight = 2000;
+    float textEditorMinHeight = 300;
+    float textEditorMargin = 100;
 
     // Panel
     Text search = new Text("", "Search for tags");
     boolean panelIsOpen;
     boolean tabProtection; // This is to help keep tab from being inputed to the search bar immediately after opening the panel
     float panelWidth = 300;
+    float panelCushion = 20;
     int panelColor = 30;
 
 
@@ -87,14 +87,13 @@ public class Visipalp {
         this.lib = lib;
         this.g = g;
         this.t = t;
+        duo = t.createFont("iAWriterDuoS-Regular.ttf", 32);
     }
 
+    //region DRAW
     // This is the main update method, called every draw frame.
     void showtime() {
         prepare();
-
-//        readKeyInput(ki);
-
 
         g.background(bgColor);
 
@@ -108,19 +107,13 @@ public class Visipalp {
         finish();
     }
 
-    private void scrollWheel() {
-        if (me == null) return;
-        if (me.getAction() != MouseEvent.WHEEL) return;
-        if (mode == Mode.CONTACTSHEET) changeLatitude(me.getCount() * scrollSpeed);
-    }
-
     public void casperLayer(){
         if (!heldClippings.isEmpty()){
             casper(heldClippings.get(0), casperSize.x, casperSize.y);
         }
     }
-
-    // VISIPALP BUSINESS
+    //endregion
+    //region Visipalp Business
 
     public void prepare() {
         hotItem = 0;
@@ -171,7 +164,12 @@ public class Visipalp {
         activeItem = id;
     }
 
-    // INPUT
+    public void setMode(Mode m){
+        lastMode = mode;
+        mode = m;
+    }
+    //endregion
+    //region Input
 
     public boolean mouseOver(float x, float y, float w, float h) {
         return !(me.getX() < x) &&
@@ -203,8 +201,8 @@ public class Visipalp {
         if (mode == Mode.CONTACTSHEET){
             if (e.getKey() == PConstants.CODED){
                 switch (e.getKeyCode()) {
-                    case PConstants.RIGHT -> directionalSelect(1);
-                    case PConstants.LEFT -> directionalSelect(-1);
+                    case PConstants.RIGHT -> arrowLeftRight(1);
+                    case PConstants.LEFT -> arrowLeftRight(-1);
                     case PConstants.UP -> UDDirection = -1;
                     case PConstants.DOWN -> UDDirection = 1;
                 }
@@ -228,8 +226,8 @@ public class Visipalp {
             }
 
         } else if(mode == Mode.CLIPPINGVIEW){
-            if (e.getKeyCode() == PConstants.RIGHT) directionalSelect(1);
-            else if (e.getKeyCode() == PConstants.LEFT) directionalSelect(-1);
+            if (e.getKeyCode() == PConstants.RIGHT) arrowLeftRight(1);
+            else if (e.getKeyCode() == PConstants.LEFT) arrowLeftRight(-1);
             else if (e.getKey() == ' ') mode = Mode.CONTACTSHEET;
         }
     }
@@ -242,20 +240,52 @@ public class Visipalp {
             return;
         }
 
-        if (focusText == search && e.getKey() == PConstants.ENTER){
-            System.out.println("Search for " + search.bodyText);
-            unfocusText();
-            return;
+        if (focusText == search){
+            if(e.getKey() == PConstants.ENTER) {
+                System.out.println("Search for " + search.bodyText);
+                unfocusText();
+                return;
+            }else if (e.getKey() == PConstants.TAB){
+                closePanel();
+                return;
+            }
+        }else if(focusText instanceof ClippingText){
+            if (e.getKey() == PConstants.ENTER) ((ClippingText)focusText).collectTags(lib);
         }
 
-        switch (e.getKey()) {
-            case PConstants.BACKSPACE -> { if (focusText.bodyText.length() > 0) focusText.bodyText = focusText.bodyText.substring(0, focusText.bodyText.length() - 1); }
-            case PConstants.TAB -> { if (focusText == search) closePanel(); }
-            default -> focusText.bodyText += e.getKey();
-        }
+        focusText.type(e.getKey(), lib);
+
+
+//        switch (e.getKey()) {
+//            case PConstants.BACKSPACE -> { if (focusText.bodyText.length() > 0) focusText.bodyText = focusText.bodyText.substring(0, focusText.bodyText.length() - 1); }
+//            case PConstants.TAB -> { if (focusText == search) closePanel(); }
+//
+//            case ' ' -> {
+//                focusText.collectTags(lib);
+//                focusText.bodyText += e.getKey();
+//            }
+//            case PConstants.ENTER -> {
+//                if (focusText instanceof SearchText){
+//                    ((SearchText)focusText).commit();
+//                    unfocusText();
+//                    return;
+//                } else if (focusText instanceof ClippingText){
+//                    ((ClippingText)focusText).collectTags(lib);
+//                    focusText.bodyText += e.getKey();
+//                }
+//            }
+//            default -> focusText.bodyText += e.getKey();
+//        }
     }
 
-    // CONTACT SHEET
+    private void scrollWheel() {
+        if (me == null) return;
+        if (me.getAction() != MouseEvent.WHEEL) return;
+        if (mode == Mode.CONTACTSHEET) changeLatitude(me.getCount() * scrollSpeed);
+    }
+
+    //endregion
+    //region Contact Sheet
     // makes all the clippings
 
     // FIXME doesn't set foot correctly at all zoom levels
@@ -276,7 +306,6 @@ public class Visipalp {
 
     void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY){
         float previousRightEdge = 0;
-//        Clipping nextRowClipping = row.get(-1)
         for (int i = 0; i < row.size(); i++){
             Clipping c = row.get(i);
             float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
@@ -338,6 +367,11 @@ public class Visipalp {
         }
     }
 
+    void setArrowUDTarget(int rowNum, float x){
+        arrowUDrowNum = rowNum;
+        arrowUDX = x;
+    }
+
     boolean mouseDown(){
         return activeItem == 0 && me.getAction() == MouseEvent.PRESS && me.getButton() == PConstants.LEFT;
     }
@@ -378,18 +412,34 @@ public class Visipalp {
         }
     }
 
-    void casper(Clipping c, float w, float h){
-        g.push();
-        g.translate(0, -latitude);
-        g.tint(255, 128);
-        g.image(c.img, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h);
-        g.tint(255);
-        g.pop();
+    public void arrowLeftRight(int amount) {
+        if (lib.selected.size() != 1) return;
+        Clipping selClip = lib.selected.get(0);
+        int index = lib.clippings.indexOf(selClip);
+        lib.select(lib.clippings.get(PApplet.constrain(index + amount, 0, lib.clippings.size() - 1)));
+        goTo = lib.selected.get(0); // mark this clipping to follow the selection offscreen if we need to
     }
 
-    void setCasper(PVector offset, PVector size){
-        casperOffset = offset;
-        casperSize = size;
+    void arrowUpDown(Clipping c, int rowNum, float clipX, PVector offset, float thumbW){
+        if (arrowUDrowNum != -1){
+            if (rowNum == arrowUDrowNum && clipX <= arrowUDX && clipX + offset.x + thumbW > arrowUDX){
+                lib.select(c);
+                goTo = c;
+                setArrowUDTarget(-1, 0);
+                UDDirection = 0;
+            }
+        }
+        if (UDDirection != 0 && lib.isSelected(c)){
+            setArrowUDTarget(rowNum + UDDirection, clipX + offset.x + thumbW/2);
+            UDDirection = 0;
+        }
+
+    }
+
+    public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetH){
+        if (c == goTo) {
+            goToThumbnail(thumbY, lat, sheetH);
+        }
     }
 
     PVector sizeThumbnail(Clipping c) {
@@ -421,7 +471,40 @@ public class Visipalp {
         g.rect(x, y, w, h);
     }
 
-    // SCROLLER
+    public void setLatitude(float y) {
+        latitude = y;
+    }
+
+    public void changeLatitude(float l) {
+        latitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
+    }
+
+    public void goToThumbnail(float thumbY, float lat, float sheetH) {
+        if (thumbY - gutter < lat) {
+            setLatitude(thumbY - gutter);
+        } else if (thumbY + getClipSize() + gutter > lat + sheetH) {
+            setLatitude((thumbY + getClipSize() + gutter) - sheetH);
+        }
+        goTo = null;
+    }
+    //endregion
+    //region Casper
+
+    void casper(Clipping c, float w, float h){
+        g.push();
+        g.translate(0, -latitude);
+        g.tint(255, 128);
+        g.image(c.img, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h);
+        g.tint(255);
+        g.pop();
+    }
+
+    void setCasper(PVector offset, PVector size){
+        casperOffset = offset;
+        casperSize = size;
+    }
+    //endregion
+    //region Scroller
 
     public void scroller(int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH) {
         g.noStroke();
@@ -464,51 +547,8 @@ public class Visipalp {
     public float setGripPos(float scrollValue, float bottomOfScroll, float scrollerH, float gripH) {
         return PApplet.constrain(scrollValue / bottomOfScroll * scrollerH, 0, scrollerH - gripH);
     }
-
-    public void directionalSelect(int amount) {
-        if (lib.selected.size() != 1) return;
-        Clipping selClip = lib.selected.get(0);
-        int index = lib.clippings.indexOf(selClip);
-        lib.select(lib.clippings.get(PApplet.constrain(index + amount, 0, lib.clippings.size() - 1)));
-        goTo = lib.selected.get(0); // mark this clipping to follow the selection offscreen if we need to
-    }
-
-    void arrowUpDown(Clipping c, int rowNum, float clipX, PVector offset, float thumbW){
-        if (arrowUDrowNum != -1){
-            if (rowNum == arrowUDrowNum && clipX <= arrowUDX && clipX + offset.x + thumbW > arrowUDX){
-                lib.select(c);
-                goTo = c;
-                setArrowUDTarget(-1, 0);
-                UDDirection = 0;
-            }
-        }
-        if (UDDirection != 0 && lib.isSelected(c)){
-            setArrowUDTarget(rowNum + UDDirection, clipX + offset.x + thumbW/2);
-            UDDirection = 0;
-        }
-
-    }
-
-    // LATITUDE AND SCROLLING
-
-    public void setLatitude(float y) {
-        latitude = y;
-    }
-
-    public void changeLatitude(float l) {
-        latitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
-    }
-
-    public void goToThumbnail(float thumbY, float lat, float sheetH) {
-        if (thumbY - gutter < lat) {
-            setLatitude(thumbY - gutter);
-        } else if (thumbY + getClipSize() + gutter > lat + sheetH) {
-            setLatitude((thumbY + getClipSize() + gutter) - sheetH);
-        }
-        goTo = null;
-    }
-
-    // PUZZLE VIEW
+    //endregion
+    //region Puzzle View
 
     // i hate this method :(
     //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
@@ -578,41 +618,55 @@ public class Visipalp {
         }
     }
 
-    // CLIPPING VIEW
+    public void togglePuzzleView(){
+        puzzleView = !puzzleView;
+        changeLatitude(latitude);
+    }
+    //endregion
+    //region Clipping View
 
     public void clippingView(){
         if (lib.selected.size() != 1){
             mode = Mode.CONTACTSHEET;
             return;
         }
-        g.noStroke();
-        g.fill(0, clippingBackgroundAlpha);
-        g.rect(0, 0, t.w, getSheetH());
+
+        clippingViewBG();
 
         Clipping c = lib.selected.get(0);
         PVector size = fitImage(c.img, PApplet.constrain(t.w - clippingViewCushion * 2, minClippingSize, c.img.width),
-                PApplet.constrain(getSheetH() - clippingViewCushion*3 - 40, minClippingSize, c.img.height));
+                PApplet.constrain(getSheetH() - clippingViewCushion*3 - minBoxH, minClippingSize, c.img.height));
         float textH = minBoxH;
         float blockH = size.y + clippingViewCushion + textH;
-        float x = getSheetX() + getSheetWidth() / 2 - (size.x / 2);
-        float y = getSheetY() + getSheetH() / 2 - (blockH / 2);
-        float textBoxY = y + size.y + clippingViewCushion;
-        g.image(c.img, x, y, size.x, size.y);
-        textBox(getID(), c.text, x, textBoxY, size.x, minBoxH);
+        float imgX = getSheetX() + getSheetWidth() / 2 - (size.x / 2);
+        float imgY = getSheetY() + getSheetH() / 2 - (blockH / 2);
+        float textBoxW = PApplet.constrain(textEditorWidth, 0, getSheetWidth() - clippingViewCushion);
+        float textBoxX = getSheetX() + getSheetWidth()/2 - textBoxW/2;
+        float textBoxY = imgY + size.y + clippingViewCushion;
+        float textBoxH = PApplet.constrain(textEditorHeight, textEditorMinHeight, getSheetH() - textBoxY - clippingViewCushion);
+        g.image(c.img, imgX, imgY, size.x, size.y);
+        textBox(getID(), c.text, textBoxX, textBoxY, textBoxW, textBoxH,
+                            textBoxX + textEditorMargin, textBoxY + textEditorMargin, textBoxW - 2*textEditorMargin, textBoxH - textEditorMargin);
 
         if (mouseDown()){
-            if (!(mouseOver(x, y, size.x, size.y) || mouseOver(x, textBoxY, size.x, minBoxH)))
-                mode = Mode.CONTACTSHEET;
+            if (!(mouseOver(imgX, imgY, size.x, size.y) || mouseOver(imgX, textBoxY, size.x, minBoxH))) mode = Mode.CONTACTSHEET;
         }
+    }
+
+    public void clickOutOfClippingView(float x, float y, float w, float h){
     }
 
     public void clippingViewImage(Clipping c, float x, float y, float w, float h){
         g.image(c.img, x, y, w, h);
-//        if
     }
 
-    public void clippingViewText(){
+    public void collectTags(){
+    }
 
+    public void clippingViewBG(){
+        g.noStroke();
+        g.fill(0, clippingBackgroundAlpha);
+        g.rect(0, 0, t.w, getSheetH());
     }
 
     public PVector fitImage(PImage img, float w, float h){
@@ -627,72 +681,30 @@ public class Visipalp {
         }
         return new PVector(newW, newH);
     }
-
-    public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetH){
-        if (c == goTo) {
-            goToThumbnail(thumbY, lat, sheetH);
-        }
-    }
+    //endregion
+    //region Panel
 
     public void panel(){
         g.noStroke();
         g.fill(panelColor);
         g.rect(0, 0, panelWidth, t.h);
-        textBox(getID(), search, 20, 50, 260, 40);
+        textBox(getID(), search, panelCushion, 50, panelWidth - 2*panelCushion, minBoxH);
+        tagList(panelCushion, 50 + minBoxH + panelCushion * 2 , 0, 0);
     }
 
-    public void textBox(int id, Text text, float x, float y, float w, float h){
+    public void tagList(float x, float y, float w, float h){
+        float tagY = y;
+        for (Tag t : lib.tags){
+            tagLink(t, x, tagY);
+            tagY += 35;
+        }
+    }
 
-//        g.stroke(60);
-        g.noStroke();
-        g.fill(20);
-        g.rect(x, y, w, h, cornerRadius);
+    public void tagLink(Tag tag, float x, float y){
+        g.fill(bodyTextColor);
         g.textSize(32);
+        g.text(tag.name, x, y);
 
-        textBoxMouseInteraction(id, text, x, y, w, h);
-        if (!text.bodyText.equals("")) {
-            g.fill(bodyTextColor);
-            g.text(text.bodyText, x + 5, y + h - 9);
-        }
-        else {
-            g.fill(hintColor);
-            g.text(text.hint, x + 5, y + h - 9);
-        }
-        if (focusText == text){
-            // TODO Text cursor
-            g.stroke(60, 0, 60);
-            g.noFill();
-            g.rect(x, y, w, h, cornerRadius);
-        }
-    }
-
-    public void textBoxMouseInteraction(int id, Text text, float x, float y, float w, float h) {
-        // MOUSEOVER
-        if (mouseOver(x, y, w, h)) {
-            setHotItem(id);
-
-            // MOUSE DOWN
-            if (activeItem == 0 && me.getButton() == PConstants.LEFT) {
-                setActiveItem(id);
-                setFocusText(text);
-            }
-        }
-        else if (me.getButton() == PConstants.LEFT && focusText == text){
-            unfocusText();
-        }
-    }
-
-    public void setFocusText(Text text){
-        focusText = text;
-    }
-
-    public void unfocusText(){
-        focusText = null;
-    }
-
-    public void setMode(Mode m){
-        lastMode = mode;
-        mode = m;
     }
 
     public void openPanel(){
@@ -713,16 +725,70 @@ public class Visipalp {
         if (panelIsOpen) closePanel();
         else openPanel();
     }
+    //endregion
+    //region Text
 
-    public void togglePuzzleView(){
-        puzzleView = !puzzleView;
-        changeLatitude(latitude);
+    public void textBox(int id, Text text, float x, float y, float w, float h){
+        textBox(id, text, x, y, w, h, x, y, w, h);
     }
 
-    void setArrowUDTarget(int rowNum, float x){
-        arrowUDrowNum = rowNum;
-        arrowUDX = x;
+    public void textBox(int id, Text text,
+                        float boxX,  float boxY,  float boxW,  float boxH,
+                        float textX, float textY, float textW, float textH){
+
+        g.noStroke();
+        g.fill(20);
+        g.rect(boxX, boxY, boxW, boxH, cornerRadius);
+        g.textFont(duo);
+        g.textSize(32);
+        g.textLeading(37);
+
+        textBoxMouseInteraction(id, text, boxX, boxY, boxW, boxH);
+
+        if (!text.bodyText.equals("")) {
+            g.fill(bodyTextColor);
+            g.text(text.bodyText, textX, textY, textW, textH);
+        }
+        else {
+            g.fill(hintColor);
+            g.text(text.hint, textX, textY, textW, textH);
+        }
+        if (focusText == text){
+            // TODO Text cursor
+            g.stroke(60, 0, 60);
+            g.noFill();
+            g.rect(boxX, boxY, boxW, boxH, cornerRadius);
+        }
     }
+
+    public void textBoxMouseInteraction(int id, Text text, float x, float y, float w, float h) {
+        // MOUSEOVER
+        if (mouseOver(x, y, w, h)) {
+            setHotItem(id);
+
+            // MOUSE DOWN
+            if (mouseDown()) {
+                setActiveItem(id);
+                setFocusText(text);
+            }
+        }
+        else if (me.getButton() == PConstants.LEFT && focusText == text){
+            unfocusText();
+        }
+    }
+
+    public void setFocusText(Text text){
+        focusText = text;
+    }
+
+    public void unfocusText(){
+        if (focusText instanceof ClippingText){
+            ((ClippingText)focusText).collectTags(lib);
+        }
+        focusText = null;
+    }
+    //endregion
+
 }
 
 //TODO panel

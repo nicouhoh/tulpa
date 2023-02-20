@@ -94,6 +94,7 @@ public class Library {
   }
 
   public void tagClipping(Clipping c, Tag t){
+    // tag clipping with a tag. If it's not in the tag list, we add it
     if (!tagExists(tags, t)){
       tags.add(t);
     }
@@ -103,6 +104,7 @@ public class Library {
   }
 
   public void tagClipping(Clipping c, String name){
+    // tag clipping with string. If the tag doesn't exist, we create it
     if (!tagExists(tags, name)){
       Tag tagatha = createTag(name);
       tags.add(tagatha);
@@ -113,6 +115,7 @@ public class Library {
   }
 
   public void tagClipping(Clipping c, ArrayList<Tag> l){
+    // Tag a clipping with a list of tags
     for (Tag t : l){
       tagClipping(c, t);
     }
@@ -169,7 +172,7 @@ public class Library {
 
   public ArrayList<Clipping> search(String s){
     ArrayList<Clipping> output = new ArrayList<Clipping>();
-    String[] terms = s.split(" ");
+    String[] terms = s.split("[\\W\\n]");
     for (Clipping c : clippings){
       for (String word : terms){
         if(!c.taggedWith(word)) continue;

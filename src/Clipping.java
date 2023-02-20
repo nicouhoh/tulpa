@@ -1,5 +1,3 @@
-import processing.core.PApplet;
-import processing.core.PGraphics;
 import processing.core.PImage;
 
 import java.io.File;
@@ -12,7 +10,7 @@ public class Clipping {
     PImage img;
     String imgPath;
 
-    Text text;
+    ClippingText text;
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 
@@ -20,7 +18,7 @@ public class Clipping {
         id = idIn;
         imgPath = file.getAbsolutePath();
         img = tulpa.SOLE.loadImage(imgPath);
-        text = new Text("", "Type here");
+        text = new ClippingText("", "Type here");
     }
 
     public void addTag(Tag t){
