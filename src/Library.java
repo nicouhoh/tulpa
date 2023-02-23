@@ -27,6 +27,12 @@ public class Library {
     debugInit(path);
   }
 
+  public Clipping newClipping(){
+    Clipping clip = new Clipping(getid());
+    addToLibrary(clip);
+    return clip;
+  }
+
   public Clipping newClipping(File file){
     Clipping clip = incubateFile(file);
     addToLibrary(clip);
@@ -139,7 +145,7 @@ public class Library {
     ArrayList<Tag> output = new ArrayList<Tag>();
     if (!text.bodyText.contains("#")) return output;
     for (String word : text.getWords()){
-      if (word.startsWith("#")) output.add(new Tag(word));
+      if (word.startsWith("#") && word.length() > 1) output.add(new Tag(word));
     }
     return output;
   }

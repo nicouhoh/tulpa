@@ -14,8 +14,15 @@ public class Clipping {
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 
-    public Clipping(File file, String idIn) {
-        id = idIn;
+    public Clipping(String id){
+        this.id = id;
+        imgPath = "";
+        img = null;
+        text = new ClippingText("", "Type here");
+    }
+
+    public Clipping(File file, String id) {
+        this.id = id;
         imgPath = file.getAbsolutePath();
         img = tulpa.SOLE.loadImage(imgPath);
         text = new ClippingText("", "Type here");

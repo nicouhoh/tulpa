@@ -44,10 +44,12 @@ public class Visipalp {
     // Text Boxes
     Text focusText;
     PFont duo;
+    PFont sans;
     float minBoxH = 50;
     int cornerRadius = 5;
     int hintColor = 70;
     int bodyTextColor = 225;
+    int textBoxMinMargin = 3;
 
     // Casper
     PVector casperSize = new PVector(0, 0);
@@ -59,19 +61,25 @@ public class Visipalp {
     int gripColor = 0xff6C6C6C;
     int gripActiveColor = 225;
     int scrollerW = 20;
-    int scrollSpeed = 200;
+    int scrollSpeed = 100;
     float scrollGrabY = 0;
 
     // Clipping View
     int clippingBackgroundAlpha = 235;
     float minClippingSize = 10;
     float clippingViewCushion = 20;
+    float clippingViewLatitude = 0;
+    float clippingViewFoot = 0;
 
     // Text Editor
-    float textEditorWidth = 1500;
-    float textEditorHeight = 2000;
+    float textEditorWidth = 1200;
+    float textEditorHeight = 1000;
     float textEditorMinHeight = 300;
     float textEditorMargin = 100;
+    PVector textEditorCaptionMinMaxW = new PVector(300, 1500);
+    int textEditorColor = 30;
+    // iA Writer limits line length to 64 characters. food for thought
+
 
     // Panel
     Text search = new Text("", "Search for tags");
@@ -88,17 +96,20 @@ public class Visipalp {
         this.g = g;
         this.t = t;
         duo = t.createFont("iAWriterDuoS-Regular.ttf", 32);
+        sans = t.createFont("Gill Sans.otf", 32);
+
     }
 
     //region DRAW
+
     // This is the main update method, called every draw frame.
     void showtime() {
         prepare();
 
         g.background(bgColor);
 
-        if (puzzleView) puzzleView(getSheetX(), 0, getSheetWidth(), t.h, latitude);
-        else thumbnailView(getSheetX(), 0, t.h, latitude);
+        if (puzzleView) puzzleView(getSheetX(), 0, getSheetW(), t.h);
+        else thumbnailView(getSheetX(), 0, t.h);
 
         casperLayer();
         if (panelIsOpen) panel();
@@ -135,7 +146,7 @@ public class Visipalp {
     }
 
     public float getClipSize() {
-        return (getSheetWidth() - (gutter * (columns + 1))) / columns;
+        return (getSheetW() - (gutter * (columns + 1))) / columns;
     }
 
     public float getSheetX(){
@@ -151,7 +162,7 @@ public class Visipalp {
         return t.h;
     }
 
-    public float getSheetWidth() {
+    public float getSheetW() {
         if (panelIsOpen) return t.w - scrollerW - panelWidth;
         else return t.w - scrollerW;
     }
@@ -186,6 +197,7 @@ public class Visipalp {
     public void receiveKeyInput(KeyEvent e) {
         if (e.getAction() == 0) return;
 
+//        debugKeyInput(e);
         System.out.println();
         System.out.println(e.getKey());
         System.out.println(e.getAction());
@@ -215,6 +227,8 @@ public class Visipalp {
                             System.out.println("BACKSPACE");
                         }
                     }
+                    case 'n' ->
+                    {lib.newClipping();}
                     case '-' -> columns++;
                     case '=' -> columns--;
                     case '0' -> togglePuzzleView();
@@ -254,34 +268,13 @@ public class Visipalp {
         }
 
         focusText.type(e.getKey(), lib);
-
-
-//        switch (e.getKey()) {
-//            case PConstants.BACKSPACE -> { if (focusText.bodyText.length() > 0) focusText.bodyText = focusText.bodyText.substring(0, focusText.bodyText.length() - 1); }
-//            case PConstants.TAB -> { if (focusText == search) closePanel(); }
-//
-//            case ' ' -> {
-//                focusText.collectTags(lib);
-//                focusText.bodyText += e.getKey();
-//            }
-//            case PConstants.ENTER -> {
-//                if (focusText instanceof SearchText){
-//                    ((SearchText)focusText).commit();
-//                    unfocusText();
-//                    return;
-//                } else if (focusText instanceof ClippingText){
-//                    ((ClippingText)focusText).collectTags(lib);
-//                    focusText.bodyText += e.getKey();
-//                }
-//            }
-//            default -> focusText.bodyText += e.getKey();
-//        }
     }
 
     private void scrollWheel() {
         if (me == null) return;
         if (me.getAction() != MouseEvent.WHEEL) return;
         if (mode == Mode.CONTACTSHEET) changeLatitude(me.getCount() * scrollSpeed);
+        if (mode == Mode.CLIPPINGVIEW) clippingViewLatitude = PApplet.constrain(clippingViewLatitude + me.getCount() * scrollSpeed, 0, clippingViewFoot - getSheetH());
     }
 
     //endregion
@@ -290,12 +283,15 @@ public class Visipalp {
 
     // FIXME doesn't set foot correctly at all zoom levels
 
-    void thumbnailView(float sheetX, float sheetY, float sheetH, float lat) {
+    void thumbnailView(float sheetX, float sheetY, float sheetH) {
         List<Clipping> row;
 
+        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
         g.push();
-        g.translate(0, -lat);
-        for (int i = 0; i < lib.clippings.size() / columns; i++){
+        g.translate(0, -latitude);
+        int rows = lib.clippings.size() / columns;
+        if (lib.clippings.size() % columns != 0) rows += 1;
+        for (int i = 0; i < rows; i++){
             row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)), 0, lib.clippings.size()));
             thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX, sheetY);
         }
@@ -315,7 +311,9 @@ public class Visipalp {
             previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
             followClippingOffscreen(c,rowY,latitude,getSheetH());
         }
-        dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetWidth()) / 2, 50, rowY, getClipSize(), latitude);
+        if (rowNum * columns + 1 < lib.clippings.size()) {
+            dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetW()) / 2, 50, rowY, getClipSize(), latitude);
+        }
         //TODO I think I still need to do a special case for the very last clipping in the library
     }
 
@@ -333,14 +331,30 @@ public class Visipalp {
 
         thumbnailMouseinteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH);
 
-        g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+        if (c.img != null) g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+        else{
+            thumbnailText(c.text, clipX, clipY, thumbW, thumbH);
+        }
 
         if (lib.isSelected(c)) {
-            drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+            if (c.img == null) drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH, cornerRadius);
+            else drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
         }
 
         if(heldClippings.isEmpty()) return;
         dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat);
+    }
+
+    void thumbnailText(Text text, float clipX, float clipY, float thumbW, float thumbH){
+        g.noStroke();
+        g.fill(textEditorColor);
+        g.rect(clipX, clipY, thumbW, thumbH, cornerRadius);
+        g.fill(bodyTextColor);
+        g.textFont(duo);
+        g.textSize(24);
+        g.textLeading(26);
+        g.text(text.bodyText, clipX + 2 * gutter, clipY + 2 * gutter, thumbW - 4*gutter, thumbH - 4*gutter);
+
     }
 
     void thumbnailMouseinteraction(int id, Clipping c, float x, float y, float w, float h) {
@@ -443,15 +457,21 @@ public class Visipalp {
     }
 
     PVector sizeThumbnail(Clipping c) {
-        float wid = c.img.width;
-        float hei = c.img.height;
+        float wid, hei;
+        if (c.img != null) {
+            wid = c.img.width;
+            hei = c.img.height;
 
-        if (wid >= hei) {
-            wid = getClipSize();
-            hei = c.img.height / (c.img.width / getClipSize());
+            if (wid >= hei) {
+                wid = getClipSize();
+                hei = c.img.height / (c.img.width / getClipSize());
+            } else {
+                hei = getClipSize();
+                wid = c.img.width / (c.img.height / getClipSize());
+            }
         } else {
+            wid = getClipSize();
             hei = getClipSize();
-            wid = c.img.width / (c.img.height / getClipSize());
         }
         return new PVector(wid, hei);
     }
@@ -464,11 +484,15 @@ public class Visipalp {
         return new PVector(offX, offY);
     }
 
-    public void drawThumbnailSelect(float x, float y, float w, float h) {
+    public void drawThumbnailSelect(float x, float y, float w, float h, float r) {
         g.stroke(255);
         g.strokeWeight(2);
         g.noFill();
-        g.rect(x, y, w, h);
+        g.rect(x, y, w, h, r);
+    }
+
+    public void drawThumbnailSelect(float x, float y, float w, float h) {
+        drawThumbnailSelect(x, y, w, h, 0);
     }
 
     public void setLatitude(float y) {
@@ -479,6 +503,10 @@ public class Visipalp {
         latitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
     }
 
+//    public void changeCVLatitude(float l) {
+//        clippingViewLatitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
+//    }
+
     public void goToThumbnail(float thumbY, float lat, float sheetH) {
         if (thumbY - gutter < lat) {
             setLatitude(thumbY - gutter);
@@ -486,6 +514,14 @@ public class Visipalp {
             setLatitude((thumbY + getClipSize() + gutter) - sheetH);
         }
         goTo = null;
+
+    }
+    public void zoomIn(){
+        columns--;
+    }
+
+    public void zoomOut(){
+        columns++;
     }
     //endregion
     //region Casper
@@ -494,7 +530,8 @@ public class Visipalp {
         g.push();
         g.translate(0, -latitude);
         g.tint(255, 128);
-        g.image(c.img, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h);
+        if (c.img != null) g.image(c.img, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h);
+//        if (c.text.bodyText != null) thumbnailText(c.text, me.getX() - casperOffset.x, me.getY() - casperOffset.y, w, h);
         g.tint(255);
         g.pop();
     }
@@ -554,8 +591,9 @@ public class Visipalp {
     //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
     //FIXME I don't think this really works with opening and closing the panel -- shrink it like thumbnail view so it doesn't jostle around
 
-    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH, float lat) {
+    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH) {
         // set up
+        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
         float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
         ArrayList<Clipping> row = new ArrayList<>();
         float rowWidth = 0;
@@ -578,7 +616,7 @@ public class Visipalp {
             } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat);
+                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, latitude);
                 rowNum++;
                 rowH = minH * ratio;
 
@@ -594,7 +632,7 @@ public class Visipalp {
         }
         // finish off the last row
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, lat);
+        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, latitude);
 
         g.pop();
 
@@ -630,37 +668,57 @@ public class Visipalp {
             mode = Mode.CONTACTSHEET;
             return;
         }
-
         clippingViewBG();
-
+        g.push();
+        g.translate(0, -clippingViewLatitude);
         Clipping c = lib.selected.get(0);
-        PVector size = fitImage(c.img, PApplet.constrain(t.w - clippingViewCushion * 2, minClippingSize, c.img.width),
-                PApplet.constrain(getSheetH() - clippingViewCushion*3 - minBoxH, minClippingSize, c.img.height));
+        if (c.img != null) clippingViewImage(c);
+        else clippingViewText(c);
+        g.pop();
+    }
+
+    public void clippingViewImage(Clipping c){
+        PVector size;
+        size = fitImage(c.img, PApplet.constrain(t.w - clippingViewCushion * 2, minClippingSize, c.img.width),
+                PApplet.constrain(getSheetH() - clippingViewCushion * 3 - minBoxH, minClippingSize, c.img.height));
         float textH = minBoxH;
         float blockH = size.y + clippingViewCushion + textH;
-        float imgX = getSheetX() + getSheetWidth() / 2 - (size.x / 2);
+        float imgX = getSheetX() + getSheetW() / 2 - (size.x / 2);
         float imgY = getSheetY() + getSheetH() / 2 - (blockH / 2);
-        float textBoxW = PApplet.constrain(textEditorWidth, 0, getSheetWidth() - clippingViewCushion);
-        float textBoxX = getSheetX() + getSheetWidth()/2 - textBoxW/2;
-        float textBoxY = imgY + size.y + clippingViewCushion;
-        float textBoxH = PApplet.constrain(textEditorHeight, textEditorMinHeight, getSheetH() - textBoxY - clippingViewCushion);
         g.image(c.img, imgX, imgY, size.x, size.y);
-        textBox(getID(), c.text, textBoxX, textBoxY, textBoxW, textBoxH,
-                            textBoxX + textEditorMargin, textBoxY + textEditorMargin, textBoxW - 2*textEditorMargin, textBoxH - textEditorMargin);
 
+        float eX = PApplet.lerp(imgX, getSheetX() + getSheetW()/2 - textEditorWidth/2, clippingViewLatitude / (clippingViewFoot - getSheetH()) );
+        float eY = imgY + size.y + clippingViewCushion;
+        float eW = PApplet.lerp(PApplet.constrain(g.textWidth(c.text.bodyText), PApplet.max(textEditorCaptionMinMaxW.x, size.x), textEditorWidth), textEditorWidth, clippingViewLatitude / (clippingViewFoot - getSheetH()) );
+        float eH = PApplet.lerp(minBoxH, textEditorHeight, clippingViewLatitude / (clippingViewFoot - getSheetH()) );
+        float margin = PApplet.lerp(textBoxMinMargin, textEditorMargin, clippingViewLatitude / (clippingViewFoot - getSheetH()) );
+        clippingViewFoot = eY + textEditorHeight + clippingViewCushion;
+        float textBoxAlpha = (mouseOver(eX, eY, eW, eH) || focusText == c.text) ? 255 : 0;
+        textEditor(c, eX, eY, eW, eH, margin, margin, clippingViewLatitude, PApplet.lerp(textBoxAlpha, 255, clippingViewLatitude / (clippingViewFoot - getSheetH())) );
         if (mouseDown()){
-            if (!(mouseOver(imgX, imgY, size.x, size.y) || mouseOver(imgX, textBoxY, size.x, minBoxH))) mode = Mode.CONTACTSHEET;
+            if (!(mouseOver(imgX, imgY - clippingViewLatitude, size.x, size.y) || mouseOver(eX, eY, eW, eH))) mode = Mode.CONTACTSHEET;
         }
     }
 
-    public void clickOutOfClippingView(float x, float y, float w, float h){
+    //TODO I'm pretty sure this can actually just be absorbed into the above function eventually
+    public void clippingViewText(Clipping c){
+        float eW = PApplet.constrain(textEditorWidth, 200, getSheetW() - 2*clippingViewCushion);
+        float eH = PApplet.constrain(textEditorHeight, 200, getSheetH() - 2*clippingViewCushion);
+        float eX = getSheetX() + getSheetW()/2 - eW/2;
+        float eY = getSheetY() + getSheetH()/2 - eH/2;
+        clippingViewFoot = eY + textEditorHeight + clippingViewCushion;
+        textEditor(c, eX, eY, eW, eH, textEditorMargin, textEditorMargin, clippingViewLatitude, 255);
+        if (mouseDown()){
+            if (mouseOver(eX, eY, eW, eH)) mode = Mode.CONTACTSHEET;
+        }
     }
 
-    public void clippingViewImage(Clipping c, float x, float y, float w, float h){
-        g.image(c.img, x, y, w, h);
+    public void textEditor(Clipping c, float editorX, float editorY, float editorW, float editorH){
+        textBox(getID(), c.text, duo, editorX, editorY, editorW, editorH);
     }
 
-    public void collectTags(){
+    public void textEditor(Clipping c, float editorX, float editorY, float editorW, float editorH, float marginX, float marginY, float cvlatitude, float alpha){
+        textBox(getID(), c.text, duo, editorX, editorY, editorW, editorH, marginX, marginY, cvlatitude, alpha);
     }
 
     public void clippingViewBG(){
@@ -688,10 +746,11 @@ public class Visipalp {
         g.noStroke();
         g.fill(panelColor);
         g.rect(0, 0, panelWidth, t.h);
-        textBox(getID(), search, panelCushion, 50, panelWidth - 2*panelCushion, minBoxH);
+        textBox(getID(), search, sans, panelCushion, 50, panelWidth - 2*panelCushion, minBoxH);
         tagList(panelCushion, 50 + minBoxH + panelCushion * 2 , 0, 0);
     }
 
+    // TODO fill out an area rather than one to a row
     public void tagList(float x, float y, float w, float h){
         float tagY = y;
         for (Tag t : lib.tags){
@@ -702,7 +761,8 @@ public class Visipalp {
 
     public void tagLink(Tag tag, float x, float y){
         g.fill(bodyTextColor);
-        g.textSize(32);
+        g.textSize(24);
+        g.textFont(sans);
         g.text(tag.name, x, y);
 
     }
@@ -728,37 +788,40 @@ public class Visipalp {
     //endregion
     //region Text
 
-    public void textBox(int id, Text text, float x, float y, float w, float h){
-        textBox(id, text, x, y, w, h, x, y, w, h);
+    public void textBox(int id, Text text, PFont font, float x, float y, float w, float h){
+        textBox(id, text, font, x, y, w, h,  textBoxMinMargin,  textBoxMinMargin, 0, textEditorColor);
     }
 
-    public void textBox(int id, Text text,
+    public void textBox(int id, Text text, PFont font,
                         float boxX,  float boxY,  float boxW,  float boxH,
-                        float textX, float textY, float textW, float textH){
+                        float marginX, float marginY, float cvlatitude, float alpha){
 
         g.noStroke();
-        g.fill(20);
+        g.fill(textEditorColor, alpha);
         g.rect(boxX, boxY, boxW, boxH, cornerRadius);
-        g.textFont(duo);
+        g.textFont(font);
         g.textSize(32);
         g.textLeading(37);
 
-        textBoxMouseInteraction(id, text, boxX, boxY, boxW, boxH);
+        textBoxMouseInteraction(id, text, boxX, boxY - cvlatitude, boxW, boxH);
 
-        if (!text.bodyText.equals("")) {
+        float textX = boxX + marginX;
+        float textY = boxY + marginY;
+        float textW = boxW - 2*marginX;
+        float textH = boxH - 2*marginY;
+
+        // FIXME temporary shitty cursor situation; this will be expunged
+        if (focusText == text || text.bodyText != "") {
+            String s = focusText == text ? text.bodyText + "|" : text.bodyText;
             g.fill(bodyTextColor);
-            g.text(text.bodyText, textX, textY, textW, textH);
-        }
-        else {
+            g.text(s, textX, textY, textW, textH);
+        } else{
             g.fill(hintColor);
             g.text(text.hint, textX, textY, textW, textH);
         }
-        if (focusText == text){
-            // TODO Text cursor
-            g.stroke(60, 0, 60);
-            g.noFill();
-            g.rect(boxX, boxY, boxW, boxH, cornerRadius);
-        }
+    }
+
+    public void textCursor(Text text){
     }
 
     public void textBoxMouseInteraction(int id, Text text, float x, float y, float w, float h) {
@@ -789,11 +852,18 @@ public class Visipalp {
     }
     //endregion
 
+    public void debugKeyInput(KeyEvent e){
+        g.fill(255, 255, 255);
+        g.textSize(32);
+        String keystring = e.getKey() == PConstants.CODED ? "CODED" : "" + e.getKey();
+        g.text(keystring + "\n" + e.getModifiers(), 50, 200);
+    }
+
 }
 
-//TODO panel
-//TODO typing
-//TODO tags
+//TODO text editor sizing
+
+//TODO Search
 
 //TODO click scroller
 //TODO stay close to selected or centered clipping when switching views
