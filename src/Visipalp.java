@@ -611,7 +611,9 @@ public class Visipalp {
 
         for (Clipping c : lib.clippings) {
 
-            float adjustedW = (minH * c.img.width) / c.img.height;      // find the new width if scaled to minH
+            float adjustedW;
+            if (c.img != null) adjustedW = (minH * c.img.width) / c.img.height;      // find the new width if scaled to minH
+            else adjustedW = minH;
 
             if (rowWidth + adjustedW <= sheetW - puzzleGutter) { // does the next clipping fit on this row
                 row.add(c);
@@ -646,8 +648,14 @@ public class Visipalp {
     public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat) {
         float px = sheetX + puzzleGutter;
         for (Clipping clip : row) {
-            float displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
-            float displayH = minH * ratio;
+            float displayW, displayH;
+            if (clip.img != null){
+                displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
+                displayH = minH * ratio;
+            } else{
+                displayW = minH * ratio;
+                displayH = minH * ratio;
+            }
             followClippingOffscreen(clip, rowY, lat, sheetH);
             PVector offset = new PVector(0,0);
 
@@ -670,6 +678,7 @@ public class Visipalp {
     public void clippingView(){
         if (lib.selected.size() != 1){
             mode = Mode.CONTACTSHEET;
+            clippingViewLatitude = 0;
             return;
         }
         clippingViewBG();
