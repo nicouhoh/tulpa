@@ -197,11 +197,6 @@ public class Visipalp {
     public void receiveKeyInput(KeyEvent e) {
         if (e.getAction() == 0) return;
 
-//        debugKeyInput(e);
-        System.out.println();
-        System.out.println(e.getKey());
-        System.out.println(e.getAction());
-
         // reroute TYPE events to the type input method
         if (focusText != null){
             if (e.getAction() == KeyEvent.TYPE) typeInput(e);
@@ -224,7 +219,6 @@ public class Visipalp {
                     case '\b' -> {
                         if (lib.selected.size() > 0) {
                             lib.whackClipping(lib.selected);
-                            System.out.println("BACKSPACE");
                         }
                     }
                     case 'n' ->
@@ -240,9 +234,15 @@ public class Visipalp {
             }
 
         } else if(mode == Mode.CLIPPINGVIEW){
-            if (e.getKeyCode() == PConstants.RIGHT) arrowLeftRight(1);
-            else if (e.getKeyCode() == PConstants.LEFT) arrowLeftRight(-1);
-            else if (e.getKey() == ' ') mode = Mode.CONTACTSHEET;
+            if (e.getKeyCode() == PConstants.RIGHT) {
+                arrowLeftRight(1);
+                clippingViewLatitude = 0;
+            }
+            else if (e.getKeyCode() == PConstants.LEFT) {
+                arrowLeftRight(-1);
+                clippingViewLatitude = 0;
+            }
+            else if (e.getKey() == ' ') closeClippingView();
         }
     }
 
@@ -675,10 +675,14 @@ public class Visipalp {
     //endregion
     //region Clipping View
 
+    public void closeClippingView(){
+        mode = Mode.CONTACTSHEET;
+        clippingViewLatitude = 0;
+    }
+
     public void clippingView(){
         if (lib.selected.size() != 1){
-            mode = Mode.CONTACTSHEET;
-            clippingViewLatitude = 0;
+            closeClippingView();
             return;
         }
         clippingViewBG();
@@ -709,7 +713,7 @@ public class Visipalp {
         float textBoxAlpha = (mouseOver(eX, eY, eW, eH) || focusText == c.text) ? 255 : 0;
         textEditor(c, eX, eY, eW, eH, margin, margin, clippingViewLatitude, PApplet.lerp(textBoxAlpha, 255, clippingViewLatitude / (clippingViewFoot - getSheetH())) );
         if (mouseDown()){
-            if (!(mouseOver(imgX, imgY - clippingViewLatitude, size.x, size.y) || mouseOver(eX, eY, eW, eH))) mode = Mode.CONTACTSHEET;
+            if (!(mouseOver(imgX, imgY - clippingViewLatitude, size.x, size.y) || mouseOver(eX, eY, eW, eH))) closeClippingView();
         }
     }
 
@@ -722,7 +726,7 @@ public class Visipalp {
         clippingViewFoot = eY + textEditorHeight + clippingViewCushion;
         textEditor(c, eX, eY, eW, eH, textEditorMargin, textEditorMargin, clippingViewLatitude, 255);
         if (mouseDown()){
-            if (mouseOver(eX, eY, eW, eH)) mode = Mode.CONTACTSHEET;
+            if (mouseOver(eX, eY, eW, eH)) closeClippingView();
         }
     }
 
@@ -784,7 +788,6 @@ public class Visipalp {
         panelIsOpen = true;
         tabProtection = true;
         setFocusText(search);
-        System.out.println("focusText: " + focusText);
     }
 
     public void closePanel(){
