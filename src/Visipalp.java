@@ -345,15 +345,19 @@ public class Visipalp {
         dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat);
     }
 
-    void thumbnailText(Text text, float clipX, float clipY, float thumbW, float thumbH){
+    void thumbnailText(Text text, float clipX, float clipY, float thumbW, float thumbH, float alpha){
         g.noStroke();
-        g.fill(textEditorColor);
+        g.fill(textEditorColor, alpha);
         g.rect(clipX, clipY, thumbW, thumbH, cornerRadius);
-        g.fill(bodyTextColor);
+        g.fill(bodyTextColor, alpha);
         g.textFont(duo);
         g.textSize(24);
         g.textLeading(26);
         g.text(text.bodyText, clipX + 2 * gutter, clipY + 2 * gutter, thumbW - 4*gutter, thumbH - 4*gutter);
+    }
+
+    void thumbnailText(Text text, float clipX, float clipY, float thumbW, float thumbH) {
+        thumbnailText(text, clipX, clipY, thumbW, thumbH, 255);
 
     }
 
@@ -531,7 +535,7 @@ public class Visipalp {
         g.translate(0, -latitude);
         g.tint(255, 128);
         if (c.img != null) g.image(c.img, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h);
-//        if (c.text.bodyText != null) thumbnailText(c.text, me.getX() - casperOffset.x, me.getY() - casperOffset.y, w, h);
+        else if (c.text.bodyText != "") thumbnailText(c.text, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h, 128);
         g.tint(255);
         g.pop();
     }
@@ -860,8 +864,6 @@ public class Visipalp {
     }
 
 }
-
-//TODO text editor sizing
 
 //TODO Search
 
