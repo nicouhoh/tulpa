@@ -11,6 +11,7 @@ public class Clipping {
     String imgPath;
 
     ClippingText text;
+    String textPath;
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 
@@ -21,11 +22,28 @@ public class Clipping {
         text = new ClippingText("", "Type here");
     }
 
-    public Clipping(File file, String id) {
+    public Clipping(String id, File file) {
         this.id = id;
-        imgPath = file.getAbsolutePath();
-        img = tulpa.SOLE.loadImage(imgPath);
-        text = new ClippingText("", "Type here");
+        if (file.getName().contains(".jpg")) {
+            imgPath = file.getAbsolutePath();
+            img = tulpa.SOLE.loadImage(imgPath);
+            text = new ClippingText("", "Type here");
+        } else if (file.getName().contains(".txt")){
+            textPath = file.getAbsolutePath();
+            imgPath = "";
+            String newText = "";
+            for (String s : tulpa.SOLE.loadStrings(textPath)){
+                newText += s;
+            }
+            text = new ClippingText(newText, "Type here");
+        }
+    }
+
+    public Clipping(String id, String string){
+        this.id = id;
+        imgPath = "";
+        img = null;
+        text = new ClippingText(string,"Type here");
     }
 
     public void addTag(Tag t){

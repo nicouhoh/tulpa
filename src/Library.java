@@ -55,11 +55,9 @@ public class Library {
 
   public Clipping incubateFile(File file) {
     System.out.println("INCUBATE FILE: " + file.getName());
-    if (file.getName().contains(".jpg")){//|| file.getName().contains(".png")) {
-      return new Clipping(file, getid());
-    } else {
-      return null;
-    }
+    if (file.getName().contains(".jpg") || file.getName().contains(".txt")){//|| file.getName().contains(".png")) {
+      return new Clipping(getid(), file);
+    } else return null;
   }
 
   public ArrayList<Clipping> incubateDir(File dir) {
@@ -68,7 +66,7 @@ public class Library {
     ArrayList<Clipping> brood = new ArrayList<Clipping>();
     if (files != null)
       for (File file : files) {
-        if (file.getName().contains(".jpg")){
+        if (file.getName().contains(".jpg") || file.getName().contains(".txt")){
           brood.add(incubateFile(file));
         } else if (file.isDirectory()) {
           brood.addAll(incubateDir(file));
