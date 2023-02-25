@@ -25,7 +25,12 @@ public class Visipalp {
         int columns = 7;
         float latitude = 0;
         float foot = 0;
-        Clipping goTo = null;
+        Clipping goToClipping = null;
+        float goToWhere = 0;
+        float goToY;
+        float selectY;
+        float selectScreenY;
+        boolean puzzleToggle = false;
 
         // Puzzle View
         boolean puzzleView = false;
@@ -109,7 +114,7 @@ public class Visipalp {
         g.background(bgColor);
 
         if (puzzleView) puzzleView(getSheetX(), 0, getSheetW(), t.h);
-        else thumbnailView(getSheetX(), 0, t.h);
+        else thumbnailView(getSheetX(),  t.h);
 
         casperLayer();
         if (panelIsOpen) panel();
@@ -283,7 +288,7 @@ public class Visipalp {
 
     // FIXME doesn't set foot correctly at all zoom levels
 
-    void thumbnailView(float sheetX, float sheetY, float sheetH) {
+    void thumbnailView(float sheetX, float sheetH) {
         List<Clipping> row;
 
         latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
@@ -293,23 +298,22 @@ public class Visipalp {
         if (lib.clippings.size() % columns != 0) rows += 1;
         for (int i = 0; i < rows; i++){
             row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)), 0, lib.clippings.size()));
-            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX, sheetY);
+            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX);
         }
         g.pop();
 
-        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH);
+        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
     }
 
-    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX, float sheetY){
+    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX){
         float previousRightEdge = 0;
         for (int i = 0; i < row.size(); i++){
             Clipping c = row.get(i);
             float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
             PVector size = sizeThumbnail(c);
             PVector offset = findOffset(size.x, size.y);
-            thumbnail(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, sheetY, previousRightEdge);
+            thumbnail(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, previousRightEdge);
             previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
-            followClippingOffscreen(c,rowY,latitude,getSheetH());
         }
         if (rowNum * columns + 1 < lib.clippings.size()) {
             dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetW()) / 2, 50, rowY, getClipSize(), latitude);
@@ -319,15 +323,22 @@ public class Visipalp {
 
 
     void thumbnail(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
-                   float thumbH, PVector offset, float lat, float sheetY, float previousRightEdge) {
+                   float thumbH, PVector offset, float lat, float previousRightEdge) {
 
         foot = clipY + thumbH + gutter;
-        arrowUpDown(c, rowNum, clipX, offset, thumbW);
+        arrowUpDownCheck(c, rowNum, clipX, offset, thumbW);
 
+        if (c == goToClipping){
+            if (puzzleToggle) {
+                goToLocation(clipY, selectScreenY);
+                puzzleToggle = false;
+            }
+            else followClippingOffscreen(clipY, getClipSize());
+
+        }
 
         // don't draw or bother with mouse interaction if offscreen
-        if (clipY < lat - thumbH) return;
-        if (clipY > lat + getSheetH()) return;
+        if ((clipY < lat - thumbH) || (clipY > lat + getSheetH())) return;
 
         thumbnailMouseinteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH);
 
@@ -337,6 +348,7 @@ public class Visipalp {
         }
 
         if (lib.isSelected(c)) {
+            selectScreenY = clipY - latitude;
             if (c.img == null) drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH, cornerRadius);
             else drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
         }
@@ -435,14 +447,15 @@ public class Visipalp {
         Clipping selClip = lib.selected.get(0);
         int index = lib.clippings.indexOf(selClip);
         lib.select(lib.clippings.get(PApplet.constrain(index + amount, 0, lib.clippings.size() - 1)));
-        goTo = lib.selected.get(0); // mark this clipping to follow the selection offscreen if we need to
+
+        setGoTo(lib.selected.get(0), 0, 0);
     }
 
-    void arrowUpDown(Clipping c, int rowNum, float clipX, PVector offset, float thumbW){
+    void arrowUpDownCheck(Clipping c, int rowNum, float clipX, PVector offset, float thumbW){
         if (arrowUDrowNum != -1){
             if (rowNum == arrowUDrowNum && clipX <= arrowUDX && clipX + offset.x + thumbW > arrowUDX){
                 lib.select(c);
-                goTo = c;
+                setGoTo(lib.selected.get(0), 0, 0);
                 setArrowUDTarget(-1, 0);
                 UDDirection = 0;
             }
@@ -454,10 +467,10 @@ public class Visipalp {
 
     }
 
-    public void followClippingOffscreen(Clipping c, float thumbY, float lat, float sheetH){
-        if (c == goTo) {
-            goToThumbnail(thumbY, lat, sheetH);
-        }
+    void setGoTo(Clipping clipping, float y, float where){
+        goToClipping = clipping;
+        goToY = y;
+        goToWhere = where;
     }
 
     PVector sizeThumbnail(Clipping c) {
@@ -507,19 +520,20 @@ public class Visipalp {
         latitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
     }
 
-//    public void changeCVLatitude(float l) {
-//        clippingViewLatitude = PApplet.constrain(latitude + l, 0, foot - getSheetH());
-//    }
-
-    public void goToThumbnail(float thumbY, float lat, float sheetH) {
-        if (thumbY - gutter < lat) {
-            setLatitude(thumbY - gutter);
-        } else if (thumbY + getClipSize() + gutter > lat + sheetH) {
-            setLatitude((thumbY + getClipSize() + gutter) - sheetH);
+    public void followClippingOffscreen(float y, float h) {
+        if (y - gutter < latitude) {
+            goToLocation(y, gutter);
+        } else if (y + h + 2 * gutter > latitude + getSheetH()) {
+            goToLocation(y + h, getSheetH() - gutter);
         }
-        goTo = null;
-
     }
+
+    public void goToLocation(float y, float where) {
+        setLatitude(y - where);
+        setGoTo(null, 0,0);
+    }
+
+
     public void zoomIn(){
         columns--;
     }
@@ -547,38 +561,45 @@ public class Visipalp {
     //endregion
     //region Scroller
 
-    public void scroller(int id, float scrollerX, float scrollerY, float scrollerW, float scrollerH) {
+    //TODO grip is slightly wonky if you quickly click on the scroller, outside of the grip. otherwise functional
+    public void scroller(int scrollerID, int gripID, float scrollerX, float scrollerY, float scrollerW, float scrollerH) {
+        if (me == null) return;
+
         g.noStroke();
         g.fill(scrollerColor);
         g.rect(scrollerX, scrollerY, scrollerW, scrollerH);
 
-        grip(getID(), scrollerX, scrollerW, scrollerH);
-    }
-
-    void grip(int id, float gripX, float gripW, float scrollerH) {
-        if (me == null) return;
-
         float gripH = setGripSize(foot, scrollerH);
-        float gripY;
+        float gripY = setGripPos(latitude, foot, scrollerH, gripH);
 
-        if (activeItem == id) {
+        if (mouseOver(scrollerX, scrollerY, scrollerW, scrollerH)) {
+            //mouse over grip
+            if (mouseOver(scrollerX, gripY, scrollerW, gripH)) {
+                setHotItem(gripID);
+                if (mouseDown()) {
+                    setActiveItem(gripID);
+                    scrollGrabY = me.getY() - gripY;
+                }
+            } else{ // mouse over scroller
+                setHotItem(scrollerID);
+                if (mouseDown()){
+                    setHotItem(gripID);
+                    setActiveItem(gripID);
+                    scrollGrabY = gripH/2;
+                }
+            }
+        }
+
+        if (activeItem == gripID) {
             gripY = PApplet.constrain(me.getY() - scrollGrabY, 0, scrollerH - gripH);
             latitude = gripY / scrollerH * foot;
             if (me.getAction() == MouseEvent.RELEASE && me.getButton() == PConstants.LEFT) activeItem = 0;
         } else gripY = setGripPos(latitude, foot, scrollerH, gripH);
 
         g.noStroke();
-        if (activeItem == id) g.fill(gripActiveColor);
+        if (activeItem == gripID) g.fill(gripActiveColor);
         else g.fill(gripColor);
-        g.rect(gripX, gripY, gripW, gripH);
-
-        if (mouseOver(gripX, gripY, gripW, gripH)) {
-            hotItem = id;
-            if (activeItem == 0 && me.getAction() == MouseEvent.PRESS && me.getButton() == PConstants.LEFT) {
-                activeItem = id;
-                scrollGrabY = me.getY() - gripY;
-            }
-        }
+        g.rect(scrollerX, gripY, scrollerW, gripH);
     }
 
     public float setGripSize(float bottomOfScroll, float scrollerH) {
@@ -622,7 +643,7 @@ public class Visipalp {
             } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
                 pocketedClipping = c;
                 float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, latitude);
+                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
                 rowNum++;
                 rowH = minH * ratio;
 
@@ -638,14 +659,14 @@ public class Visipalp {
         }
         // finish off the last row
         float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, sheetH, latitude);
+        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
 
         g.pop();
 
-        scroller(getID(), t.w - scrollerW, 0, scrollerW, sheetH);
+        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
     }
 
-    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float sheetH, float lat) {
+    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float lat) {
         float px = sheetX + puzzleGutter;
         for (Clipping clip : row) {
             float displayW, displayH;
@@ -656,10 +677,9 @@ public class Visipalp {
                 displayW = minH * ratio;
                 displayH = minH * ratio;
             }
-            followClippingOffscreen(clip, rowY, lat, sheetH);
             PVector offset = new PVector(0,0);
 
-            thumbnail(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, sheetY, 0);
+            thumbnail(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, 0);
 
             dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat);
 
@@ -668,9 +688,10 @@ public class Visipalp {
         }
     }
 
-    public void togglePuzzleView(){
+    public void togglePuzzleView() {
+        goToClipping = lib.selected.get(0);
+        puzzleToggle = true;
         puzzleView = !puzzleView;
-        changeLatitude(latitude);
     }
     //endregion
     //region Clipping View
@@ -879,13 +900,10 @@ public class Visipalp {
 
 //TODO Search
 
-//TODO click scroller
-//TODO stay close to selected or centered clipping when switching views
-
 //FIXME clipping view is off center when the panel is open...
 //TODO ...which leads us to -- need to make a decision on how the clipping view and the panel work together. Which is on top? What's the hierarchy
 
-//FIXME when arrowing up of the top of the screen clippings pop in at the bottom
+//FIXME when arrowing up off the top of the screen clippings pop in at the bottom
 //FIXME I noticed funkiness when scrolling down to the bottom in puzzle view and switching back to
 //FIXME I think dropzones are brokenish in puzzle mode
 //FIXME when I open the program, select a clipping, then open the panel, the search bar doesnt focus automatically
