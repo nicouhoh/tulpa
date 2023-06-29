@@ -9,7 +9,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Drop" level="project" />
-    <orderEntry type="library" name="Processing" level="project" />
+    <orderEntry type="library" name="Processing 4" level="project" />
     <orderEntry type="library" name="Drop" level="project" />
   </component>
 </module>

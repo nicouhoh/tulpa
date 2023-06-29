@@ -23,8 +23,8 @@ public class tulpa extends PApplet {
     public void setup() {
         SOLE = this;
 
-        surface.setSize(500, 500);
         surface.setResizable(true);
+        surface.setSize(1000, 1000);
 
         // sdrop = new SDrop(this);
 
