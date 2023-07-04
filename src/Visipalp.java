@@ -21,8 +21,10 @@ public class Visipalp {
     int nextID;
 
     // Contact Sheet
+        ArrayList<Thumbnail> thumbs = new ArrayList<Thumbnail>();
+
         float gutter = 10;
-        int columns = 7;
+        int columns = 5;
         float latitude = 0;
         float foot = 0;
         Clipping goToClipping = null;
@@ -85,7 +87,6 @@ public class Visipalp {
     int textEditorColor = 30;
     // iA Writer limits line length to 64 characters. food for thought
 
-
     // Panel
     Text search = new Text("", "Search for tags");
     boolean panelIsOpen;
@@ -102,19 +103,85 @@ public class Visipalp {
         this.t = t;
         duo = t.createFont("iAWriterDuoS-Regular.ttf", 32);
         sans = t.createFont("Gill Sans.otf", 32);
+        for (Clipping clip : lib.clippings){
+            thumbs.add(new Thumbnail(g, getID(), clip, 0, 0, getClipSize(), getClipSize()));
+        }
 
+        arrangeContactSheet();
     }
 
-    //region DRAW
+    void rearrange(){
+        if (puzzleView) arrangePuzzleSheet();
+        else arrangeContactSheet();
+    }
+
+    void arrangeContactSheet(){
+        for (int i = 0; i < thumbs.size(); i++){
+            Thumbnail t = thumbs.get(i);
+            t.setSize(getClipSize());
+            t.setPos(gutter + ((i % columns ) * getClipSize()) + gutter * (i % columns) + t.offset.x,
+                    gutter + (getClipSize() + gutter) * (i / columns) + t.offset.y);
+        }
+        foot = thumbs.get(thumbs.size() - 1).y + getClipSize() + gutter;
+    }
+
+    void arrangePuzzleSheet(){
+        float thumbX = puzzleGutter, thumbY = puzzleGutter;
+        ArrayList<Thumbnail> row = new ArrayList<Thumbnail>();
+
+        for (int i = 0; i < thumbs.size(); i++){
+            
+            Thumbnail t = thumbs.get(i);
+            t.resizeByHeight(getClipSize()); // start out at a minimum row height
+
+            if (i == thumbs.size() - 1 || thumbX + t.w > getSheetW() - 2 * puzzleGutter){ // if it doesn't fit, resize the row & reset for next row
+                float ratio = getSheetW() / thumbX;
+                float rowH = 0;
+
+                for (Thumbnail thumb : row){ // resize everything in the row
+                    thumb.setPos(thumb.x * ratio, thumb.y);
+                    thumb.setSize(thumb.w * ratio, thumb.h * ratio);
+                    rowH = thumb.h;
+                }
+                thumbX = puzzleGutter;
+                thumbY += rowH + puzzleGutter;
+                row.clear();
+            }
+
+            // position clipping and get ready for next row
+            t.setPos(thumbX, thumbY);
+            row.add(t);
+            thumbX += t.w + puzzleGutter;
+        }
+
+        // clumsily fill out the last row with the remaining images
+        if (!row.isEmpty()){
+            float ratio = getSheetW() / thumbX;
+            System.out.println(row);
+            for (Thumbnail thumb : row){
+                thumb.setPos(thumb.x * ratio, thumb.y);
+                thumb.setSize(thumb.w * ratio, thumb.h * ratio);
+            }
+        }
+        foot = thumbs.get(thumbs.size() - 1).y + thumbs.get(thumbs.size() - 1).h + puzzleGutter;
+    }
 
     // This is the main update method, called every draw frame.
-    void showtime() {
+    void showtime(boolean resize) {
         prepare();
 
         g.background(bgColor);
 
-        if (puzzleView) puzzleView(getSheetX(), 0, getSheetW(), t.h);
-        else thumbnailView(getSheetX(),  t.h);
+//        if (puzzleView) puzzleView(getSheetX(), 0, getSheetW(), t.h);
+//        else thumbnailView(getSheetX(),  t.h);
+
+        if (resize){
+            if (!puzzleView) arrangeContactSheet();
+            if (puzzleView) arrangePuzzleSheet();
+        }
+
+        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
+        patientContactSheet();
 
         casperLayer();
         if (panelIsOpen) panel();
@@ -128,8 +195,6 @@ public class Visipalp {
             casper(heldClippings.get(0), casperSize.x, casperSize.y);
         }
     }
-    //endregion
-    //region Visipalp Business
 
     public void prepare() {
         hotItem = 0;
@@ -286,76 +351,88 @@ public class Visipalp {
     //region Contact Sheet
     // makes all the clippings
 
-    // FIXME doesn't set foot correctly at all zoom levels
 
-    void thumbnailView(float sheetX, float sheetH) {
-        List<Clipping> row;
+    void patientContactSheet(){
 
-        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
         g.push();
         g.translate(0, -latitude);
-        int rows = lib.clippings.size() / columns;
-        if (lib.clippings.size() % columns != 0) rows += 1;
-        for (int i = 0; i < rows; i++){
-            row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)), 0, lib.clippings.size()));
-            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX);
+        for (Thumbnail t : thumbs){
+            if (t.y > latitude + getSheetH()) break;
+            if (t.y >= latitude - t.h) t.draw();
         }
         g.pop();
 
-        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
+        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, getSheetH());
     }
 
-    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX){
-        float previousRightEdge = 0;
-        for (int i = 0; i < row.size(); i++){
-            Clipping c = row.get(i);
-            float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
-            PVector size = sizeThumbnail(c);
-            PVector offset = findOffset(size.x, size.y);
-            thumbnail(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, previousRightEdge);
-            previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
-        }
-        if (rowNum * columns + 1 < lib.clippings.size()) {
-            dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetW()) / 2, 50, rowY, getClipSize(), latitude);
-        }
-        //TODO I think I still need to do a special case for the very last clipping in the library
-    }
+//    doesn't set foot correctly at all zoom levels
+//    void thumbnailView(float sheetX, float sheetH) {
+//        List<Clipping> row;
+//
+//        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
+//        g.push();
+//        g.translate(0, -latitude);
+//        int rows = lib.clippings.size() / columns;
+//        if (lib.clippings.size() % columns != 0) rows += 1;
+//        for (int i = 0; i < rows; i++){
+//            row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)), 0, lib.clippings.size()));
+//            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX);
+//        }
+//        g.pop();
+//
+//        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
+//    }
+
+//    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX){
+//        float previousRightEdge = 0;
+//        for (int i = 0; i < row.size(); i++){
+//            Clipping c = row.get(i);
+//            float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
+//            PVector size = sizeThumbnail(c);
+//            PVector offset = findOffset(size.x, size.y);
+//            thumbnail(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, previousRightEdge);
+//            previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
+//        }
+//        if (rowNum * columns + 1 < lib.clippings.size()) {
+//            dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetW()) / 2, 50, rowY, getClipSize(), latitude);
+//        }
+//        //TD I think I still need to do a special case for the very last clipping in the library
+//    }
 
 
-    void thumbnail(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
-                   float thumbH, PVector offset, float lat, float previousRightEdge) {
-
-        foot = clipY + thumbH + gutter;
-        arrowUpDownCheck(c, rowNum, clipX, offset, thumbW);
-
-        if (c == goToClipping){
-            if (puzzleToggle) {
-                goToLocation(clipY, selectScreenY);
-                puzzleToggle = false;
-            }
-            else followClippingOffscreen(clipY, getClipSize());
-
-        }
-
-        // don't draw or bother with mouse interaction if offscreen
-        if ((clipY < lat - thumbH) || (clipY > lat + getSheetH())) return;
-
-        thumbnailMouseinteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH);
-
-        if (c.img != null) g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-        else{
-            thumbnailText(c.text, clipX, clipY, thumbW, thumbH);
-        }
-
-        if (lib.isSelected(c)) {
-            selectScreenY = clipY - latitude;
-            if (c.img == null) drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH, cornerRadius);
-            else drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-        }
-
-        if(heldClippings.isEmpty()) return;
-        dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat);
-    }
+//    void thumbnail(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
+//                   float thumbH, PVector offset, float lat, float previousRightEdge) {
+//
+//        foot = clipY + thumbH + gutter; // the idea being that the last thumbnail in the list will determine foot
+//        arrowUpDownCheck(c, rowNum, clipX, offset, thumbW);
+//
+//        if (c == goToClipping){ //TODO
+//            if (puzzleToggle) {
+//                goToLocation(clipY, selectScreenY);
+//                puzzleToggle = false;
+//            }
+//            else followClippingOffscreen(clipY, getClipSize());
+//        }
+//
+//        // don't draw or bother with mouse interaction if offscreen TODO
+//        if ((clipY < lat - thumbH) || (clipY > lat + getSheetH())) return;
+//
+//        thumbnailMouseinteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH); //TODO
+//
+//        if (c.img != null) g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH); //TODO
+//        else{
+//            thumbnailText(c.text, clipX, clipY, thumbW, thumbH);
+//        }
+//
+//        if (lib.isSelected(c)) { //TODO
+//            selectScreenY = clipY - latitude;
+//            if (c.img == null) drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH, cornerRadius);
+//            else drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
+//        }
+//
+//        if(heldClippings.isEmpty()) return;
+//        dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat); //TODO
+//    }
 
     void thumbnailText(Text text, float clipX, float clipY, float thumbW, float thumbH, float alpha){
         g.noStroke();
@@ -613,85 +690,86 @@ public class Visipalp {
     //region Puzzle View
 
     // i hate this method :(
-    //FIXME for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
-    //FIXME I don't think this really works with opening and closing the panel -- shrink it like thumbnail view so it doesn't jostle around
+    //FM for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
+    //FM I don't think this really works with opening and closing the panel -- shrink it like thumbnail view so it doesn't jostle around
 
-    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH) {
-        // set up
-        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
-        float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
-        ArrayList<Clipping> row = new ArrayList<>();
-        float rowWidth = 0;
-        Clipping pocketedClipping;
-        float py = puzzleGutter;
-        float rowH;
-        int rowNum = 1;
+//    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH) {
+//        // set up
+//        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
+//        float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
+//        ArrayList<Clipping> row = new ArrayList<>();
+//        float rowWidth = 0;
+//        Clipping pocketedClipping;
+//        float py = puzzleGutter;
+//        float rowH;
+//        int rowNum = 1;
+//
+//        g.push();
+//        g.translate(0, -latitude);
+//
+//        for (Clipping c : lib.clippings) {
+//
+//            float adjustedW;
+//            if (c.img != null) adjustedW = (minH * c.img.width) / c.img.height;      // find the new width if scaled to minH
+//            else adjustedW = minH;
+//
+//            if (rowWidth + adjustedW <= sheetW - puzzleGutter) { // does the next clipping fit on this row
+//                row.add(c);
+//                rowWidth += adjustedW + puzzleGutter;
+//
+//            } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
+//                pocketedClipping = c;
+//                float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
+//                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
+//                rowNum++;
+//                rowH = minH * ratio;
+//
+//                // reset for the next row
+//                row.clear();
+//                py += rowH + puzzleGutter;
+//                rowWidth = 0;
+//
+//                // then back to the clipping we set aside to start the new row
+//                row.add(pocketedClipping);
+//                rowWidth += adjustedW + puzzleGutter;
+//            }
+//        }
+//        // finish off the last row
+//        float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
+//        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
+//
+//        g.pop();
+//
+//        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
+//    }
 
-        g.push();
-        g.translate(0, -latitude);
-
-        for (Clipping c : lib.clippings) {
-
-            float adjustedW;
-            if (c.img != null) adjustedW = (minH * c.img.width) / c.img.height;      // find the new width if scaled to minH
-            else adjustedW = minH;
-
-            if (rowWidth + adjustedW <= sheetW - puzzleGutter) { // does the next clipping fit on this row
-                row.add(c);
-                rowWidth += adjustedW + puzzleGutter;
-
-            } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
-                pocketedClipping = c;
-                float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
-                rowNum++;
-                rowH = minH * ratio;
-
-                // reset for the next row
-                row.clear();
-                py += rowH + puzzleGutter;
-                rowWidth = 0;
-
-                // then back to the clipping we set aside to start the new row
-                row.add(pocketedClipping);
-                rowWidth += adjustedW + puzzleGutter;
-            }
-        }
-        // finish off the last row
-        float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
-
-        g.pop();
-
-        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
-    }
-
-    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float lat) {
-        float px = sheetX + puzzleGutter;
-        for (Clipping clip : row) {
-            float displayW, displayH;
-            if (clip.img != null){
-                displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
-                displayH = minH * ratio;
-            } else{
-                displayW = minH * ratio;
-                displayH = minH * ratio;
-            }
-            PVector offset = new PVector(0,0);
-
-            thumbnail(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, 0);
-
-            dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat);
-
-            px += displayW + puzzleGutter;
-            foot = rowY + displayH + puzzleGutter;
-        }
-    }
+//    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float lat) {
+//        float px = sheetX + puzzleGutter;
+//        for (Clipping clip : row) {
+//            float displayW, displayH;
+//            if (clip.img != null){
+//                displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
+//                displayH = minH * ratio;
+//            } else{
+//                displayW = minH * ratio;
+//                displayH = minH * ratio;
+//            }
+//            PVector offset = new PVector(0,0);
+//
+//            thumbnail(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, 0);
+//
+//            dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat);
+//
+//            px += displayW + puzzleGutter;
+//            foot = rowY + displayH + puzzleGutter;
+//        }
+//    }
 
     public void togglePuzzleView() {
-        goToClipping = lib.selected.get(0);
+//        goToClipping = lib.selected.get(0);
         puzzleToggle = true;
         puzzleView = !puzzleView;
+        rearrange();
     }
     //endregion
     //region Clipping View

@@ -15,7 +15,7 @@ public class tulpa extends PApplet {
     public KeyInput ki = new KeyInput(0, '0', 0, 0);
     public MouseInput mi = new MouseInput(0, 0, 0, 0, 0);
 
-    int w, h;
+    int w = 1000, h = 1000;
     public boolean resized = false;
 
     public static tulpa SOLE = null;
@@ -24,7 +24,7 @@ public class tulpa extends PApplet {
         SOLE = this;
 
         surface.setResizable(true);
-        surface.setSize(1000, 1000);
+        surface.setSize(w, h);
 
         // sdrop = new SDrop(this);
 
@@ -37,7 +37,7 @@ public class tulpa extends PApplet {
 
     public void draw() {
         checkResize();
-        vis.showtime();
+        vis.showtime(resized);
         ki.key = '\0';
         ki.kc = 0;
         mi.wheel = 0; // we have to reset mouse wheel input because of the way it works
