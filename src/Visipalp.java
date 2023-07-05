@@ -1,7 +1,8 @@
 import processing.core.*;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
@@ -126,43 +127,49 @@ public class Visipalp {
     }
 
     void arrangePuzzleSheet(){
-        float thumbX = puzzleGutter, thumbY = puzzleGutter;
-        ArrayList<Thumbnail> row = new ArrayList<Thumbnail>();
 
+        for (Thumbnail t : thumbs){
+            t.resizeByHeight(getClipSize());
+        }
+
+        ArrayList<ArrayList<Thumbnail>> allRows = new ArrayList<ArrayList<Thumbnail>>();
+        allRows.add(new ArrayList<Thumbnail>());
+        float rowW = 0;
+        int row = 0;
+
+        // build rows
         for (int i = 0; i < thumbs.size(); i++){
-            
             Thumbnail t = thumbs.get(i);
-            t.resizeByHeight(getClipSize()); // start out at a minimum row height
-
-            if (i == thumbs.size() - 1 || thumbX + t.w > getSheetW() - 2 * puzzleGutter){ // if it doesn't fit, resize the row & reset for next row
-                float ratio = getSheetW() / thumbX;
-                float rowH = 0;
-
-                for (Thumbnail thumb : row){ // resize everything in the row
-                    thumb.setPos(thumb.x * ratio, thumb.y);
-                    thumb.setSize(thumb.w * ratio, thumb.h * ratio);
-                    rowH = thumb.h;
-                }
-                thumbX = puzzleGutter;
-                thumbY += rowH + puzzleGutter;
-                row.clear();
-            }
-
-            // position clipping and get ready for next row
-            t.setPos(thumbX, thumbY);
-            row.add(t);
-            thumbX += t.w + puzzleGutter;
-        }
-
-        // clumsily fill out the last row with the remaining images
-        if (!row.isEmpty()){
-            float ratio = getSheetW() / thumbX;
-            System.out.println(row);
-            for (Thumbnail thumb : row){
-                thumb.setPos(thumb.x * ratio, thumb.y);
-                thumb.setSize(thumb.w * ratio, thumb.h * ratio);
+            if (rowW + t.w <= getSheetW() - puzzleGutter * (i + 2)){
+                allRows.get(row).add(t);
+                rowW += t.w;
+            } else{
+                System.out.println(allRows.get(row));
+                allRows.add(new ArrayList<Thumbnail>());
+                row++;
+                allRows.get(row).add(t);
+                rowW = t.w;
             }
         }
+
+        float thumbY = puzzleGutter;
+
+        for (ArrayList<Thumbnail> r : allRows){
+            rowW = 0;
+            for (Thumbnail t : r){
+                rowW += t.w;
+            }
+            float ratio = (getSheetW() - puzzleGutter * (r.size() + 1)) / rowW;
+            float thumbX = puzzleGutter;
+            for (Thumbnail t : r){
+                t.setSize(t.w * ratio, t.h * ratio);
+                t.setPos(thumbX, thumbY);
+                thumbX += t.w + puzzleGutter;
+            }
+            thumbY += r.get(0).h + puzzleGutter;
+        }
+
+
         foot = thumbs.get(thumbs.size() - 1).y + thumbs.get(thumbs.size() - 1).h + puzzleGutter;
     }
 
@@ -293,8 +300,14 @@ public class Visipalp {
                     }
                     case 'n' ->
                     {lib.newClipping();}
-                    case '-' -> columns++;
-                    case '=' -> columns--;
+                    case '-' -> {
+                        columns++;
+                        rearrange();
+                    }
+                    case '=' -> {
+                        columns--;
+                        rearrange();
+                    }
                     case '0' -> togglePuzzleView();
                     case ' ' -> {
                         if (lib.selected.size() == 1) mode = Mode.CLIPPINGVIEW;
@@ -359,6 +372,7 @@ public class Visipalp {
         for (Thumbnail t : thumbs){
             if (t.y > latitude + getSheetH()) break;
             if (t.y >= latitude - t.h) t.draw();
+            if (lib.isSelected(t.clipping)) t.drawSelect();
         }
         g.pop();
 
@@ -414,7 +428,7 @@ public class Visipalp {
 //            else followClippingOffscreen(clipY, getClipSize());
 //        }
 //
-//        // don't draw or bother with mouse interaction if offscreen TODO
+//        // don't draw or bother with mouse interaction if offscreen
 //        if ((clipY < lat - thumbH) || (clipY > lat + getSheetH())) return;
 //
 //        thumbnailMouseinteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH); //TODO

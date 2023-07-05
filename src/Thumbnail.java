@@ -62,7 +62,11 @@ public class Thumbnail {
     }
 
     public void resizeByHeight(float height){
-        if (clipping.img == null) return;
+        if (clipping.img == null){
+            h = height;
+            w = height;
+            return;
+        }
         h = height;
         w = (height * clipping.img.width) / clipping.img.height;
     }
