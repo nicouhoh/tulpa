@@ -28,7 +28,7 @@ public class Thumbnail {
         g.stroke(255);
         g.strokeWeight(2);
         g.noFill();
-        g.rect(x + offset.x, y + offset.y, w, h);
+        g.rect(x, y, w, h);
     }
 
     public void setPos(float x, float y){
@@ -55,12 +55,6 @@ public class Thumbnail {
         }
     }
 
-    public void resizeByWidth(float width){
-        if (clipping.img == null) return;
-        w = width;
-        h = (width * clipping.img.height) / clipping.img.width;
-    }
-
     public void resizeByHeight(float height){
         if (clipping.img == null){
             h = height;
@@ -70,11 +64,4 @@ public class Thumbnail {
         h = height;
         w = (height * clipping.img.width) / clipping.img.height;
     }
-
-    public float getWidthByHeight(float height){
-        if (clipping.img == null) return height;
-        h = height;
-        return (height * clipping.img.width) / clipping.img.height;
-    }
-
 }

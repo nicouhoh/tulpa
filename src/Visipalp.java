@@ -1,8 +1,6 @@
 import processing.core.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
@@ -61,7 +59,7 @@ public class Visipalp {
 
     // Casper
     PVector casperSize = new PVector(0, 0);
-    PVector casperOffset;
+    PVector casperOffset = new PVector(0, 0);
     ArrayList<Clipping> heldClippings = new ArrayList<>();
 
     // Scroller
@@ -127,19 +125,17 @@ public class Visipalp {
     }
 
     void arrangePuzzleSheet(){
-
-        for (Thumbnail t : thumbs){
-            t.resizeByHeight(getClipSize());
-        }
-
         ArrayList<ArrayList<Thumbnail>> allRows = new ArrayList<ArrayList<Thumbnail>>();
         allRows.add(new ArrayList<Thumbnail>());
         float rowW = 0;
         int row = 0;
 
-        // build rows
+        // resize all images and build rows
         for (int i = 0; i < thumbs.size(); i++){
+
             Thumbnail t = thumbs.get(i);
+
+            t.resizeByHeight(getClipSize());
             if (rowW + t.w <= getSheetW() - puzzleGutter * (i + 2)){
                 allRows.get(row).add(t);
                 rowW += t.w;
@@ -151,6 +147,8 @@ public class Visipalp {
                 rowW = t.w;
             }
         }
+
+        // resize and reposition rows
 
         float thumbY = puzzleGutter;
 
@@ -169,7 +167,6 @@ public class Visipalp {
             thumbY += r.get(0).h + puzzleGutter;
         }
 
-
         foot = thumbs.get(thumbs.size() - 1).y + thumbs.get(thumbs.size() - 1).h + puzzleGutter;
     }
 
@@ -179,21 +176,21 @@ public class Visipalp {
 
         g.background(bgColor);
 
-//        if (puzzleView) puzzleView(getSheetX(), 0, getSheetW(), t.h);
-//        else thumbnailView(getSheetX(),  t.h);
-
         if (resize){
             if (!puzzleView) arrangeContactSheet();
             if (puzzleView) arrangePuzzleSheet();
         }
 
         latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
+
         patientContactSheet();
 
+        if ( me == null || me.getAction() == MouseEvent.RELEASE) heldClippings.clear();
         casperLayer();
+
         if (panelIsOpen) panel();
 
-        if (mode == Mode.CLIPPINGVIEW) clippingView();
+        if (mode == Mode.CLIPPINGVIEW) clippingVi:while ()ew();
         finish();
     }
 
@@ -269,6 +266,12 @@ public class Visipalp {
     public void receiveMouseInput(MouseEvent e){
         me = e;
         scrollWheel();
+    }
+
+    public boolean noMouseButton(MouseEvent e){
+        if (me == null) return true;
+        if (me != null && me.getButton() == 0) return true;
+        return false;
     }
 
     public void receiveKeyInput(KeyEvent e) {
@@ -360,93 +363,22 @@ public class Visipalp {
         if (mode == Mode.CLIPPINGVIEW) clippingViewLatitude = PApplet.constrain(clippingViewLatitude + me.getCount() * scrollSpeed, 0, clippingViewFoot - getSheetH());
     }
 
-    //endregion
-    //region Contact Sheet
-    // makes all the clippings
-
-
     void patientContactSheet(){
 
         g.push();
         g.translate(0, -latitude);
         for (Thumbnail t : thumbs){
+            if (t.y + t.h < latitude) continue;
             if (t.y > latitude + getSheetH()) break;
-            if (t.y >= latitude - t.h) t.draw();
+
+            thumbnailMouseInteraction(t);
+            t.draw();
             if (lib.isSelected(t.clipping)) t.drawSelect();
         }
         g.pop();
 
         scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, getSheetH());
     }
-
-//    doesn't set foot correctly at all zoom levels
-//    void thumbnailView(float sheetX, float sheetH) {
-//        List<Clipping> row;
-//
-//        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
-//        g.push();
-//        g.translate(0, -latitude);
-//        int rows = lib.clippings.size() / columns;
-//        if (lib.clippings.size() % columns != 0) rows += 1;
-//        for (int i = 0; i < rows; i++){
-//            row = lib.clippings.subList(columns * i, PApplet.constrain((columns * (i+1)), 0, lib.clippings.size()));
-//            thumbnailRow(row, i, (((i+1) * gutter) + (i * getClipSize())), sheetX);
-//        }
-//        g.pop();
-//
-//        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
-//    }
-
-//    void thumbnailRow(List<Clipping> row, int rowNum, float rowY, float sheetX){
-//        float previousRightEdge = 0;
-//        for (int i = 0; i < row.size(); i++){
-//            Clipping c = row.get(i);
-//            float clipX = sheetX + ((i + 1) * gutter) + (i * getClipSize());
-//            PVector size = sizeThumbnail(c);
-//            PVector offset = findOffset(size.x, size.y);
-//            thumbnail(getID(), rowNum, c, clipX, rowY, size.x, size.y, offset, latitude, previousRightEdge);
-//            previousRightEdge = ((i + 1) * gutter) + ((i + 1) * getClipSize()) - offset.x;
-//        }
-//        if (rowNum * columns + 1 < lib.clippings.size()) {
-//            dropZone(lib.clippings.get(rowNum * columns + 1), (previousRightEdge + sheetX + getSheetW()) / 2, 50, rowY, getClipSize(), latitude);
-//        }
-//        //TD I think I still need to do a special case for the very last clipping in the library
-//    }
-
-
-//    void thumbnail(int id, int rowNum, Clipping c, float clipX, float clipY, float thumbW,
-//                   float thumbH, PVector offset, float lat, float previousRightEdge) {
-//
-//        foot = clipY + thumbH + gutter; // the idea being that the last thumbnail in the list will determine foot
-//        arrowUpDownCheck(c, rowNum, clipX, offset, thumbW);
-//
-//        if (c == goToClipping){ //TODO
-//            if (puzzleToggle) {
-//                goToLocation(clipY, selectScreenY);
-//                puzzleToggle = false;
-//            }
-//            else followClippingOffscreen(clipY, getClipSize());
-//        }
-//
-//        // don't draw or bother with mouse interaction if offscreen
-//        if ((clipY < lat - thumbH) || (clipY > lat + getSheetH())) return;
-//
-//        thumbnailMouseinteraction(id, c, clipX + offset.x,clipY + offset.y - lat, thumbW, thumbH); //TODO
-//
-//        if (c.img != null) g.image(c.img, clipX + offset.x, clipY + offset.y, thumbW, thumbH); //TODO
-//        else{
-//            thumbnailText(c.text, clipX, clipY, thumbW, thumbH);
-//        }
-//
-//        if (lib.isSelected(c)) { //TODO
-//            selectScreenY = clipY - latitude;
-//            if (c.img == null) drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH, cornerRadius);
-//            else drawThumbnailSelect(clipX + offset.x, clipY + offset.y, thumbW, thumbH);
-//        }
-//
-//        if(heldClippings.isEmpty()) return;
-//        dropZone(c, (previousRightEdge + clipX + offset.x) / 2, 50, clipY, getClipSize(), lat); //TODO
-//    }
 
     void thumbnailText(Text text, float clipX, float clipY, float thumbW, float thumbH, float alpha){
         g.noStroke();
@@ -456,37 +388,70 @@ public class Visipalp {
         g.textFont(duo);
         g.textSize(24);
         g.textLeading(26);
-        g.text(text.bodyText, clipX + 2 * gutter, clipY + 2 * gutter, thumbW - 4*gutter, thumbH - 4*gutter);
+        g.text(text.bodyText, clipX + 2 * gutter, clipY + 2*gutter, thumbW - 4*gutter, thumbH - 4*gutter);
     }
 
     void thumbnailText(Text text, float clipX, float clipY, float thumbW, float thumbH) {
         thumbnailText(text, clipX, clipY, thumbW, thumbH, 255);
-
     }
 
-    void thumbnailMouseinteraction(int id, Clipping c, float x, float y, float w, float h) {
+    void thumbnailMouseInteraction(Thumbnail thumbnail) {
         if (me == null) return;
         if (mode != Mode.CONTACTSHEET) return;
 
         // MOUSEOVER
-        if (mouseOver(x, y, w, h)) {
-            setHotItem(id);
+        if (mouseOver(thumbnail.x, thumbnail.y - latitude, thumbnail.w, thumbnail.h)) {
 
             // MOUSE DOWN
             if (mouseDown()) {
-                setActiveItem(id);
-                setCasper(new PVector(me.getX() - x, me.getY() - y), new PVector(w, h));
-                if (!lib.isSelected(c) && me.getModifiers() == 0) {
-                    lib.select(c);
-                }
+
+                setCasper(new PVector(me.getX() - thumbnail.x, me.getY() - thumbnail.y + latitude), new PVector(thumbnail.w, thumbnail.h));
+
+                // CLICK
+                if (!lib.isSelected(thumbnail.clipping) && me.getModifiers() == 0)
+                    lib.select(thumbnail.clipping);
+
+                // CTRL CLICK
                 else if (me.getModifiers() == MouseEvent.CTRL)
-                    lib.addSelect(c);
+                    lib.addSelect(thumbnail.clipping);
             }
-            else if (mouseDrag(id)){
-                dragThumbnail(id, c);
-            }
+
+            // DRAG
+            else if (me.getAction() == MouseEvent.DRAG && heldClippings.isEmpty())
+                grabThumbnail(thumbnail);
         }
     }
+
+    void grabThumbnail(Thumbnail t){
+        if(lib.isSelected(t.clipping) && lib.selected.size() > 1)
+            setHeldClippings(lib.selected);
+        else setHeldClippings(t.clipping);
+    }
+
+    // OLD MOUSE INTERACTIOn
+//    void thumbnailMouseinteraction(int id, Clipping c, float x, float y, float w, float h) {
+//        if (me == null) return;
+//        if (mode != Mode.CONTACTSHEET) return;
+//
+//        // MOUSEOVER
+//        if (mouseOver(x, y, w, h)) {
+//            setHotItem(id);
+//
+//            // MOUSE DOWN
+//            if (mouseDown()) {
+//                setActiveItem(id);
+//                setCasper(new PVector(me.getX() - x, me.getY() - y), new PVector(w, h));
+//                if (!lib.isSelected(c) && me.getModifiers() == 0) {
+//                    lib.select(c);
+//                }
+//                else if (me.getModifiers() == MouseEvent.CTRL)
+//                    lib.addSelect(c);
+//            }
+//            else if (mouseDrag(id)){
+//                dragThumbnail(id, c);
+//            }
+//        }
+//    }
 
     void setArrowUDTarget(int rowNum, float x){
         arrowUDrowNum = rowNum;
@@ -501,13 +466,6 @@ public class Visipalp {
        return activeItem == id && me.getAction() == MouseEvent.DRAG && me.getButton() == PConstants.LEFT;
     }
 
-    void dragThumbnail(int id, Clipping c){
-        if (activeItem != id) return;
-        if (!heldClippings.isEmpty()) return;
-        if(lib.isSelected(c) && lib.selected.size() > 1)
-            setHeldClippings(lib.selected);
-        else setHeldClippings(c);
-    }
 
     void setHeldClippings(Clipping c){
         heldClippings.clear();
@@ -584,24 +542,16 @@ public class Visipalp {
         return new PVector(wid, hei);
     }
 
-    PVector findOffset(float wid, float hei) {
-        float offX = 0;
-        float offY = 0;
-        if (wid >= hei) offY = (getClipSize() - hei) / 2;
-        else offX = (getClipSize() - wid) / 2;
-        return new PVector(offX, offY);
-    }
-
-    public void drawThumbnailSelect(float x, float y, float w, float h, float r) {
-        g.stroke(255);
-        g.strokeWeight(2);
-        g.noFill();
-        g.rect(x, y, w, h, r);
-    }
-
-    public void drawThumbnailSelect(float x, float y, float w, float h) {
-        drawThumbnailSelect(x, y, w, h, 0);
-    }
+//    public void drawThumbnailSelect(float x, float y, float w, float h, float r) {
+//        g.stroke(255);
+//        g.strokeWeight(2);
+//        g.noFill();
+//        g.rect(x, y, w, h, r);
+//    }
+//
+//    public void drawThumbnailSelect(float x, float y, float w, float h) {
+//        drawThumbnailSelect(x, y, w, h, 0);
+//    }
 
     public void setLatitude(float y) {
         latitude = y;
@@ -636,13 +586,11 @@ public class Visipalp {
     //region Casper
 
     void casper(Clipping c, float w, float h){
-        g.push();
-        g.translate(0, -latitude);
+        if (heldClippings == null) return;
         g.tint(255, 128);
-        if (c.img != null) g.image(c.img, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h);
-        else if (c.text.bodyText != "") thumbnailText(c.text, me.getX() - casperOffset.x, me.getY() + latitude - casperOffset.y, w, h, 128);
+        if (c.img != null) g.image(c.img, me.getX() - casperOffset.x, me.getY() - casperOffset.y, w, h);
+        else if (c.text.bodyText != "") thumbnailText(c.text, me.getX() - casperOffset.x, me.getY() - casperOffset.y, w, h, 128);
         g.tint(255);
-        g.pop();
     }
 
     void setCasper(PVector offset, PVector size){
@@ -700,84 +648,6 @@ public class Visipalp {
     public float setGripPos(float scrollValue, float bottomOfScroll, float scrollerH, float gripH) {
         return PApplet.constrain(scrollValue / bottomOfScroll * scrollerH, 0, scrollerH - gripH);
     }
-    //endregion
-    //region Puzzle View
-
-    // i hate this method :(
-    //FM for some reason the rows don't come out to the same width. Some of them fall short of the sheet width
-    //FM I don't think this really works with opening and closing the panel -- shrink it like thumbnail view so it doesn't jostle around
-
-//    public void puzzleView(float sheetX, float sheetY, float sheetW, float sheetH) {
-//        // set up
-//        latitude = PApplet.constrain(latitude, 0, foot - getSheetH());
-//        float minH = PApplet.constrain(sheetH / columns, 9, sheetH);
-//        ArrayList<Clipping> row = new ArrayList<>();
-//        float rowWidth = 0;
-//        Clipping pocketedClipping;
-//        float py = puzzleGutter;
-//        float rowH;
-//        int rowNum = 1;
-//
-//        g.push();
-//        g.translate(0, -latitude);
-//
-//        for (Clipping c : lib.clippings) {
-//
-//            float adjustedW;
-//            if (c.img != null) adjustedW = (minH * c.img.width) / c.img.height;      // find the new width if scaled to minH
-//            else adjustedW = minH;
-//
-//            if (rowWidth + adjustedW <= sheetW - puzzleGutter) { // does the next clipping fit on this row
-//                row.add(c);
-//                rowWidth += adjustedW + puzzleGutter;
-//
-//            } else { // if it doesn't fit, we set it aside for later, resize the row we just finished and draw it
-//                pocketedClipping = c;
-//                float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-//                puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
-//                rowNum++;
-//                rowH = minH * ratio;
-//
-//                // reset for the next row
-//                row.clear();
-//                py += rowH + puzzleGutter;
-//                rowWidth = 0;
-//
-//                // then back to the clipping we set aside to start the new row
-//                row.add(pocketedClipping);
-//                rowWidth += adjustedW + puzzleGutter;
-//            }
-//        }
-//        // finish off the last row
-//        float ratio = (sheetW - 2 * puzzleGutter) / rowWidth;
-//        puzzleRow(sheetX, row, rowNum, ratio, minH, py, sheetY, latitude);
-//
-//        g.pop();
-//
-//        scroller(getID(), getID(), t.w - scrollerW, 0, scrollerW, sheetH);
-//    }
-
-//    public void puzzleRow(float sheetX, ArrayList<Clipping> row, int rowNum, float ratio, float minH, float rowY, float sheetY, float lat) {
-//        float px = sheetX + puzzleGutter;
-//        for (Clipping clip : row) {
-//            float displayW, displayH;
-//            if (clip.img != null){
-//                displayW = ((minH * clip.img.width) / clip.img.height) * ratio;
-//                displayH = minH * ratio;
-//            } else{
-//                displayW = minH * ratio;
-//                displayH = minH * ratio;
-//            }
-//            PVector offset = new PVector(0,0);
-//
-//            thumbnail(getID(), rowNum, clip, px, rowY, displayW, displayH, offset, lat, 0);
-//
-//            dropZone(clip, px - puzzleGutter/2, 50, rowY, displayH,lat);
-//
-//            px += displayW + puzzleGutter;
-//            foot = rowY + displayH + puzzleGutter;
-//        }
-//    }
 
     public void togglePuzzleView() {
 //        goToClipping = lib.selected.get(0);
@@ -987,7 +857,6 @@ public class Visipalp {
         String keystring = e.getKey() == PConstants.CODED ? "CODED" : "" + e.getKey();
         g.text(keystring + "\n" + e.getModifiers(), 50, 200);
     }
-
 }
 
 //TODO Search
