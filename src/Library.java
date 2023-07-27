@@ -149,7 +149,8 @@ public class Library {
   }
 
   public void addSelect(Clipping clipping) {
-    selected.add(clipping);
+    if (!selected.contains(clipping))
+      selected.add(clipping);
   }
 
   public void removeSelect(Clipping clipping) {
