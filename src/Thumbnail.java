@@ -2,12 +2,12 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Thumbnail {
+public class Thumbnail extends Organelle {
 
     PGraphics g;
     int id;
     Clipping clipping;
-    float x, y, w, h;
+    //float x, y, w, h;
     float thumbX, thumbY, thumbW, thumbH;
     PVector offset = new PVector(0, 0);
     float dropZonePercent = 20;
@@ -21,6 +21,8 @@ public class Thumbnail {
         this.w = w;
         this.h = h;
     }
+
+    public void update(){}
 
     public void draw(){
         if (clipping.img != null) g.image(clipping.img, thumbX, thumbY, thumbW, thumbH);
