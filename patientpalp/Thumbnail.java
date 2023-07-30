@@ -4,28 +4,37 @@ import processing.core.PVector;
 
 public class Thumbnail extends Organelle {
 
+    PGraphics g;
+    int id;
     Clipping clipping;
+    //float x, y, w, h;
     float thumbX, thumbY, thumbW, thumbH;
     PVector offset = new PVector(0, 0);
     float dropZonePercent = 20;
 
-    public Thumbnail(Clipping clipping){
+    public Thumbnail(PGraphics g, int id, Clipping clipping, float x, float y, float w, float h){
+        this.g = g;
+        this.id = id;
         this.clipping = clipping;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
     }
 
-    public void draw(PGraphics g){
-        System.out.println("Drawing Thumbnail: " + this);
-        System.out.println(thumbX + " " + thumbY + " " + thumbW + " " +  thumbH);
+    public void update(){}
+
+    public void draw(){
         if (clipping.img != null) g.image(clipping.img, thumbX, thumbY, thumbW, thumbH);
         // else thumbnailText()
     }
 
-//    public void drawSelect(){
-//        g.stroke(255);
-//        g.strokeWeight(2);
-//        g.noFill();
-//        g.rect(thumbX, thumbY, thumbW, thumbH);
-//    }
+    public void drawSelect(){
+        g.stroke(255);
+        g.strokeWeight(2);
+        g.noFill();
+        g.rect(thumbX, thumbY, thumbW, thumbH);
+    }
 
     public void setPos(float x, float y){
         this.x = x;

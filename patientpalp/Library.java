@@ -13,7 +13,7 @@ public class Library {
   ArrayList<Clipping> clippings;
   ArrayList<Clipping> selected;
 
-//  ArrayList<Tag> tags = new ArrayList<Tag>();
+  ArrayList<Tag> tags = new ArrayList<Tag>();
 
   boolean zoom;
 
@@ -80,70 +80,70 @@ public class Library {
     return id;
   }
 
-//  public Tag createTag(String name){
-//    if (tagExists(tags, name)) return null;
-//    return new Tag(name);
-//  }
-//
-//  public Tag getTag(String s){
-//    for (Tag t : tags){
-//      if (t.name.toLowerCase() == s.toLowerCase()){
-//        return t;
-//      }
-//    }
-//    return null;
-//  }
-//
-//  public void tagClipping(Clipping c, Tag t){
-//    // tag clipping with a tag. If it's not in the tag list, we add it
-//    if (!tagExists(tags, t)){
-//      tags.add(t);
-//    }
-//    if (!c.taggedWith(t.name)){
-//      c.addTag(t);
-//    }
-//  }
-//
-//  public void tagClipping(Clipping c, String name){
-//    // tag clipping with string. If the tag doesn't exist, we create it
-//    if (!tagExists(tags, name)){
-//      Tag tagatha = createTag(name);
-//      tags.add(tagatha);
-//    }
-//    if (!c.taggedWith(name)){
-//      c.addTag(getTag(name));
-//    }
-//  }
-//
-//  public void tagClipping(Clipping c, ArrayList<Tag> l){
-//    // Tag a clipping with a list of tags
-//    for (Tag t : l){
-//      tagClipping(c, t);
-//    }
-//  }
-//
-//  public boolean tagExists(ArrayList<Tag> taggies, String s){
-//    for (Tag t : taggies){
-//      if (t.name.toLowerCase() == s.toLowerCase()) return true;
-//    }
-//    return false;
-//  }
-//
-//  public boolean tagExists(ArrayList<Tag> taggies, Tag korv){
-//    for (Tag t : taggies){
-//      if (t.name.equalsIgnoreCase(korv.name)) return true;
-//    }
-//    return false;
-//  }
-//
-//  public ArrayList<Tag> parseTags(Text text){
-//    ArrayList<Tag> output = new ArrayList<Tag>();
-//    if (!text.bodyText.contains("#")) return output;
-//    for (String word : text.getWords()){
-//      if (word.startsWith("#") && word.length() > 1) output.add(new Tag(word));
-//    }
-//    return output;
-//  }
+  public Tag createTag(String name){
+    if (tagExists(tags, name)) return null;
+    return new Tag(name);
+  }
+
+  public Tag getTag(String s){
+    for (Tag t : tags){
+      if (t.name.toLowerCase() == s.toLowerCase()){
+        return t;
+      }
+    }
+    return null;
+  }
+
+  public void tagClipping(Clipping c, Tag t){
+    // tag clipping with a tag. If it's not in the tag list, we add it
+    if (!tagExists(tags, t)){
+      tags.add(t);
+    }
+    if (!c.taggedWith(t.name)){
+      c.addTag(t);
+    }
+  }
+
+  public void tagClipping(Clipping c, String name){
+    // tag clipping with string. If the tag doesn't exist, we create it
+    if (!tagExists(tags, name)){
+      Tag tagatha = createTag(name);
+      tags.add(tagatha);
+    }
+    if (!c.taggedWith(name)){
+      c.addTag(getTag(name));
+    }
+  }
+
+  public void tagClipping(Clipping c, ArrayList<Tag> l){
+    // Tag a clipping with a list of tags
+    for (Tag t : l){
+      tagClipping(c, t);
+    }
+  }
+
+  public boolean tagExists(ArrayList<Tag> taggies, String s){
+    for (Tag t : taggies){
+      if (t.name.toLowerCase() == s.toLowerCase()) return true;
+    }
+    return false;
+  }
+
+  public boolean tagExists(ArrayList<Tag> taggies, Tag korv){
+    for (Tag t : taggies){
+      if (t.name.equalsIgnoreCase(korv.name)) return true;
+    }
+    return false;
+  }
+
+  public ArrayList<Tag> parseTags(Text text){
+    ArrayList<Tag> output = new ArrayList<Tag>();
+    if (!text.bodyText.contains("#")) return output;
+    for (String word : text.getWords()){
+      if (word.startsWith("#") && word.length() > 1) output.add(new Tag(word));
+    }
+    return output;
+  }
 
   public void addSelect(Clipping clipping) {
     if (!selected.contains(clipping))
@@ -172,17 +172,17 @@ public class Library {
     return (selected.contains(c));
   }
 
-//  public ArrayList<Clipping> search(String s){
-//    ArrayList<Clipping> output = new ArrayList<Clipping>();
-//    String[] terms = s.split("[\\W\\n]");
-//    for (Clipping c : clippings){
-//      for (String word : terms){
-//        if(!c.taggedWith(word)) continue;
-//        output.add(c);
-//      }
-//    }
-//    return output;
-//  }
+  public ArrayList<Clipping> search(String s){
+    ArrayList<Clipping> output = new ArrayList<Clipping>();
+    String[] terms = s.split("[\\W\\n]");
+    for (Clipping c : clippings){
+      for (String word : terms){
+        if(!c.taggedWith(word)) continue;
+        output.add(c);
+      }
+    }
+    return output;
+  }
 
   // move Clipping c before clipping c2
   public void moveClipping(Clipping c1, Clipping c2){
@@ -217,15 +217,15 @@ public class Library {
     zoom = false;
   }
 
-//  public void debugTagList(){
-//    if (tags == null){
-//      System.out.println("No tags");
-//      return;
-//    }
-//    for (Tag t : tags){
-//      System.out.println(t.name);
-//    }
-//  }
+  public void debugTagList(){
+    if (tags == null){
+      System.out.println("No tags");
+      return;
+    }
+    for (Tag t : tags){
+      System.out.println(t.name);
+    }
+  }
 
   public void stockShelves(){
     File data = new File(path);

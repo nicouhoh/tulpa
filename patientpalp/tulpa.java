@@ -9,12 +9,12 @@ public class tulpa extends PApplet {
 
     // SDrop sdrop;
 
-    private Conductor conductor;
-    private Library library;
-    private Visipalp visipalp;
+    public Conductor conductor;
+    public Library library;
+    public Visipalp visipalp;
 
-//    public KeyInput ki = new KeyInput(0, '0', 0, 0);
-//    public MouseInput mi = new MouseInput(0, 0, 0, 0, 0);
+    public KeyInput ki = new KeyInput(0, '0', 0, 0);
+    public MouseInput mi = new MouseInput(0, 0, 0, 0, 0);
 
     int w = 1000, h = 1000;
     public boolean resized = false;
@@ -29,7 +29,9 @@ public class tulpa extends PApplet {
 
         // sdrop = new SDrop(this);
 
-        conductor = new Conductor(this, g);
+        library = new Library();
+        visipalp = new Visipalp(this, g, library);
+        conductor = new Conductor(this, g, library, visipalp);
 
         conductor.setup();
 
@@ -38,7 +40,6 @@ public class tulpa extends PApplet {
     }
 
     public void draw() {
-        conductor.update();
 //        checkResize();
 //        vis.showtime(resized);
 //        ki.key = '\0';
@@ -47,23 +48,23 @@ public class tulpa extends PApplet {
 //        resized = false;
     }
 
-//    public void checkResize() {
-//        if (w != width || h != height) {
-//            w = width;
-//            h = height;
-//            resized = true;
-//        }
-//    }
+    public void checkResize() {
+        if (w != width || h != height) {
+            w = width;
+            h = height;
+            resized = true;
+        }
+    }
 
     // INPUT -----------------------------------------------------------------
 
-//    public void keyEvent(KeyEvent e) {
-//        visipalp.receiveKeyInput(e);
-//    }
-//
-//    public void mouseEvent(MouseEvent e) {
-//        visipalp.receiveMouseInput(e);
-//    }
+    public void keyEvent(KeyEvent e) {
+        visipalp.receiveKeyInput(e);
+    }
+
+    public void mouseEvent(MouseEvent e) {
+        visipalp.receiveMouseInput(e);
+    }
 
     //public void dropEvent(DropEvent dropEvent){
     //    callosum.ear.dropEvent(dropEvent);

@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class Scroller {
+public class Scroller extends Organelle{
 
     int id, gripID;
     float x, y, w = 20, h;
@@ -22,6 +22,10 @@ public class Scroller {
 
         updateGrip(latitude, foot);
     }
+
+    public void update(){}
+
+    public void draw(){}
 
     public void updateGrip(float latitude, float foot){
         setGripH(foot);
