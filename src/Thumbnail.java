@@ -14,8 +14,8 @@ public class Thumbnail extends Organelle {
     }
 
     public void draw(PGraphics g){
-        System.out.println("Drawing Thumbnail: " + this);
-        System.out.println(thumbX + " " + thumbY + " " + thumbW + " " +  thumbH);
+//        System.out.println("Drawing Thumbnail: " + this);
+//        System.out.println(thumbX + " " + thumbY + " " + thumbW + " " +  thumbH);
         if (clipping.img != null) g.image(clipping.img, thumbX, thumbY, thumbW, thumbH);
         // else thumbnailText()
     }

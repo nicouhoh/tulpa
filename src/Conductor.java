@@ -20,11 +20,11 @@ public class Conductor {
         visipalp.addChild(contactSheet);
         contactSheet.liquidBounds();
         visipalp.addChild(contactSheet);
+        Scroller scroller = new Scroller(contactSheet);
+        contactSheet.addChild(scroller);
         Materializer materializer = new Materializer();
         contactSheet.addChildren(materializer.materialize(library.clippings));
         contactSheet.arrangeThumbnails();
-//        ThumbnailObsesser thumbObsessor = new ThumbnailObsesser();
-//        thumbObsessor.arrangeThumbnails(contactSheet.getChildren(), contactSheet.getClipSize(), contactSheet.getGutter(), contactSheet.getColumns());
     }
 
     public void update(){
