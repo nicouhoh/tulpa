@@ -2,15 +2,11 @@ import processing.core.PGraphics;
 
 public class Visipalp extends Organelle {
 
-    private tulpa parent;
+    PGraphics g;
 
-    int bgColor = 49;
-
-    public Visipalp(tulpa parent){
-        this.parent = parent;
-    }
-
-    public void draw(PGraphics g){
-        g.background(bgColor);
+    public Visipalp(PGraphics g){
+        this.g = g;
+        this.shapeShifter = new ShapeOfPalp();
+        this.drawBehavior = new DrawBackground(g);
     }
 }

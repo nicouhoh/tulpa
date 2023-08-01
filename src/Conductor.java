@@ -1,4 +1,5 @@
 import processing.core.PGraphics;
+
 public class Conductor {
 
     tulpa t;
@@ -6,29 +7,20 @@ public class Conductor {
     Library library;
     Visipalp visipalp;
 
-    public Conductor(tulpa parent, PGraphics g){
-        this.t = parent;
+    public Conductor(tulpa t, PGraphics g){
+        this.t = t;
         this.g = g;
     }
 
     public void setup(){
         library = new Library();
         library.stockShelves();
-        this.visipalp = new Visipalp(t);
-        visipalp.setBounds(0, 0, t.w, t.h);
-        ContactSheet contactSheet = new ContactSheet();
-        visipalp.addChild(contactSheet);
-        contactSheet.liquidBounds();
-        visipalp.addChild(contactSheet);
-        Scroller scroller = new Scroller(contactSheet);
-        contactSheet.addChild(scroller);
-        Materializer materializer = new Materializer();
-        contactSheet.addChildren(materializer.materialize(library.clippings));
-        contactSheet.arrangeThumbnails();
+        this.visipalp = new Visipalp(g);
+        visipalp.addChild(new ContactSheet(g));
     }
 
     public void update(){
-        visipalp.update(g);
+        visipalp.performUpdate();
     }
 
 }

@@ -10,6 +10,8 @@ public class tulpa extends PApplet {
     // SDrop sdrop;
 
     private Conductor conductor;
+    private Library library;
+    private Visipalp visipalp;
 
 //    public KeyInput ki = new KeyInput(0, '0', 0, 0);
 //    public MouseInput mi = new MouseInput(0, 0, 0, 0, 0);

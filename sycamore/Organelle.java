@@ -1,29 +1,21 @@
 import java.util.ArrayList;
+import processing.core.PGraphics;
+
 public abstract class Organelle {
 
     private Organelle parent;
     private ArrayList<Organelle> children = new ArrayList<Organelle>();
-    ShapeShifter shapeShifter;
-    DrawBehavior drawBehavior;
-
+    private float foot;
+    private float latitude;
     float x, y, w, h;
 
-    public void performUpdate(){
-        shapeShifter.update(this);
-        System.out.println("UPDATED " + this + " -- x: " + x + " y: " + y + " w: " + w + " h: " + h);
+    public void update(PGraphics g){
+        if (!(this instanceof Thumbnail))System.out.println("UPDATING " + this + " -- " + "x: " + x + " y: " + y + " w: " + w + " h: " + h);
+        draw(g);
+        for (Organelle child : getChildren()) child.update(g);
+    };
 
-        drawBehavior.draw();
-
-        updateChildren();
-    }
-
-    public void updateChildren(){
-        if (getChildren() != null) for (Organelle child : getChildren()) child.performUpdate();
-    }
-
-    public ArrayList<Organelle> getChildren(){
-        return children;
-    }
+    abstract void draw(PGraphics g);
 
     public void addChild(Organelle child){
         children.add(child);
@@ -37,12 +29,16 @@ public abstract class Organelle {
         }
     }
 
+    public void setParent(Organelle parent){
+        this.parent = parent;
+    }
+
     public Organelle getParent(){
         return parent;
     }
 
-    public void setParent(Organelle parent){
-        this.parent = parent;
+    public ArrayList<Organelle> getChildren(){
+        return children;
     }
 
     public void setBounds(float x, float y, float w, float h){
@@ -58,4 +54,21 @@ public abstract class Organelle {
         this.w = parent.w;
         this.h = parent.h;
     }
+
+    public float getLatitude(){
+        return latitude;
+    }
+
+    public void setLatitude(float latitude){
+        this.latitude = latitude;
+    }
+
+    public float getFoot(){
+        return foot;
+    }
+
+    public void setFoot(float bottomOfScroll){
+        foot = bottomOfScroll;
+    }
+
 }
