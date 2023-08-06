@@ -1,10 +1,7 @@
 import java.util.ArrayList;
-public class Shaper implements ShapeShifter {
-
-    private Organelle parent;
-    private ArrayList<Organelle> children;
+public class Shaper implements Shape {
 
     @Override
-    public void update(Organelle organelle) {
+    public void shift(Organelle organelle) {
     }
 }

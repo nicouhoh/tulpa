@@ -3,13 +3,13 @@ public abstract class Organelle {
 
     private Organelle parent;
     private ArrayList<Organelle> children = new ArrayList<Organelle>();
-    ShapeShifter shapeShifter;
+    Shape shape;
     DrawBehavior drawBehavior;
 
     float x, y, w, h;
 
     public void performUpdate(){
-        shapeShifter.update(this);
+        shape.shift(this);
         System.out.println("UPDATED " + this + " -- x: " + x + " y: " + y + " w: " + w + " h: " + h);
 
         drawBehavior.draw();

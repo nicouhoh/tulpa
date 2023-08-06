@@ -17,6 +17,10 @@ public class Conductor {
         library.stockShelves();
         this.visipalp = new Visipalp(g);
         visipalp.addChild(new ContactSheet(g));
+        ContactSheet contactSheet = new ContactSheet(g);
+        visipalp.addChild(contactSheet);
+        contactSheet.materialize(library.clippings);
+        contactSheet.arrangeThumbnails();
     }
 
     public void update(){

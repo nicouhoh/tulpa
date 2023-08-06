@@ -1,6 +1,6 @@
-public class ShapeOfGas implements ShapeShifter {
+public class ShapeOfGas implements Shape {
 
-    public void update(Organelle organelle){
+    public void shift(Organelle organelle){
         organelle.x = organelle.getParent().x;
         organelle.y = organelle.getParent().y;
         organelle.w = organelle.getParent().w;

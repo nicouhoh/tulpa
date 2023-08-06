@@ -1,7 +1,7 @@
-public class ShapeOfPalp implements ShapeShifter {
+public class ShapeOfPalp implements Shape {
 
     @Override
-    public void update(Organelle organelle) {
+    public void shift(Organelle organelle) {
         organelle.x = 0;
         organelle.y = 0;
         organelle.w = tulpa.SOLE.w;

@@ -5,19 +5,15 @@ import processing.core.PVector;
 public class Thumbnail extends Organelle {
 
     Clipping clipping;
-    float thumbX, thumbY, thumbW, thumbH;
+    private float dropZonePercent = 20;
+
+    float thumbW, thumbH;
     PVector offset = new PVector(0, 0);
-    float dropZonePercent = 20;
 
-    public Thumbnail(Clipping clipping){
+    public Thumbnail(PGraphics g, Clipping clipping){
         this.clipping = clipping;
-    }
-
-    public void draw(PGraphics g){
-//        System.out.println("Drawing Thumbnail: " + this);
-//        System.out.println(thumbX + " " + thumbY + " " + thumbW + " " +  thumbH);
-        if (clipping.img != null) g.image(clipping.img, thumbX, thumbY, thumbW, thumbH);
-        // else thumbnailText()
+        this.drawBehavior = new DrawThumbnail(g, this);
+        this.shape = new Shaper();
     }
 
 //    public void drawSelect(){
@@ -30,27 +26,58 @@ public class Thumbnail extends Organelle {
     public void setPos(float x, float y){
         this.x = x;
         this.y = y;
-        this.thumbX = x + offset.x;
-        this.thumbY = y + offset.y;
+    }
+
+    public float getThumbX(){
+        float tw = getThumbSize().x;
+        float offset = (w / 2) - (tw / 2);
+        return x + offset;
+    }
+
+    public float getThumbY(){
+        float th = getThumbSize().y;
+        float offset = (h / 2) - (th / 2);
+        return y + offset;
     }
 
     public void setSize(float newW, float newH){
         w = newW;
         h = newH;
-        PImage img = clipping.img;
-        if (img == null){
-            thumbW = w; thumbH = h;
-            return;
-        }
+    }
 
+//    public void setSize(float newW, float newH){
+//        w = newW;
+//        h = newH;
+//        PImage img = clipping.img;
+//        if (img == null){
+//            thumbW = w; thumbH = h;
+//            return;
+//        }
+//
+//        if (img.width >= img.height){
+//            thumbW = w;
+//            thumbH = (w * img.height) / img.width;
+//            offset = new PVector(0, (h - thumbH) / 2);
+//        } else {
+//            thumbH = h;
+//            thumbW = (h * img.width) / img.height;
+//            offset = new PVector((w - thumbW) / 2, 0);
+//        }
+//    }
+
+    public PVector getThumbSize(){
+        PImage img = clipping.img;
+        if (img == null)
+            return new PVector(w, h);
         if (img.width >= img.height){
-            thumbW = w;
-            thumbH = (w * img.height) / img.width;
-            offset = new PVector(0, (h - thumbH) / 2);
-        } else {
-            thumbH = h;
-            thumbW = (h * img.width) / img.height;
-            offset = new PVector((w - thumbW) / 2, 0);
+            float tw = w;
+            float th = (w * img.height) / img.width;
+            return new PVector(tw, th);
+        }
+        else {
+            float th = h;
+            float tw = (h * img.width) / img.height;
+            return new PVector(tw, th);
         }
     }
 
