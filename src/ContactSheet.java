@@ -1,7 +1,7 @@
 import processing.core.PGraphics;
 import java.util.ArrayList;
 
-public class ContactSheet extends Organelle {
+public class ContactSheet extends Organelle implements Shape, DrawBehavior{
 
     PGraphics g;
     private int columns = 5;
@@ -9,8 +9,6 @@ public class ContactSheet extends Organelle {
 
     public ContactSheet(PGraphics g){
         this.g = g;
-        this.shape = new ShapeOfGas();
-        this.drawBehavior = new DrawDebug(g, this);
     }
 
     public float getGutter(){
@@ -25,6 +23,21 @@ public class ContactSheet extends Organelle {
         return (w - getGutter() * (getColumns() + 1)) / getColumns();
     }
 
+    @Override
+    public void shift(){
+        if (resized()) {
+            x = getParent().x;
+            y = getParent().y;
+            w = getParent().w;
+            h = getParent().h;
+
+            arrangeThumbnails();
+        }
+    }
+
+    @Override
+    public void draw(PGraphics g){}
+
     public void materialize(ArrayList<Clipping> clippings){
         ArrayList<Organelle> thumbnails = new ArrayList<Organelle>();
         System.out.println("Giving form to clippings");
@@ -35,12 +48,16 @@ public class ContactSheet extends Organelle {
     }
 
     public void arrangeThumbnails(){
-        shape.shift(this);
         for (int i = 0; i < getChildren().size(); i++){
             Thumbnail t = (Thumbnail)getChildren().get(i);
             t.setSize(getThumbSize(), getThumbSize());
             t.setPos(x + getGutter()*(i % getColumns() + 1) + getThumbSize() * (i % getColumns()),
                     y + (int)(i / getColumns()) * getThumbSize() + (int)(i / getColumns() + 1) * getGutter()  );
         }
+    }
+
+    boolean resized(){
+        Organelle parent = getParent();
+        return (x != parent.x || y != parent.y || w != parent.w || h != parent.h);
     }
 }

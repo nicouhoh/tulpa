@@ -2,7 +2,7 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Thumbnail extends Organelle {
+public class Thumbnail extends Organelle implements Shape, DrawBehavior{
 
     Clipping clipping;
     private float dropZonePercent = 20;
@@ -12,8 +12,15 @@ public class Thumbnail extends Organelle {
 
     public Thumbnail(PGraphics g, Clipping clipping){
         this.clipping = clipping;
-        this.drawBehavior = new DrawThumbnail(g, this);
-        this.shape = new Shaper();
+    }
+
+    @Override
+    public void shift(){}
+
+    @Override
+    public void draw(PGraphics g) {
+        if (clipping.img != null)
+            g.image(clipping.img, getThumbX(), getThumbY(), getThumbSize().x, getThumbSize().y);
     }
 
 //    public void drawSelect(){

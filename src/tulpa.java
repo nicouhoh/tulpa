@@ -45,13 +45,13 @@ public class tulpa extends PApplet {
 //        resized = false;
     }
 
-//    public void checkResize() {
-//        if (w != width || h != height) {
-//            w = width;
-//            h = height;
-//            resized = true;
-//        }
-//    }
+    public void checkResize() {
+        if (w != width || h != height) {
+            w = width;
+            h = height;
+            resized = true;
+        }
+    }
 
     // INPUT -----------------------------------------------------------------
 

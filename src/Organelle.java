@@ -1,24 +1,24 @@
 import java.util.ArrayList;
-public abstract class Organelle {
+import processing.core.PGraphics;
+
+public abstract class Organelle implements Shape, DrawBehavior{
 
     private Organelle parent;
     private ArrayList<Organelle> children = new ArrayList<Organelle>();
-    Shape shape;
-    DrawBehavior drawBehavior;
+//    Shape shape;
+//    DrawBehavior drawBehavior;
 
     float x, y, w, h;
 
-    public void performUpdate(){
-        shape.shift(this);
-        System.out.println("UPDATED " + this + " -- x: " + x + " y: " + y + " w: " + w + " h: " + h);
-
-        drawBehavior.draw();
-
-        updateChildren();
+    public void performUpdate(PGraphics g){
+        shift();
+//        System.out.println("UPDATED " + this + " -- x: " + x + " y: " + y + " w: " + w + " h: " + h);
+        draw(g);
+        updateChildren(g);
     }
 
-    public void updateChildren(){
-        if (getChildren() != null) for (Organelle child : getChildren()) child.performUpdate();
+    public void updateChildren(PGraphics g){
+        if (getChildren() != null) for (Organelle child : getChildren()) child.performUpdate(g);
     }
 
     public ArrayList<Organelle> getChildren(){

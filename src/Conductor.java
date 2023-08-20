@@ -24,7 +24,7 @@ public class Conductor {
     }
 
     public void update(){
-        visipalp.performUpdate();
+        visipalp.performUpdate(g);
     }
 
 }
