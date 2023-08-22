@@ -9,6 +9,8 @@ public abstract class Organelle implements Shape, DrawBehavior{
 //    DrawBehavior drawBehavior;
 
     float x, y, w, h;
+    float scrollW = 0;
+    float latitude = 0;
 
     public void performUpdate(PGraphics g){
         shift();

@@ -2,7 +2,8 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Thumbnail extends Organelle implements Shape, DrawBehavior{
+public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickish
+{
 
     Clipping clipping;
     private float dropZonePercent = 20;
@@ -20,7 +21,7 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior{
     @Override
     public void draw(PGraphics g) {
         if (clipping.img != null)
-            g.image(clipping.img, getThumbX(), getThumbY(), getThumbSize().x, getThumbSize().y);
+            g.image(clipping.img, x, y, w, h);
     }
 
 //    public void drawSelect(){
@@ -31,81 +32,43 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior{
 //    }
 
     public void setPos(float x, float y){
-        this.x = x;
-        this.y = y;
+        this.x = x + offset.x;
+        this.y = y + offset.y;
     }
 
-    public float getThumbX(){
-        float tw = getThumbSize().x;
-        float offset = (w / 2) - (tw / 2);
-        return x + offset;
-    }
-
-    public float getThumbY(){
-        float th = getThumbSize().y;
-        float offset = (h / 2) - (th / 2);
-        return y + offset;
-    }
-
-    public void setSize(float newW, float newH){
-        w = newW;
-        h = newH;
-    }
-
-//    public void setSize(float newW, float newH){
-//        w = newW;
-//        h = newH;
-//        PImage img = clipping.img;
-//        if (img == null){
-//            thumbW = w; thumbH = h;
-//            return;
-//        }
-//
-//        if (img.width >= img.height){
-//            thumbW = w;
-//            thumbH = (w * img.height) / img.width;
-//            offset = new PVector(0, (h - thumbH) / 2);
-//        } else {
-//            thumbH = h;
-//            thumbW = (h * img.width) / img.height;
-//            offset = new PVector((w - thumbW) / 2, 0);
-//        }
-//    }
-
-    public PVector getThumbSize(){
+    public void setSize(float thumbW, float thumbH){
         PImage img = clipping.img;
-        if (img == null)
-            return new PVector(w, h);
-        if (img.width >= img.height){
-            float tw = w;
-            float th = (w * img.height) / img.width;
-            return new PVector(tw, th);
+        if (img == null){
+            w = thumbW;
+            h = thumbH;
+        }
+        else if (img.width >= img.height){
+            w = thumbW;
+            h = (thumbW * img.height) / img.width;
         }
         else {
-            float th = h;
-            float tw = (h * img.width) / img.height;
-            return new PVector(tw, th);
+            float th = thumbH;
+            h = thumbH;
+            w = (thumbH * img.width) / img.height;
         }
+        offset = new PVector((thumbW - w) / 2, (thumbH - h) / 2);
     }
 
-    public void setSize(float newW, float newH, float newThumbW, float newThumbH){
-        w = newW;
-        h = newH;
-        thumbW = newThumbW;
-        thumbH = newThumbH;
-        offset = new PVector(0,0);
+    @Override
+    public void click(){
+        System.out.println(this);
     }
-
-    public void resizeByHeight(float height){
-        if (clipping.img == null){
-            h = height;
-            w = height;
-            return;
-        }
-        h = height;
-        thumbH = h;
-        thumbW = (height * clipping.img.width) / clipping.img.height;
-        w = thumbW;
-    }
-
+//
+//    public void resizeByHeight(float height){
+//        if (clipping.img == null){
+//            h = height;
+//            w = height;
+//            return;
+//        }
+//        h = height;
+//        thumbH = h;
+//        thumbW = (height * clipping.img.width) / clipping.img.height;
+//        w = thumbW;
+//    }
+//
 }

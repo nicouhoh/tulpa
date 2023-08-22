@@ -1,4 +1,5 @@
 import processing.core.PGraphics;
+import processing.event.MouseEvent;
 
 public class Conductor {
 
@@ -6,6 +7,8 @@ public class Conductor {
     PGraphics g;
     Library library;
     Visipalp visipalp;
+
+    MouseInput mouseInput;
 
     public Conductor(tulpa t, PGraphics g){
         this.t = t;
@@ -16,15 +19,20 @@ public class Conductor {
         library = new Library();
         library.stockShelves();
         this.visipalp = new Visipalp(g);
-        visipalp.addChild(new ContactSheet(g));
-        ContactSheet contactSheet = new ContactSheet(g);
-        visipalp.addChild(contactSheet);
+        Scroller contactSheetScrollthing = new Scroller();
+        visipalp.addChild(contactSheetScrollthing);
+        ContactSheet contactSheet = new ContactSheet();
+        contactSheetScrollthing.addChild(contactSheet);
         contactSheet.materialize(library.clippings);
         contactSheet.arrangeThumbnails();
+        mouseInput = new MouseInput();
     }
 
     public void update(){
         visipalp.performUpdate(g);
     }
 
+    public void receiveMouseInput(MouseEvent e){
+        mouseInput.receiveMouseInput(e, visipalp);
+    }
 }

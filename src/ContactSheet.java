@@ -6,10 +6,7 @@ public class ContactSheet extends Organelle implements Shape, DrawBehavior{
     PGraphics g;
     private int columns = 5;
     private int gutter = 10;
-
-    public ContactSheet(PGraphics g){
-        this.g = g;
-    }
+    ScrollRail scroller;
 
     public float getGutter(){
         return gutter;
@@ -28,7 +25,7 @@ public class ContactSheet extends Organelle implements Shape, DrawBehavior{
         if (resized()) {
             x = getParent().x;
             y = getParent().y;
-            w = getParent().w;
+            w = getParent().w - getParent().scrollW;
             h = getParent().h;
 
             arrangeThumbnails();
@@ -53,6 +50,8 @@ public class ContactSheet extends Organelle implements Shape, DrawBehavior{
             t.setSize(getThumbSize(), getThumbSize());
             t.setPos(x + getGutter()*(i % getColumns() + 1) + getThumbSize() * (i % getColumns()),
                     y + (int)(i / getColumns()) * getThumbSize() + (int)(i / getColumns() + 1) * getGutter()  );
+            if (i == getChildren().size() - 1)
+                h = (int)(i / getColumns() + 1) * getThumbSize() + (int)(i / getColumns() + 2) * getGutter();
         }
     }
 
