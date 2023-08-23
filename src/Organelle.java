@@ -5,8 +5,9 @@ public abstract class Organelle implements Shape, DrawBehavior{
 
     private Organelle parent;
     private ArrayList<Organelle> children = new ArrayList<Organelle>();
-//    Shape shape;
-//    DrawBehavior drawBehavior;
+
+    boolean hot;
+    boolean active;
 
     float x, y, w, h;
     float scrollW = 0;

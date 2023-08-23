@@ -1,6 +1,5 @@
 // import drop.*;
 import processing.core.PApplet;
-import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 //import processing.core.PConstants;
 
@@ -51,7 +50,7 @@ public class tulpa extends PApplet {
 //    }
 
     public void mouseEvent(MouseEvent e) {
-        conductor.receiveMouseInput(e);
+        conductor.passMouseInput(e);
     }
 
     //public void dropEvent(DropEvent dropEvent){

@@ -24,12 +24,12 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickis
             g.image(clipping.img, x, y, w, h);
     }
 
-//    public void drawSelect(){
-//        g.stroke(255);
-//        g.strokeWeight(2);
-//        g.noFill();
-//        g.rect(thumbX, thumbY, thumbW, thumbH);
-//    }
+    public void drawSelect(PGraphics g){
+        g.stroke(255);
+        g.strokeWeight(2);
+        g.noFill();
+        g.rect(x - 1, y - 1, w + 2, h + 2);
+    }
 
     public void setPos(float x, float y){
         this.x = x + offset.x;
@@ -55,20 +55,12 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickis
     }
 
     @Override
-    public void click(){
+    public void hot(){}
+
+    public void active(){}
+
+    @Override
+    public void click() {
         System.out.println(this);
     }
-//
-//    public void resizeByHeight(float height){
-//        if (clipping.img == null){
-//            h = height;
-//            w = height;
-//            return;
-//        }
-//        h = height;
-//        thumbH = h;
-//        thumbW = (height * clipping.img.width) / clipping.img.height;
-//        w = thumbW;
-//    }
-//
 }

@@ -32,7 +32,8 @@ public class Conductor {
         visipalp.performUpdate(g);
     }
 
-    public void receiveMouseInput(MouseEvent e){
-        mouseInput.receiveMouseInput(e, visipalp);
+    public void passMouseInput(MouseEvent e){
+        mouseInput.receiveMouseStatus(e, visipalp);
+        mouseInput.receiveClick(e);
     }
 }
