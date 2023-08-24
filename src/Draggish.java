@@ -1,6 +1,6 @@
 public interface Draggish {
 
-    void drag();
+    void drag(float x, float y);
 
     void release();
 }

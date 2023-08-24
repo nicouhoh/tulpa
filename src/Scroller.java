@@ -4,16 +4,19 @@ import processing.core.PGraphics;
 public class Scroller extends Organelle implements Shape, DrawBehavior, Scrollish{
 
     float scrollSpeed = 50;
-    float foot = 0;
-    float gripY;
-    float gripH;
 
-    ScrollRail scrollRail;
+    ScrollRail rail;
+    ScrollGrip grip;
+    Organelle contents;
 
-    public Scroller(){
-        scrollW = 20;
-        scrollRail = new ScrollRail();
-        addChild(scrollRail);
+    public Scroller(Organelle contents){
+        this.contents = contents;
+        this.addChild(contents);
+        scrollW = 10;
+        rail = new ScrollRail();
+        addChild(rail);
+        grip = new ScrollGrip();
+        rail.addChild(grip);
     }
 
     @Override
@@ -21,23 +24,16 @@ public class Scroller extends Organelle implements Shape, DrawBehavior, Scrollis
         shift();
         draw(g);
         g.push();
-        g.translate(0, -latitude);
+        g.translate(0, -contents.latitude);
         updateChildren(g);
-        for (Organelle child : getChildren()){
-            if (!(child instanceof ScrollRail)){
-                child.performUpdate(g);
-                foot = child.h;
-            }
-        }
+        contents.performUpdate(g);
         g.pop();
-        trackScrollStatus();
-        scrollRail.performUpdate(g);
+        rail.performUpdate(g);
+        syncGrip();
     }
 
     @Override
-    public void draw(PGraphics g) {
-
-    }
+    public void draw(PGraphics g){}
 
     @Override
     public void shift() {
@@ -49,12 +45,29 @@ public class Scroller extends Organelle implements Shape, DrawBehavior, Scrollis
 
     @Override
     public void scroll(float scrollAmount){
-        latitude = PApplet.constrain(latitude + (scrollAmount * scrollSpeed), 0, foot - h);
+
+        contents.latitude = PApplet.constrain(contents.latitude + (scrollAmount * scrollSpeed), 0, contents.h - h);
+    }
+
+    public Organelle getChild(){
+        for (Organelle child : getChildren()){
+            if (!(child instanceof ScrollRail)){
+                return child;
+            }
+        }
+        return null;
     }
 
     void trackScrollStatus(){
-        scrollRail.gripY = (h * latitude) / foot;
-        scrollRail.gripH = (h * h) / foot;
+        grip.y = (h * contents.latitude) / contents.h;
+        grip.h = (h * h) / contents.h;
     }
 
+    void syncGrip(){
+        if (!grip.held){
+            trackScrollStatus();
+        } else{
+            contents.latitude = (contents.h * grip.y) / rail.h;
+        }
+    }
 }

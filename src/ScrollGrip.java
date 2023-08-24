@@ -1,8 +1,9 @@
+import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class ScrollGrip extends Organelle implements Clickish{
+public class ScrollGrip extends Organelle implements Clickish, Draggish{
 
-    int inactiveColor = 0xff6C6C6C, activeColor = 225;
+    int inactiveColor = 0xff6C6C6C, hotColor = 130;
 
     @Override
     public void draw(PGraphics g) {
@@ -13,13 +14,12 @@ public class ScrollGrip extends Organelle implements Clickish{
 
     @Override
     public void shift() {
-        ScrollRail rail = (ScrollRail)getParent();
-        setBounds(rail.x, rail.gripY, rail.w, rail.gripH);
-        //TODO update y + h based on Scroller's latitude and foot
+        x = getParent().x;
+        w = getParent().w;
     }
 
     int getColor(){
-        if (active) return activeColor;
+        if (hot || held) return hotColor;
         else return inactiveColor;
     }
 
@@ -27,10 +27,16 @@ public class ScrollGrip extends Organelle implements Clickish{
     public void hot(){}
 
     @Override
-    public void active() {
+    public void active(){}
+
+    @Override
+    public void click(){}
+
+    @Override
+    public void drag(float mouseX, float mouseY){
+        y = PApplet.constrain(mouseY - dragY, getParent().y, getParent().h - h);
     }
 
     @Override
-    public void click() {
-    }
+    public void release(){}
 }

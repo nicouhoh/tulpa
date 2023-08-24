@@ -22,6 +22,7 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickis
     public void draw(PGraphics g) {
         if (clipping.img != null)
             g.image(clipping.img, x, y, w, h);
+        if(hot) drawDebug(g);
     }
 
     public void drawSelect(PGraphics g){

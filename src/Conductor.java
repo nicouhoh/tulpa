@@ -19,9 +19,9 @@ public class Conductor {
         library = new Library();
         library.stockShelves();
         this.visipalp = new Visipalp(g);
-        Scroller contactSheetScrollthing = new Scroller();
-        visipalp.addChild(contactSheetScrollthing);
         ContactSheet contactSheet = new ContactSheet();
+        Scroller contactSheetScrollthing = new Scroller(contactSheet);
+        visipalp.addChild(contactSheetScrollthing);
         contactSheetScrollthing.addChild(contactSheet);
         contactSheet.materialize(library.clippings);
         contactSheet.arrangeThumbnails();
@@ -33,7 +33,6 @@ public class Conductor {
     }
 
     public void passMouseInput(MouseEvent e){
-        mouseInput.receiveMouseStatus(e, visipalp);
-        mouseInput.receiveClick(e);
+        mouseInput.receiveMouseInput(e, visipalp);
     }
 }

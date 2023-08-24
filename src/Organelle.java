@@ -8,6 +8,8 @@ public abstract class Organelle implements Shape, DrawBehavior{
 
     boolean hot;
     boolean active;
+    boolean held;
+    float dragX, dragY;
 
     float x, y, w, h;
     float scrollW = 0;
@@ -15,7 +17,6 @@ public abstract class Organelle implements Shape, DrawBehavior{
 
     public void performUpdate(PGraphics g){
         shift();
-//        System.out.println("UPDATED " + this + " -- x: " + x + " y: " + y + " w: " + w + " h: " + h);
         draw(g);
         updateChildren(g);
     }
@@ -55,10 +56,9 @@ public abstract class Organelle implements Shape, DrawBehavior{
         this.h = h;
     }
 
-    public void liquidBounds(){
-        this.x = parent.x;
-        this.y = parent.y;
-        this.w = parent.w;
-        this.h = parent.h;
+    public void drawDebug(PGraphics g){
+        g.stroke(255, 0, 255);
+        g.noFill();
+        g.rect(x - 1, y - 1, w + 2, h + 2);
     }
 }
