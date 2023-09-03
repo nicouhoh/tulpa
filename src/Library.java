@@ -148,13 +148,16 @@ public class Library {
   public void addSelect(Clipping clipping) {
     if (!selected.contains(clipping))
       selected.add(clipping);
+    clipping.isSelected = true;
   }
 
   public void removeSelect(Clipping clipping) {
+    clipping.isSelected = false;
     selected.remove(clipping);
   }
 
   public void clearSelection() {
+    for (Clipping clipping : selected) clipping.isSelected = false;
     selected.clear();
   }
 

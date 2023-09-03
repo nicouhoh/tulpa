@@ -20,7 +20,7 @@ public class Visipalp extends Organelle implements Shape, DrawBehavior {
     }
 
     @Override
-    public void draw(PGraphics g){
+    public void draw(PGraphics g, float x, float y){
         g.background(bgColor);
     }
 

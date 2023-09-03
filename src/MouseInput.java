@@ -1,11 +1,15 @@
 import processing.event.MouseEvent;
 
-
 public class MouseInput {
 
+    Conductor conductor;
     Draggish heldItem;
     Clickish hotItem;
     Clickish activeItem;
+
+
+    public MouseInput(){
+    }
 
     private final float scrollSpeed = 50;
 
@@ -26,7 +30,7 @@ public class MouseInput {
         if (activeItem != null) {
             if (e.getAction() == MouseEvent.RELEASE) {
                 if (isHot(activeItem)) {
-                    activeItem.click();
+                    activeItem.click(conductor, e.getModifiers());
                 }
                 clearActive();
             }
@@ -64,10 +68,12 @@ public class MouseInput {
                     clearActive();
                     setHeld(draggish, e);
                     draggish.drag(e.getX(), e.getY());
+                    conductor.apparition.setPos(e.getX(), e.getY());
                 }
             }
         } else{
             heldItem.drag(e.getX(), e.getY());
+            conductor.apparition.setPos(e.getX(), e.getY());
         }
     }
 
@@ -112,12 +118,14 @@ public class MouseInput {
         o.dragX = e.getX() - o.x;
         o.dragY = e.getY() - o.y;
         heldItem = draggish;
+        conductor.apparition.mirages.add(o);
     }
 
     public void clearHeld(){
         Organelle o = (Organelle)heldItem;
         o.held = false;
         heldItem = null;
+        conductor.apparition.mirages.remove(o);
     }
 
     public Organelle digDeeper(MouseEvent e, Organelle organelle){

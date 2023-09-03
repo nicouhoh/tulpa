@@ -6,7 +6,7 @@ public class ScrollRail extends Organelle {
     ScrollGrip grip;
 
     @Override
-    public void draw(PGraphics g) {
+    public void draw(PGraphics g, float x, float y) {
         g.noStroke();
         g.fill(color);
         g.rect(x, y, w, h);

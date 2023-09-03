@@ -17,7 +17,7 @@ public abstract class Organelle implements Shape, DrawBehavior{
 
     public void performUpdate(PGraphics g){
         shift();
-        draw(g);
+        draw(g, x, y);
         updateChildren(g);
     }
 

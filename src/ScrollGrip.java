@@ -6,7 +6,7 @@ public class ScrollGrip extends Organelle implements Clickish, Draggish{
     int inactiveColor = 0xff6C6C6C, hotColor = 130;
 
     @Override
-    public void draw(PGraphics g) {
+    public void draw(PGraphics g, float x, float y) {
         g.noStroke();
         g.fill(getColor());
         g.rect(x, y, w, h);
@@ -30,7 +30,7 @@ public class ScrollGrip extends Organelle implements Clickish, Draggish{
     public void active(){}
 
     @Override
-    public void click(){}
+    public void click(Conductor conductor, int mod){}
 
     @Override
     public void drag(float mouseX, float mouseY){

@@ -13,6 +13,8 @@ public class Clipping {
 //    ClippingText text;
     String textPath;
 
+    boolean isSelected;
+
 //    ArrayList<Tag> tags = new ArrayList<Tag>();
 
     public Clipping(String id){

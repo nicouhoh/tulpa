@@ -2,7 +2,7 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickish
+public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickish, Draggish
 {
 
     Clipping clipping;
@@ -19,10 +19,10 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickis
     public void shift(){}
 
     @Override
-    public void draw(PGraphics g) {
+    public void draw(PGraphics g, float x, float y) {
         if (clipping.img != null)
             g.image(clipping.img, x, y, w, h);
-        if(hot) drawDebug(g);
+        if (clipping.isSelected) drawSelect(g);
     }
 
     public void drawSelect(PGraphics g){
@@ -61,7 +61,20 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickis
     public void active(){}
 
     @Override
-    public void click() {
-        System.out.println(this);
+    public void click(Conductor conductor, int mod) {
+        switch(mod){
+            case 2, 4 -> conductor.toggleSelect(this);
+            default -> conductor.selectClipping(this);
+        }
+    }
+
+    @Override
+    public void drag(float x, float y) {
+
+    }
+
+    @Override
+    public void release() {
+
     }
 }

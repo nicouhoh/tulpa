@@ -22,7 +22,7 @@ public class Scroller extends Organelle implements Shape, DrawBehavior, Scrollis
     @Override
     public void performUpdate(PGraphics g){
         shift();
-        draw(g);
+        draw(g, x, y);
         g.push();
         g.translate(0, -contents.latitude);
         updateChildren(g);
@@ -33,7 +33,7 @@ public class Scroller extends Organelle implements Shape, DrawBehavior, Scrollis
     }
 
     @Override
-    public void draw(PGraphics g){}
+    public void draw(PGraphics g, float x, float y){}
 
     @Override
     public void shift() {

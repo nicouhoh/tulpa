@@ -33,7 +33,7 @@ public class ContactSheet extends Organelle implements Shape, DrawBehavior{
     }
 
     @Override
-    public void draw(PGraphics g){}
+    public void draw(PGraphics g, float x, float y){}
 
     public void materialize(ArrayList<Clipping> clippings){
         ArrayList<Organelle> thumbnails = new ArrayList<Organelle>();

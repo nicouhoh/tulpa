@@ -7,6 +7,7 @@ public class Conductor {
     PGraphics g;
     Library library;
     Visipalp visipalp;
+    Apparition apparition;
 
     MouseInput mouseInput;
 
@@ -25,14 +26,34 @@ public class Conductor {
         contactSheetScrollthing.addChild(contactSheet);
         contactSheet.materialize(library.clippings);
         contactSheet.arrangeThumbnails();
+        apparition = new Apparition();
         mouseInput = new MouseInput();
+        mouseInput.conductor = this;
     }
 
     public void update(){
         visipalp.performUpdate(g);
+        apparition.draw(g);
     }
 
     public void passMouseInput(MouseEvent e){
         mouseInput.receiveMouseInput(e, visipalp);
     }
+
+    public void selectClipping(Thumbnail thumbnail){
+        library.select(thumbnail.clipping);
+    }
+
+    public void addSelect(Thumbnail thumbnail){
+        library.addSelect(thumbnail.clipping);
+    }
+
+    public void toggleSelect(Thumbnail thumbnail){
+        library.toggleSelect(thumbnail.clipping);
+    }
+
+    public void drawApparition(PGraphics g, float x, float y){
+        apparition.draw(g);
+    }
+
 }
