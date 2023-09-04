@@ -3,9 +3,9 @@ import processing.event.MouseEvent;
 public class MouseInput {
 
     Conductor conductor;
-    Draggish heldItem;
-    Clickish hotItem;
-    Clickish activeItem;
+    Organelle heldItem;
+    Organelle hotItem;
+    Organelle activeItem;
 
 
     public MouseInput(){
@@ -15,22 +15,28 @@ public class MouseInput {
 
     public void receiveMouseInput(MouseEvent e, Organelle visipalp){
         switch(e.getAction()) {
-            case MouseEvent.KEY, MouseEvent.RELEASE -> receiveClick(e);
+            case MouseEvent.KEY -> receiveClick(e);
+            case MouseEvent.RELEASE -> {
+                if (heldItem == null) receiveClick(e);
+                else receiveDrop(e, visipalp);
+            }
             case MouseEvent.WHEEL -> receiveScroll(e, visipalp);
-            case MouseEvent.DRAG -> receiveDrag(e,visipalp);
-                default -> receiveMouseStatus(e, visipalp);
+            case MouseEvent.DRAG -> receiveDrag(e);
+            default -> receiveMouseStatus(e, visipalp);
         }
     }
 
+    private void receiveDrop(MouseEvent e, Organelle visipalp) {
+        if (heldItem == null) return;
+        heldItem.draggish.release(conductor, heldItem, e.getX(), e.getY());
+        clearHeld();
+    }
+
     public void receiveClick(MouseEvent e){
-        if (heldItem != null && e.getAction() == MouseEvent.RELEASE){
-            heldItem.release();
-            clearHeld();
-        }
         if (activeItem != null) {
             if (e.getAction() == MouseEvent.RELEASE) {
                 if (isHot(activeItem)) {
-                    activeItem.click(conductor, e.getModifiers());
+                    activeItem.clickish.click(conductor, activeItem, e.getModifiers());
                 }
                 clearActive();
             }
@@ -38,16 +44,16 @@ public class MouseInput {
        else if (hotItem != null) {
            if (e.getAction() == MouseEvent.KEY) {
                setActive(hotItem);
-               activeItem.active();
+               activeItem.clickish.active();
            }
        }
     }
 
     public void receiveMouseStatus(MouseEvent e, Organelle target){
-        Clickish clickish = findClickish(e.getX(), e.getY(), target);
-        if (clickish != null){
-            setHot(clickish);
-            clickish.hot();
+        Organelle organelle = findClickish(e.getX(), e.getY(), target);
+        if (organelle != null){
+            setHot(organelle);
+            organelle.clickish.hot();
         }else if (hotItem != null) {
             clearHot();
         }
@@ -60,37 +66,34 @@ public class MouseInput {
         }
     }
 
-    public void receiveDrag(MouseEvent e, Organelle target){
-        if (heldItem == null) {
+    public void receiveDrag(MouseEvent e){
+        if (heldItem != null){
+            heldItem.draggish.drag(conductor, heldItem, e.getX(), e.getY());
+        }
+        else {
             if (activeItem != null) {
-                if (activeItem instanceof Draggish) {
-                    Draggish draggish = (Draggish)activeItem;
+                if (activeItem.draggish != null) {
+                    setHeld(activeItem, e);
                     clearActive();
-                    setHeld(draggish, e);
-                    draggish.drag(e.getX(), e.getY());
-                    conductor.apparition.setPos(e.getX(), e.getY());
+                    heldItem.draggish.drag(conductor, heldItem, e.getX(), e.getY());
                 }
             }
-        } else{
-            heldItem.drag(e.getX(), e.getY());
-            conductor.apparition.setPos(e.getX(), e.getY());
         }
     }
 
 
-    public boolean isActive(Clickish clickish){
-        return clickish == activeItem;
+    public boolean isActive(Organelle organelle){
+        return organelle == activeItem;
     }
 
-    public boolean isHot(Clickish clickish){
-        return clickish == hotItem;
+    public boolean isHot(Organelle organelle){
+        return organelle == hotItem;
     }
 
-    public void setHot(Clickish clickish){
+    public void setHot(Organelle organelle){
         if (hotItem != null) clearHot();
-        hotItem = clickish;
-        Organelle o = (Organelle)clickish;
-        o.hot = true;
+        hotItem = organelle;
+        organelle.hot = true;
     }
 
     public void clearHot(){
@@ -99,10 +102,10 @@ public class MouseInput {
         hotItem = null;
     }
 
-    public void setActive(Clickish clickish){
-        activeItem = clickish;
-        Organelle o = (Organelle)clickish;
-        o.active = true;
+    public void setActive(Organelle organelle){
+        if (organelle.clickish != null);
+        activeItem = organelle;
+        organelle.active = true;
     }
 
     public void clearActive(){
@@ -111,21 +114,19 @@ public class MouseInput {
         activeItem = null;
     }
 
-    public void setHeld(Draggish draggish, MouseEvent e){
+    public void setHeld(Organelle organelle, MouseEvent e){
         if (heldItem != null) clearHeld();
-        Organelle o = (Organelle)draggish;
-        o.held = true;
-        o.dragX = e.getX() - o.x;
-        o.dragY = e.getY() - o.y;
-        heldItem = draggish;
-        conductor.apparition.mirages.add(o);
+        if (organelle.draggish == null) return;
+        heldItem = organelle;
+        organelle.held = true;
+        organelle.dragX = e.getX() - organelle.x;
+        organelle.dragY = e.getY() - organelle.y;
+        organelle.draggish.grab(conductor, organelle, e.getX(), e.getY());
     }
 
     public void clearHeld(){
-        Organelle o = (Organelle)heldItem;
-        o.held = false;
+        heldItem.held = false;
         heldItem = null;
-        conductor.apparition.mirages.remove(o);
     }
 
     public Organelle digDeeper(MouseEvent e, Organelle organelle){
@@ -153,16 +154,16 @@ public class MouseInput {
         return deepestMatching;
     }
 
-    public Clickish findClickish(float mouseX, float mouseY, Organelle target){
+    public Organelle findClickish(float mouseX, float mouseY, Organelle target){
         float adjustedY = mouseY + target.latitude;
-        Clickish deepestMatching = null;
+        Organelle deepestMatching = null;
 
         for (Organelle child : target.getChildren()) {
-            if (child instanceof Clickish && theFingerPointsAt(mouseX, adjustedY, child)){
-                deepestMatching = (Clickish) child;
+            if (child.clickish != null && theFingerPointsAt(mouseX, adjustedY, child)){
+                deepestMatching = child;
             }
 
-            Clickish childResult = findClickish(mouseX, adjustedY, child);
+            Organelle childResult = findClickish(mouseX, adjustedY, child);
             if (childResult != null) {
                 deepestMatching = childResult;
             }

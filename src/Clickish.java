@@ -4,5 +4,5 @@ public interface Clickish {
 
     void active();
 
-    void click(Conductor conductor, int mod);
+    void click(Conductor conductor, Organelle o, int mod);
 }

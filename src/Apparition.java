@@ -15,10 +15,12 @@ public class Apparition {
         g.tint(255, 64);
         for (Organelle o : mirages){
             if (o instanceof ScrollGrip) continue;
-            o.draw(g, x - o.dragX, y - o.dragY);
+            o.drawer.draw(g, o, x - o.dragX, y - o.dragY);
         }
         g.tint(255, 255);
     }
+
+    //TODO Latitude is a problem
 
     public void setPos(float x, float y){
         this.x = x;

@@ -1,6 +1,6 @@
 import processing.core.PGraphics;
 
-public class Visipalp extends Organelle implements Shape, DrawBehavior {
+public class Visipalp extends Organelle implements Shape{
 
     PGraphics g;
 
@@ -8,7 +8,8 @@ public class Visipalp extends Organelle implements Shape, DrawBehavior {
 
     public Visipalp(PGraphics g){
         this.g = g;
-        performUpdate(g);
+        updater = new OrganelleUpdater();
+        drawer = new BackgroundDrawer();
     }
 
     @Override
@@ -18,11 +19,4 @@ public class Visipalp extends Organelle implements Shape, DrawBehavior {
         w = tulpa.SOLE.width;
         h = tulpa.SOLE.height;
     }
-
-    @Override
-    public void draw(PGraphics g, float x, float y){
-        g.background(bgColor);
-    }
-
-
 }

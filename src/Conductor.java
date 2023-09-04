@@ -32,7 +32,7 @@ public class Conductor {
     }
 
     public void update(){
-        visipalp.performUpdate(g);
+        visipalp.updater.performUpdate(g, this, visipalp);
         apparition.draw(g);
     }
 
@@ -52,8 +52,12 @@ public class Conductor {
         library.toggleSelect(thumbnail.clipping);
     }
 
-    public void drawApparition(PGraphics g, float x, float y){
-        apparition.draw(g);
+    public boolean isOnscreen(Organelle o){
+        if (o.x + o.w < visipalp.x || o.x > visipalp.w
+            || o.y + o.h + o.latitude < visipalp.y || o.y + o.latitude > visipalp.h){
+            return false;
+        } else
+            return true;
     }
 
 }

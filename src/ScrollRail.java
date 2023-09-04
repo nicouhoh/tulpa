@@ -3,13 +3,10 @@ import processing.core.PGraphics;
 public class ScrollRail extends Organelle {
 
     int color = 0xff1A1A1A;
-    ScrollGrip grip;
 
-    @Override
-    public void draw(PGraphics g, float x, float y) {
-        g.noStroke();
-        g.fill(color);
-        g.rect(x, y, w, h);
+    public ScrollRail(){
+        updater = new OrganelleUpdater();
+        drawer = new ScrollRailDrawer();
     }
 
     @Override
@@ -18,6 +15,5 @@ public class ScrollRail extends Organelle {
         y = getParent().y;
         w = getParent().scrollW;
         h = getParent().h;
-        Scroller scroller = (Scroller)getParent();
     }
 }

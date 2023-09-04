@@ -2,28 +2,24 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickish, Draggish
+public class Thumbnail extends Organelle implements Shape
 {
 
     Clipping clipping;
     private float dropZonePercent = 20;
 
-    float thumbW, thumbH;
     PVector offset = new PVector(0, 0);
 
     public Thumbnail(PGraphics g, Clipping clipping){
         this.clipping = clipping;
+        updater = new OrganelleUpdater();
+        drawer = new ThumbnailDrawer();
+        clickish = new ThumbnailClickish();
+        draggish = new ThumbnailDraggish();
     }
 
     @Override
     public void shift(){}
-
-    @Override
-    public void draw(PGraphics g, float x, float y) {
-        if (clipping.img != null)
-            g.image(clipping.img, x, y, w, h);
-        if (clipping.isSelected) drawSelect(g);
-    }
 
     public void drawSelect(PGraphics g){
         g.stroke(255);
@@ -54,27 +50,10 @@ public class Thumbnail extends Organelle implements Shape, DrawBehavior, Clickis
         }
         offset = new PVector((thumbW - w) / 2, (thumbH - h) / 2);
     }
-
-    @Override
-    public void hot(){}
-
-    public void active(){}
-
-    @Override
-    public void click(Conductor conductor, int mod) {
-        switch(mod){
-            case 2, 4 -> conductor.toggleSelect(this);
-            default -> conductor.selectClipping(this);
-        }
-    }
-
-    @Override
-    public void drag(float x, float y) {
-
-    }
-
-    @Override
-    public void release() {
-
-    }
 }
+
+//TODO: dragging thumbnails around. MEANING:
+//TODO: - you have to be able to drag thumbnails.
+//TODO: - things have to be able to receive dropped items.
+//TODO: - I need to make dropzones that receive dropped items.
+//TODO: - It has to be able to reach the Conductor to tell it to make changes to the library.

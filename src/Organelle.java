@@ -1,10 +1,16 @@
 import java.util.ArrayList;
 import processing.core.PGraphics;
 
-public abstract class Organelle implements Shape, DrawBehavior{
+public abstract class Organelle implements Shape{
 
     private Organelle parent;
     private ArrayList<Organelle> children = new ArrayList<Organelle>();
+
+    public Updater updater;
+    public DrawBehavior drawer;
+    public Clickish clickish = null;
+    public Draggish draggish = null;
+    public Droppish droppish = null;
 
     boolean hot;
     boolean active;
@@ -14,16 +20,6 @@ public abstract class Organelle implements Shape, DrawBehavior{
     float x, y, w, h;
     float scrollW = 0;
     float latitude = 0;
-
-    public void performUpdate(PGraphics g){
-        shift();
-        draw(g, x, y);
-        updateChildren(g);
-    }
-
-    public void updateChildren(PGraphics g){
-        if (getChildren() != null) for (Organelle child : getChildren()) child.performUpdate(g);
-    }
 
     public ArrayList<Organelle> getChildren(){
         return children;

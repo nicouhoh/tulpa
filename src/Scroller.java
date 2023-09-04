@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class Scroller extends Organelle implements Shape, DrawBehavior, Scrollish{
+public class Scroller extends Organelle implements Shape, Scrollish{
 
     float scrollSpeed = 50;
 
@@ -17,23 +17,9 @@ public class Scroller extends Organelle implements Shape, DrawBehavior, Scrollis
         addChild(rail);
         grip = new ScrollGrip();
         rail.addChild(grip);
+        updater = new ScrollerUpdater();
+        drawer = new Invisible();
     }
-
-    @Override
-    public void performUpdate(PGraphics g){
-        shift();
-        draw(g, x, y);
-        g.push();
-        g.translate(0, -contents.latitude);
-        updateChildren(g);
-        contents.performUpdate(g);
-        g.pop();
-        rail.performUpdate(g);
-        syncGrip();
-    }
-
-    @Override
-    public void draw(PGraphics g, float x, float y){}
 
     @Override
     public void shift() {

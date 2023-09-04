@@ -1,12 +1,16 @@
 import processing.core.PGraphics;
 import java.util.ArrayList;
 
-public class ContactSheet extends Organelle implements Shape, DrawBehavior{
+public class ContactSheet extends Organelle implements Shape{
 
     PGraphics g;
     private int columns = 5;
     private int gutter = 10;
-    ScrollRail scroller;
+
+    public ContactSheet(){
+        updater = new OrganelleUpdater();
+        drawer = new Invisible();
+    }
 
     public float getGutter(){
         return gutter;
@@ -31,9 +35,6 @@ public class ContactSheet extends Organelle implements Shape, DrawBehavior{
             arrangeThumbnails();
         }
     }
-
-    @Override
-    public void draw(PGraphics g, float x, float y){}
 
     public void materialize(ArrayList<Clipping> clippings){
         ArrayList<Organelle> thumbnails = new ArrayList<Organelle>();

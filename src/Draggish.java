@@ -1,6 +1,7 @@
 public interface Draggish {
 
-    void drag(float x, float y);
+    void grab(Conductor c, Organelle o, float mouseX, float mouseY);
+    void drag(Conductor c, Organelle o, float mouseX, float mouseY);
 
-    void release();
+    void release(Conductor c, Organelle o, float mouseX, float mouseY);
 }
