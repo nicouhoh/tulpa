@@ -1,5 +1,6 @@
 public interface Droppish {
 
-    void eatWorm(Draggish draggish);
-    void openMouth();
+    void eatWorm(Conductor conductor, Organelle organelle);
+
+    void openMouth(Conductor conductor, MouseInput mouseInput, Organelle organelle, Organelle held);
 }

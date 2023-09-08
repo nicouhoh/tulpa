@@ -59,5 +59,4 @@ public class Conductor {
         } else
             return true;
     }
-
 }

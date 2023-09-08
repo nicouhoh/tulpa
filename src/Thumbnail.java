@@ -16,6 +16,7 @@ public class Thumbnail extends Organelle implements Shape
         drawer = new ThumbnailDrawer();
         clickish = new ThumbnailClickish();
         draggish = new ThumbnailDraggish();
+        droppish = new ThumbnailDroppish();
     }
 
     @Override
