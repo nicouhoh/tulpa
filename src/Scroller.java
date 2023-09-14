@@ -1,59 +1,91 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import java.util.ArrayList;
 
-public class Scroller extends Organelle implements Shape, Scrollish{
-
-    float scrollSpeed = 50;
-
+public class Scroller extends Decorator implements Drawish, Wheelish {
     ScrollRail rail;
     ScrollGrip grip;
-    Organelle contents;
+    float latitude;
+    float scrollW = 10;
+    float scrollSpeed = 50;
 
-    public Scroller(Organelle contents){
-        this.contents = contents;
-        this.addChild(contents);
-        scrollW = 10;
-        rail = new ScrollRail();
-        addChild(rail);
-        grip = new ScrollGrip();
+    public Scroller(Organelle organelle){
+        this.organelle = organelle;
+        this.shape = organelle.shape;
+
+        this.rail = new ScrollRail(this);
+        this.grip = new ScrollGrip();
+        this.addChild(rail);
         rail.addChild(grip);
-        updater = new ScrollerUpdater();
-        drawer = new Invisible();
+    }
+
+    //TODO SORT THIS STUFF OUT
+
+    @Override
+    public void shift(float parentX, float parentY, float parentW, float parentH){
+        if (shape != null){
+            shape.shift(this, parentX, parentY, parentW, parentH);
+        }
     }
 
     @Override
-    public void shift() {
-        x = getParent().x;
-        y = getParent().y;
-        w = getParent().w;
-        h = getParent().h;
+    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH) {
+        g.push();
+        g.translate(0, -latitude);
+        organelle.update(g, c, parentX, parentY, parentW - scrollW, parentH);
+        g.pop();
+
+        shift(parentX, parentY, parentW, parentH);
+        draw(g, x, y);
+        updateGrip();
+        updateChildren(g, c);
     }
+
 
     @Override
-    public void scroll(float scrollAmount){
-
-        contents.latitude = PApplet.constrain(contents.latitude + (scrollAmount * scrollSpeed), 0, contents.h - h);
+    public void draw(PGraphics g, float drawX, float drawY){
+        g.stroke(255, 0, 255);
+        g.noFill();
+        g.rect(drawX, drawY, w - 1, h - 1);
     }
 
-    public Organelle getChild(){
-        for (Organelle child : getChildren()){
-            if (!(child instanceof ScrollRail)){
-                return child;
+    //@Override
+    public void wheel(float scrollAmount){
+        System.out.println("Scrolling");
+        latitude = PApplet.constrain(latitude + (scrollAmount * scrollSpeed), 0, organelle.h - h);
+    }
+
+    private void moveGrip(){
+        grip.y = (h * latitude) / organelle.h;
+        grip.h = (h * h) / organelle.h;
+    }
+
+    void updateGrip(){
+        if (!grip.held){
+            moveGrip();
+        } else {
+            latitude = (organelle.h * grip.y) / rail.h;
+        }
+    }
+
+    public Organelle findDeepest(float mouseX, float mouseY){
+        if (!theFingerPointsAtMe(mouseX, mouseY)) return null;
+        Organelle deepestHit = null;
+        if (clickish != null) deepestHit = this;
+
+        Organelle childResult = null;
+        if (mouseX > w - scrollW){
+            for (Organelle child : getChildren()){
+                childResult = child.findDeepest(mouseX, mouseY);
+                if (childResult != null) deepestHit = childResult;
+            }
+        } else{
+            for (Organelle child : organelle.getChildren()){
+                childResult = child.findDeepest(mouseX, mouseY + latitude);
+                if (childResult != null) deepestHit = childResult;
             }
         }
-        return null;
-    }
 
-    void trackScrollStatus(){
-        grip.y = (h * contents.latitude) / contents.h;
-        grip.h = (h * h) / contents.h;
-    }
-
-    void syncGrip(){
-        if (!grip.held){
-            trackScrollStatus();
-        } else{
-            contents.latitude = (contents.h * grip.y) / rail.h;
-        }
+        return deepestHit;
     }
 }

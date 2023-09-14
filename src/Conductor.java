@@ -6,7 +6,7 @@ public class Conductor {
     tulpa t;
     PGraphics g;
     Library library;
-    Visipalp visipalp;
+    Organelle visipalp;
     Apparition apparition;
 
     MouseInput mouseInput;
@@ -21,23 +21,22 @@ public class Conductor {
         library.stockShelves();
         this.visipalp = new Visipalp(g);
         ContactSheet contactSheet = new ContactSheet();
-        Scroller contactSheetScrollthing = new Scroller(contactSheet);
-        visipalp.addChild(contactSheetScrollthing);
-        contactSheetScrollthing.addChild(contactSheet);
-        contactSheet.materialize(library.clippings);
-        contactSheet.arrangeThumbnails();
+        Organelle scroller = new Scroller(contactSheet);
+        visipalp.addChild(scroller);
         apparition = new Apparition();
         mouseInput = new MouseInput();
         mouseInput.conductor = this;
+        contactSheet.materialize(library.clippings);
+        contactSheet.arrangeThumbnails();
     }
 
     public void update(){
-        visipalp.updater.performUpdate(g, this, visipalp);
+        visipalp.update(g, this, 0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
         apparition.draw(g);
     }
 
     public void passMouseInput(MouseEvent e){
-        mouseInput.receiveMouseInput(e, visipalp);
+        mouseInput.receiveAction(e, visipalp);
     }
 
     public void selectClipping(Thumbnail thumbnail){
@@ -52,11 +51,11 @@ public class Conductor {
         library.toggleSelect(thumbnail.clipping);
     }
 
-    public boolean isOnscreen(Organelle o){
-        if (o.x + o.w < visipalp.x || o.x > visipalp.w
-            || o.y + o.h + o.latitude < visipalp.y || o.y + o.latitude > visipalp.h){
-            return false;
-        } else
-            return true;
-    }
+//    public boolean isOnscreen(Organelle o){
+//        if (o.x + o.w < visipalp.x || o.x > visipalp.w
+//            || o.y + o.h + o.latitude < visipalp.y || o.y + o.latitude > visipalp.h){
+//            return false;
+//        } else
+//            return true;
+//    }
 }

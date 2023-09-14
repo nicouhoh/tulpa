@@ -1,19 +1,26 @@
 import processing.core.PGraphics;
 
-public class ScrollRail extends Organelle {
+public class ScrollRail extends Organelle implements Drawish {
 
     int color = 0xff1A1A1A;
+    Scroller scroller;
 
-    public ScrollRail(){
-        updater = new OrganelleUpdater();
-        drawer = new ScrollRailDrawer();
+    public ScrollRail(Scroller scroller){
+        this.scroller = scroller;
     }
 
     @Override
-    public void shift() {
-        x = getParent().x + getParent().w - getParent().scrollW;
+    public void shift(float parentX, float parentY, float parentW, float parentH) {
+        x = getParent().x + getParent().w - scroller.scrollW;
         y = getParent().y;
-        w = getParent().scrollW;
+        w = scroller.scrollW;
         h = getParent().h;
+    }
+
+    @Override
+    public void draw(PGraphics g, float drawX, float drawY){
+        g.noStroke();
+        g.fill(color);
+        g.rect(drawX, drawY, w, h);
     }
 }

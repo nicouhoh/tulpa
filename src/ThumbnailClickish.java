@@ -8,6 +8,7 @@ public class ThumbnailClickish implements Clickish {
 
     @Override
     public void click(Conductor conductor, Organelle o, int mod) {
+        System.out.println(o);
         Thumbnail t = (Thumbnail)o;
         switch(mod){
             case 2, 4 -> conductor.toggleSelect(t);

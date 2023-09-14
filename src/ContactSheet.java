@@ -1,15 +1,21 @@
 import processing.core.PGraphics;
 import java.util.ArrayList;
 
-public class ContactSheet extends Organelle implements Shape{
+public class ContactSheet extends Organelle {
 
     PGraphics g;
     private int columns = 5;
     private int gutter = 10;
 
     public ContactSheet(){
-        updater = new OrganelleUpdater();
-        drawer = new Invisible();
+        shape = new ShapeOfGas();
+    }
+
+    @Override
+    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH){
+        shift(parentX, parentY, parentW, parentH);
+        arrangeThumbnails();
+        updateChildren(g, c);
     }
 
     public float getGutter(){
@@ -24,25 +30,14 @@ public class ContactSheet extends Organelle implements Shape{
         return (w - getGutter() * (getColumns() + 1)) / getColumns();
     }
 
-    @Override
-    public void shift(){
-        if (resized()) {
-            x = getParent().x;
-            y = getParent().y;
-            w = getParent().w - getParent().scrollW;
-            h = getParent().h;
-
-            arrangeThumbnails();
-        }
-    }
-
     public void materialize(ArrayList<Clipping> clippings){
         ArrayList<Organelle> thumbnails = new ArrayList<Organelle>();
-        System.out.println("Giving form to clippings");
+//        System.out.println("Giving form to clippings");
         for (Clipping clip : clippings){
             thumbnails.add(new Thumbnail(g, clip));
         }
         addChildren(thumbnails);
+        arrangeThumbnails();
     }
 
     public void arrangeThumbnails(){

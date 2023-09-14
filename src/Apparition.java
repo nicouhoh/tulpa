@@ -15,7 +15,7 @@ public class Apparition {
         g.tint(255, 64);
         for (Organelle o : mirages){
             if (o instanceof ScrollGrip) continue;
-            o.drawer.draw(g, o, x - o.dragX, y - o.dragY);
+            o.draw(g, x - o.dragX, y - o.dragY);
         }
         g.tint(255, 255);
     }

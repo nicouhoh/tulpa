@@ -1,6 +1,6 @@
 import processing.core.PGraphics;
 
-public class Visipalp extends Organelle implements Shape{
+public class Visipalp extends Organelle implements Drawish {
 
     PGraphics g;
 
@@ -8,15 +8,18 @@ public class Visipalp extends Organelle implements Shape{
 
     public Visipalp(PGraphics g){
         this.g = g;
-        updater = new OrganelleUpdater();
-        drawer = new BackgroundDrawer();
+        shape = new VisipalpShape();
     }
 
     @Override
-    public void shift(){
-        x = 0;
-        y = 0;
-        w = tulpa.SOLE.width;
-        h = tulpa.SOLE.height;
+    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH){
+        shift(parentX, parentY, parentW, parentH);
+        draw(g, x, y);
+        updateChildren(g, c);
+    }
+
+    @Override
+    public void draw(PGraphics g, float drawX, float drawY){
+        g.background(bgColor);
     }
 }
