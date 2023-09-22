@@ -17,9 +17,9 @@ public class MouseInput {
         switch(e.getAction()) {
             case MouseEvent.CLICK, MouseEvent.ENTER, MouseEvent.EXIT -> {return;}
             case MouseEvent.MOVE -> findByTouch(visipalp.findDeepest(e.getX(), e.getY()));
-            case MouseEvent.KEY -> receiveClick(e);
+            case MouseEvent.KEY -> mouseDown(e);
             case MouseEvent.RELEASE -> {
-                if (heldItem == null) receiveClick(e);
+                if (heldItem == null) mouseDown(e);
                 else receiveDrop(e);
             }
             case MouseEvent.DRAG -> receiveDrag(e);
@@ -33,7 +33,7 @@ public class MouseInput {
         clearHeld();
     }
 
-    public void receiveClick(MouseEvent e){
+    public void mouseDown(MouseEvent e){
         if (activeItem != null) {
             if (e.getAction() == MouseEvent.RELEASE) {
                 if (isHot(activeItem)) {
@@ -117,7 +117,7 @@ public class MouseInput {
         heldItem = organelle;
         organelle.held = true;
         organelle.dragX = e.getX() - organelle.x;
-        organelle.dragY = e.getY() - organelle.y;
+        organelle.dragY = e.getY() - organelle.y + organelle.getLatitude();
         organelle.draggish.grab(conductor, organelle, e.getX(), e.getY());
     }
 

@@ -17,17 +17,24 @@ public class Thumbnail extends Organelle implements Drawish {
     }
 
     @Override
+    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH) {
+        shift(parentX, parentY, parentW, parentH);
+        draw(g, x, y);
+        if (clipping.isSelected) drawSelect(g, x, y);
+        updateChildren(g, c);
+    }
+
+    @Override
     public void draw(PGraphics g, float drawX, float drawY){
         if (clipping.img != null)
             g.image(clipping.img, drawX, drawY, w, h);
-        if (clipping.isSelected) drawSelect(g);
     }
 
-    public void drawSelect(PGraphics g){
+    public void drawSelect(PGraphics g, float drawX, float drawY){
         g.stroke(255);
         g.strokeWeight(2);
         g.noFill();
-        g.rect(x - 1, y - 1, w + 2, h + 2);
+        g.rect(drawX - 1, drawY - 1, w + 2, h + 2);
     }
 
     public void setPos(float x, float y){
@@ -52,6 +59,18 @@ public class Thumbnail extends Organelle implements Drawish {
         }
         offset = new PVector((thumbW - w) / 2, (thumbH - h) / 2);
     }
+
+    public void fitToHeight(float thumbH){
+        PImage img = clipping.img;
+        if (img == null){
+            w = thumbH;
+            h = thumbH;
+        }else{
+            h = thumbH;
+            w = (h * img.width) / img.height;
+        }
+    }
+
 }
 
 //TODO: dragging thumbnails around. MEANING:

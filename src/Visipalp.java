@@ -22,4 +22,9 @@ public class Visipalp extends Organelle implements Drawish {
     public void draw(PGraphics g, float drawX, float drawY){
         g.background(bgColor);
     }
+
+    @Override
+    public float getLatitude(){
+        return 0;
+    }
 }

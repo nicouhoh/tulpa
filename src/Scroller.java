@@ -11,6 +11,7 @@ public class Scroller extends Decorator implements Drawish, Wheelish {
 
     public Scroller(Organelle organelle){
         this.organelle = organelle;
+        organelle.setParent(this);
         this.shape = organelle.shape;
 
         this.rail = new ScrollRail(this);
@@ -31,32 +32,27 @@ public class Scroller extends Decorator implements Drawish, Wheelish {
     @Override
     public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH) {
         g.push();
-        g.translate(0, -latitude);
+        g.translate(0, -getLatitude());
         organelle.update(g, c, parentX, parentY, parentW - scrollW, parentH);
         g.pop();
 
         shift(parentX, parentY, parentW, parentH);
-        draw(g, x, y);
         updateGrip();
         updateChildren(g, c);
     }
 
-
     @Override
-    public void draw(PGraphics g, float drawX, float drawY){
-        g.stroke(255, 0, 255);
-        g.noFill();
-        g.rect(drawX, drawY, w - 1, h - 1);
+    public void draw(PGraphics g, float x, float y) {
+
     }
 
-    //@Override
+    @Override
     public void wheel(float scrollAmount){
-        System.out.println("Scrolling");
-        latitude = PApplet.constrain(latitude + (scrollAmount * scrollSpeed), 0, organelle.h - h);
+        latitude = PApplet.constrain(getLatitude() + (scrollAmount * scrollSpeed), 0, organelle.h - h);
     }
 
     private void moveGrip(){
-        grip.y = (h * latitude) / organelle.h;
+        grip.y = (h * getLatitude()) / organelle.h;
         grip.h = (h * h) / organelle.h;
     }
 
@@ -81,11 +77,16 @@ public class Scroller extends Decorator implements Drawish, Wheelish {
             }
         } else{
             for (Organelle child : organelle.getChildren()){
-                childResult = child.findDeepest(mouseX, mouseY + latitude);
+                childResult = child.findDeepest(mouseX, mouseY + getLatitude());
                 if (childResult != null) deepestHit = childResult;
             }
         }
 
         return deepestHit;
+    }
+
+    @Override
+    public float getLatitude(){
+        return getParent().getLatitude() + latitude;
     }
 }

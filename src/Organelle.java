@@ -42,12 +42,6 @@ public abstract class Organelle implements Drawish {
         this.parent = parent;
     }
 
-    public void drawDebug(PGraphics g) {
-        g.stroke(255, 0, 255);
-        g.noFill();
-        g.rect(x - 1, y - 1, w + 2, h + 2);
-    }
-
     public void shift(float parentX, float parentY, float parentW, float parentH) {
         if (shape != null) {
             shape.shift(this, parentX, parentY, parentW, parentH);
@@ -106,5 +100,9 @@ public abstract class Organelle implements Drawish {
         } else {
             return true;
         }
+    }
+
+    public float getLatitude(){
+        return parent.getLatitude();
     }
 }
