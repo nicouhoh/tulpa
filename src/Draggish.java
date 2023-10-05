@@ -1,6 +1,9 @@
-public interface Draggish {
+import processing.core.PGraphics;
 
-    void grab(Conductor c, Organelle o, float mouseX, float mouseY);
-    void drag(Conductor c, Organelle o, float mouseX, float mouseY);
-    void release(Conductor c, Organelle o, float mouseX, float mouseY);
+public interface Draggish extends Palpable {
+
+    void grab();
+    void drag(float dragX, float dragY, float offsetX, float offsetY);
+
+    void drawCasper(PGraphics g, float dragX, float dragY, float offsetX, float offsetY);
 }

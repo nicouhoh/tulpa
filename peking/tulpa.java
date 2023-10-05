@@ -6,45 +6,41 @@ import processing.event.MouseEvent;
 
 public class tulpa extends PApplet {
 
-
-    private TulpaHeartInterface heart;
-    private Controller controller;
-
-    int w, h;
-
-    public static tulpa SOLE = null;
     // SDrop sdrop;
 
+    private Conductor conductor;
+
+    int w = 1000, h = 1000;
+    public boolean resized = false;
+
+    public static tulpa SOLE = null;
+
     public void setup() {
-        surface.setSize(1000, 1000);
-        w = width;
-        h = height;
-        surface.setResizable(true);
-        registerMethod("pre", this); // set up for detecting window resize
-
         SOLE = this;
-        heart = new TulpaHeart();
-        controller = new Controller(heart, g);
 
-
+        surface.setResizable(true);
+        surface.setSize(w, h);
 
         // sdrop = new SDrop(this);
+
+        conductor = new Conductor(this, g);
+
+        conductor.setup();
 
 //        registerMethod("keyEvent", this);
         registerMethod("mouseEvent", this);
     }
 
-    public void pre(){
-        if (w != width || h != height){
-            //Sketch window has resized
-            w = width;
-            h = height;
-            controller.resizeWindow();
-        }
+    public void draw() {
+        conductor.update();
     }
 
-    public void draw() {
-        controller.draw();
+    public void checkResize() {
+        if (w != width || h != height) {
+            w = width;
+            h = height;
+            resized = true;
+        }
     }
 
     // INPUT -----------------------------------------------------------------
@@ -54,7 +50,7 @@ public class tulpa extends PApplet {
 //    }
 
     public void mouseEvent(MouseEvent e) {
-        controller.passMouseInput(e);
+        conductor.passMouseInput(e);
     }
 
     //public void dropEvent(DropEvent dropEvent){

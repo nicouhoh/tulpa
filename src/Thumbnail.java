@@ -2,62 +2,63 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Thumbnail extends Organelle implements Drawish {
+public class Thumbnail extends Organelle implements Clickish, Draggish{
 
     Clipping clipping;
-    private float dropZonePercent = 20;
 
-    PVector offset = new PVector(0, 0);
+    PVector offset = new PVector(0,0);
 
     public Thumbnail(PGraphics g, Clipping clipping){
         this.clipping = clipping;
-        clickish = new ThumbnailClickish();
-        draggish = new ThumbnailDraggish();
-        droppish = new ThumbnailDroppish();
     }
 
     @Override
-    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH) {
-        shift(parentX, parentY, parentW, parentH);
-        draw(g, x, y);
-        if (clipping.isSelected) drawSelect(g, x, y);
-        updateChildren(g, c);
-    }
+    public void update(float parentX, float parentY, float parentW, float parentH){}
 
     @Override
-    public void draw(PGraphics g, float drawX, float drawY){
+    public void draw(PGraphics g){
         if (clipping.img != null)
-            g.image(clipping.img, drawX, drawY, w, h);
+            g.image(clipping.img, x, y, w, h);
+    }
+
+    public void draw(PGraphics g, float x, float y, float w, float h){
+        if (clipping.img != null)
+            g.image(clipping.img, x, y, w, h);
+        if (hot){
+            drawSelect(g, x, y);
+        }
     }
 
     public void drawSelect(PGraphics g, float drawX, float drawY){
         g.stroke(255);
         g.strokeWeight(2);
         g.noFill();
-        g.rect(drawX - 1, drawY - 1, w + 2, h + 2);
+        g.rect(x - 1, y - 1, w + 2, h + 2);
     }
 
-    public void setPos(float x, float y){
-        this.x = x + offset.x;
-        this.y = y + offset.y;
+    public void setPos(float newX, float newY){
+
+        x = newX + offset.x;
+        y = newY + offset.y;
     }
 
-    public void setSize(float thumbW, float thumbH){
+    @Override
+    public void setSize(float newW, float newH){
         PImage img = clipping.img;
         if (img == null){
-            w = thumbW;
-            h = thumbH;
+            w = newW;
+            h = newH;
         }
         else if (img.width >= img.height){
-            w = thumbW;
-            h = (thumbW * img.height) / img.width;
+            w = newW;
+            h = (newW * img.height) / img.width;
         }
         else {
-            float th = thumbH;
-            h = thumbH;
-            w = (thumbH * img.width) / img.height;
+            h = newH;
+            w = (newH * img.width) / img.height;
         }
-        offset = new PVector((thumbW - w) / 2, (thumbH - h) / 2);
+        offset = new PVector((newW - w) / 2, (newH - h) / 2);
+
     }
 
     public void fitToHeight(float thumbH){
@@ -71,10 +72,21 @@ public class Thumbnail extends Organelle implements Drawish {
         }
     }
 
-}
+    @Override
+    public void click(){
+        System.out.println(this);
+    }
 
-//TODO: dragging thumbnails around. MEANING:
-//TODO: - you have to be able to drag thumbnails.
-//TODO: - things have to be able to receive dropped items.
-//TODO: - I need to make dropzones that receive dropped items.
-//TODO: - It has to be able to reach the Conductor to tell it to make changes to the library.
+    @Override
+    public void grab(){}
+
+    @Override
+    public void drag(float dragX, float dragY, float offsetX, float offsetY){}
+
+    @Override
+    public void drawCasper(PGraphics g, float dragX, float dragY, float offsetX, float offsetY) {
+        draw(g, dragX - offsetX, dragY - offsetY, w, h);
+    }
+
+
+}

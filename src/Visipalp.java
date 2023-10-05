@@ -1,30 +1,55 @@
 import processing.core.PGraphics;
+import processing.event.MouseEvent;
+import processing.core.PVector;
+import java.util.ArrayList;
 
-public class Visipalp extends Organelle implements Drawish {
+public class Visipalp { // TODO later we'll implement some Observer interfaces
 
     PGraphics g;
+    TulpaHeartInterface heart;
+    Controller instrument;
 
-    int bgColor = 49;
+    Organelle sycamore;
+    Organelle contactSheet;
 
-    public Visipalp(PGraphics g){
+    Mouse mouse;
+
+    public Visipalp(PGraphics g, Controller instrument, TulpaHeartInterface heart){
         this.g = g;
-        shape = new VisipalpShape();
+        this.heart = heart;
+        this.instrument = instrument;
+        this.mouse = new Mouse();
+
+        materialize();
     }
 
-    @Override
-    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH){
-        shift(parentX, parentY, parentW, parentH);
-        draw(g, x, y);
-        updateChildren(g, c);
+    public void materialize(){
+        sycamore = new Nothing();
+        contactSheet = new ContactSheet();
+        contactSheet.addChildren(manifestClippings(heart.getLibrary().clippings));
+        contactSheet = new Scroller(contactSheet);
+        sycamore.addChild(contactSheet);
+        sycamore.update(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
-    @Override
-    public void draw(PGraphics g, float drawX, float drawY){
-        g.background(bgColor);
+    public void draw(){
+        sycamore.draw(g);
+//        mouse.debug(g,);
+//        mouse.drawHeldItem(g);
     }
 
-    @Override
-    public float getLatitude(){
-        return 0;
+    public ArrayList<Organelle> manifestClippings(ArrayList<Clipping> clippings){
+        ArrayList<Organelle> thumbs = new ArrayList<Organelle>();
+        for (Clipping clip : clippings){
+            thumbs.add(new Thumbnail(g, clip));
+        }
+        return thumbs;
     }
+
+    public void receiveMouseInput(MouseEvent e){
+        MouseState mouseState = new MouseState(e);
+        mouse.palpate(mouseState, sycamore);
+    }
+
+
 }

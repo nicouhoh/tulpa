@@ -1,8 +1,4 @@
-public interface Clickish {
+public interface Clickish extends Palpable{
 
-    void hot();
-
-    void active();
-
-    void click(Conductor conductor, Organelle o, int mod);
+    void click();
 }

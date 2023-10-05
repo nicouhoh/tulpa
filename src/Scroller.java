@@ -1,92 +1,79 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import java.util.ArrayList;
 
-public class Scroller extends Decorator implements Drawish, Wheelish {
-    ScrollRail rail;
-    ScrollGrip grip;
-    float latitude;
+public class Scroller extends Symbiote implements Wheelish {
+
+    ScrollerRail rail;
+    ScrollerGrip grip;
+
+    float latitude = 0;
     float scrollW = 10;
     float scrollSpeed = 50;
 
-    public Scroller(Organelle organelle){
-        this.organelle = organelle;
-        organelle.setParent(this);
-        this.shape = organelle.shape;
-
-        this.rail = new ScrollRail(this);
-        this.grip = new ScrollGrip();
-        this.addChild(rail);
+    public Scroller(Organelle organelle) {
+        this.host = organelle;
+        rail = new ScrollerRail(this);
+        grip = new ScrollerGrip(this);
         rail.addChild(grip);
     }
 
-    //TODO SORT THIS STUFF OUT
-
     @Override
-    public void shift(float parentX, float parentY, float parentW, float parentH){
-        if (shape != null){
-            shape.shift(this, parentX, parentY, parentW, parentH);
-        }
+    public void update(float parentX, float parentY, float parentW, float parentH) {
+        setPos(parentX, parentY);
+        setSize(parentW, parentH);
+        host.update(parentX, parentY, parentW - scrollW, parentH);
+        updateChildren();
+        grip.setGrip(h, host.h, latitude);
     }
 
     @Override
-    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH) {
+    public void updateChildren(){
+        rail.update(x, y, w, h);
+        host.updateChildren();
+    }
+
+    @Override
+    public void draw(PGraphics g){
         g.push();
         g.translate(0, -getLatitude());
-        organelle.update(g, c, parentX, parentY, parentW - scrollW, parentH);
+        host.draw(g);
         g.pop();
-
-        shift(parentX, parentY, parentW, parentH);
-        updateGrip();
-        updateChildren(g, c);
-    }
-
-    @Override
-    public void draw(PGraphics g, float x, float y) {
-
-    }
-
-    @Override
-    public void wheel(float scrollAmount){
-        latitude = PApplet.constrain(getLatitude() + (scrollAmount * scrollSpeed), 0, organelle.h - h);
-    }
-
-    private void moveGrip(){
-        grip.y = (h * getLatitude()) / organelle.h;
-        grip.h = (h * h) / organelle.h;
-    }
-
-    void updateGrip(){
-        if (!grip.held){
-            moveGrip();
-        } else {
-            latitude = (organelle.h * grip.y) / rail.h;
-        }
-    }
-
-    public Organelle findDeepest(float mouseX, float mouseY){
-        if (!theFingerPointsAtMe(mouseX, mouseY)) return null;
-        Organelle deepestHit = null;
-        if (clickish != null) deepestHit = this;
-
-        Organelle childResult = null;
-        if (mouseX > w - scrollW){
-            for (Organelle child : getChildren()){
-                childResult = child.findDeepest(mouseX, mouseY);
-                if (childResult != null) deepestHit = childResult;
-            }
-        } else{
-            for (Organelle child : organelle.getChildren()){
-                childResult = child.findDeepest(mouseX, mouseY + getLatitude());
-                if (childResult != null) deepestHit = childResult;
-            }
-        }
-
-        return deepestHit;
+        rail.draw(g);
     }
 
     @Override
     public float getLatitude(){
-        return getParent().getLatitude() + latitude;
+        return latitude;
+    }
+
+    public void changeLatitude(float amount){
+        latitude = PApplet.constrain(latitude + amount, 0, host.h - h);
+        grip.setGrip(rail.h, host.h, latitude);
+    }
+
+    public void setLatitudeToGrip(){
+        latitude = (grip.y * host.h) / h;
+    }
+
+    public void moveGrip(float y){
+        grip.y = PApplet.constrain(y, this.y, this.h - grip.h);
+        setLatitudeToGrip();
+    }
+
+    @Override
+    public Organelle pinpoint(MouseState state, Class<? extends Palpable> palp) {
+        if (!checkMouseOver(state.getX(), state.getY() + state.getLatitude())) return null;
+        for (Organelle child : getChildren()) {
+            state.addLatitude(latitude);
+            Organelle childResult = child.pinpoint(state, palp);
+            if (childResult == null) childResult = rail.pinpoint(state, palp);
+            if (childResult != null) return childResult;
+        }
+        if (palp.isInstance(this)) return this;
+        else return null;
+    }
+
+    public void wheel(int count){
+        changeLatitude(count * scrollSpeed);
     }
 }

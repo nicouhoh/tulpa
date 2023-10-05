@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class Clipping {
 
+    String id;
+
     PImage img;
     String imgPath;
 
@@ -15,13 +17,15 @@ public class Clipping {
 
 //    ArrayList<Tag> tags = new ArrayList<Tag>();
 
-    public Clipping(){
+    public Clipping(String id){
+        this.id = id;
         imgPath = "";
         img = null;
 //        text = new ClippingText("", "Type here");
     }
 
-    public Clipping(File file) {
+    public Clipping(String id, File file) {
+        this.id = id;
         if (file.getName().contains(".jpg")) {
             imgPath = file.getAbsolutePath();
             img = tulpa.SOLE.loadImage(imgPath);
@@ -37,7 +41,8 @@ public class Clipping {
         }
     }
 
-    public Clipping(String string){
+    public Clipping(String id, String string){
+        this.id = id;
         imgPath = "";
         img = null;
 //        text = new ClippingText(string,"Type here");

@@ -1,108 +1,93 @@
 import java.util.ArrayList;
 import processing.core.PGraphics;
 
-public abstract class Organelle implements Drawish {
+public abstract class Organelle {
 
-    private Organelle parent;
-    private ArrayList<Organelle> children = new ArrayList<Organelle>();
-
-    public Shape shape = null;
-    public Clickish clickish = null;
-    public Draggish draggish = null;
-    public Droppish droppish = null;
-
-    boolean hot;
-    boolean active;
-    boolean held;
-    float dragX, dragY;
+    ArrayList<Organelle> children = new ArrayList<Organelle>();
 
     float x, y, w, h;
+    boolean hot, active, held;
 
-    public ArrayList<Organelle> getChildren() {
+    float latitude;
+
+    public void addChild(Organelle organelle){
+        children.add(organelle);
+    }
+
+    public void addChildren(ArrayList<Organelle> organelles){
+        children.addAll(organelles);
+    }
+
+    public void removeChild(Organelle organelle){
+        children.remove(organelle);
+    }
+
+    public Organelle getChild(int index){
+        return children.get(index);
+    }
+
+    public ArrayList<Organelle> getChildren(){
         return children;
     }
 
-    public void addChild(Organelle child) {
-        children.add(child);
-        child.setParent(this);
+    public void update(float parentX, float parentY, float parentW, float parentH){
+        setPos(parentX, parentY);
+        setSize(parentW, parentH);
+        updateChildren();
     }
 
-    public void addChildren(ArrayList<? extends Organelle> children) {
-        this.children.addAll(children);
-        for (Organelle child : children) {
-            child.setParent(this);
+    public void updateChildren(){
+        for (Organelle child : getChildren()){
+            child.update(x, y, w, h);
         }
     }
 
-    public Organelle getParent() {
-        return parent;
+    public void drawAt(PGraphics g,  float drawX, float drawY, float drawW, float drawH){
+        drawChildren(g);
     }
 
-    public void setParent(Organelle parent) {
-        this.parent = parent;
+    public void draw(PGraphics g){
+        drawChildren(g);
     }
 
-    public void shift(float parentX, float parentY, float parentW, float parentH) {
-        if (shape != null) {
-            shape.shift(this, parentX, parentY, parentW, parentH);
+    public void drawChildren(PGraphics g){
+        for (Organelle child : getChildren()){
+            child.draw(g);
         }
     }
 
-    public void update(PGraphics g, Conductor c, float parentX, float parentY, float parentW, float parentH) {
-        shift(parentX, parentY, parentW, parentH);
-        draw(g, x, y);
-        updateChildren(g, c);
+    public void setPos(float newX, float newY){
+        x = newX;
+        y = newY;
     }
 
-    public void updateChildren(PGraphics g, Conductor c) {
-        if (getChildren() != null) {
-            for (Organelle child : getChildren()) {
-                child.update(g, c, x, y, w, h);
-            }
+    public void setSize(float newW, float newH){
+        w = newW;
+        h = newH;
+    }
+
+    public void drawDebug(PGraphics g){
+        g.stroke(255, 0, 255);
+        g.noFill();
+        g.rect(x, y, w - 1, h - 1);
+    }
+
+    public boolean checkMouseOver(float mouseX, float mouseY){
+        return !(mouseX < x) && !(mouseX > x + w) && !(mouseY < y) && !(mouseY > y + h);
+    }
+
+    // I thought I was going to cry from figuring out this method ;__;
+    public Organelle pinpoint(MouseState state, Class<? extends Palpable> palp) {
+        if (!checkMouseOver(state.getX(), state.getY() + state.getLatitude())) return null;
+        for (Organelle child : getChildren()) {
+            Organelle childResult = child.pinpoint(state, palp);
+            if (childResult != null) return childResult;
         }
-    }
-
-    public void draw(PGraphics g, float x, float y){}
-
-    public void passMouseInput(float mouseX, float mouseY, int action) {
-        if (!theFingerPointsAtMe(mouseX, mouseY)) return;
-    }
-
-    public Organelle findDeepest(float mouseX, float mouseY){
-        if (!theFingerPointsAtMe(mouseX, mouseY)) return null;
-        Organelle deepestHit = null;
-        if (clickish != null) deepestHit = this;
-        if (getChildren().size() > 0){
-            for (Organelle child : getChildren()){
-                Organelle childResult = child.findDeepest(mouseX, mouseY);
-                if (childResult != null) deepestHit = childResult;
-            }
-        }
-        return deepestHit;
-    }
-
-    public Wheelish findDeepestWheelish(float mouseX, float mouseY){
-        if (!theFingerPointsAtMe(mouseX, mouseY)) return null;
-        Wheelish deepestHit = null;
-        if (this instanceof Wheelish) deepestHit = (Wheelish)this;
-        if (getChildren().size() > 0){
-            for (Organelle child : getChildren()){
-                Wheelish childResult = child.findDeepestWheelish(mouseX, mouseY);
-                if (childResult != null) deepestHit = childResult;
-            }
-        }
-        return deepestHit;
-    }
-
-    public boolean theFingerPointsAtMe(float fingerX, float fingerY) {
-        if (fingerX < x || fingerX > x + w || fingerY < y || fingerY > y + h) {
-            return false;
-        } else {
-            return true;
-        }
+        if (palp.isInstance(this)) return this;
+        else return null;
     }
 
     public float getLatitude(){
-        return parent.getLatitude();
+        return 0;
     }
 }

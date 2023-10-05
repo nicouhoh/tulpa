@@ -1,4 +1,4 @@
-public interface Wheelish {
+public interface Wheelish extends Palpable{
 
-    void wheel(float scrollAmount);
+    void wheel(int count);
 }
