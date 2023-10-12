@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class Scroller extends Symbiote implements Wheelish {
+public class Scroller extends Symbiote implements Mousish, Wheelish {
 
     ScrollerRail rail;
     ScrollerGrip grip;
@@ -15,6 +15,8 @@ public class Scroller extends Symbiote implements Wheelish {
         rail = new ScrollerRail(this);
         grip = new ScrollerGrip(this);
         rail.addChild(grip);
+        addMousish(this);
+        addWheelish(this);
     }
 
     @Override
@@ -61,19 +63,31 @@ public class Scroller extends Symbiote implements Wheelish {
     }
 
     @Override
-    public Organelle pinpoint(MouseState state, Class<? extends Palpable> palp) {
-        if (!checkMouseOver(state.getX(), state.getY() + state.getLatitude())) return null;
-        for (Organelle child : getChildren()) {
-            state.addLatitude(latitude);
-            Organelle childResult = child.pinpoint(state, palp);
-            if (childResult == null) childResult = rail.pinpoint(state, palp);
-            if (childResult != null) return childResult;
+    public void captureAndBubble(MouseState state){
+        if (state.consumed) return;
+        if (!mouseOver(state.getX(), state.getY() + state.getLatitude())) return;
+
+        MouseState adjustedState = new MouseState(state, latitude);
+
+        for (Organelle child : getChildren()){
+            child.captureAndBubble(adjustedState);
+            if (adjustedState.consumed){
+                state.consume();
+                return;
+            }
         }
-        if (palp.isInstance(this)) return this;
-        else return null;
+
+        rail.captureAndBubble(state);
+
+        receiveMouseState(state);
     }
 
     public void wheel(int count){
         changeLatitude(count * scrollSpeed);
+    }
+
+    @Override
+    public void click() {
+        System.out.println("clicked " + this);
     }
 }

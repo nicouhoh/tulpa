@@ -18,7 +18,7 @@ public class Controller {
         visipalp.sycamore.update(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
-    public void passMouseInput(MouseEvent e){
-        visipalp.receiveMouseInput(e);
-    }
+//    public void passMouseInput(MouseEvent e){
+//        visipalp.receiveMouseInput(e);
+//    }
 }

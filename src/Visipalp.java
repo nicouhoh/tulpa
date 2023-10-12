@@ -25,8 +25,11 @@ public class Visipalp { // TODO later we'll implement some Observer interfaces
 
     public void materialize(){
         sycamore = new Nothing();
-        contactSheet = new ContactSheet();
+        contactSheet = new ContactSheet(mouse);
         contactSheet.addChildren(manifestClippings(heart.getLibrary().clippings));
+        for (Organelle thumb : contactSheet.getChildren()){
+            mouse.registerPalp(thumb);
+        }
         contactSheet = new Scroller(contactSheet);
         sycamore.addChild(contactSheet);
         sycamore.update(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
@@ -46,9 +49,10 @@ public class Visipalp { // TODO later we'll implement some Observer interfaces
         return thumbs;
     }
 
-    public void receiveMouseInput(MouseEvent e){
-        MouseState mouseState = new MouseState(e);
-        mouse.palpate(mouseState, sycamore);
+    public void receiveMouseEvent(MouseEvent e){
+//        MouseState mouseState = new MouseState(e);
+//        mouse.palpate(mouseState, sycamore);
+        mouse.palpate(new MouseState(e), sycamore);
     }
 
 

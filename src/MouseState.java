@@ -4,6 +4,7 @@ import processing.core.PVector;
 public class MouseState extends MouseEvent{
 
     float latitude;
+    boolean consumed = false;
 
     public MouseState(Object nativeObject, long millis, int action, int modifiers, int x, int y, int button, int count) {
         super(nativeObject, millis, action, modifiers, x, y, button, count);
@@ -11,6 +12,10 @@ public class MouseState extends MouseEvent{
 
     public MouseState(MouseEvent e){
         super(e.getNative(), e.getMillis(), e.getAction(), e.getModifiers(), e.getX(), e.getY(), e.getButton(), e.getCount());
+    }
+
+    public MouseState(MouseState s, float latitude){
+        super(s.getNative(), s.getMillis(), s.getAction(), s.getModifiers(), s.getX(), s.getY() + (int)latitude, s. getButton(), s.getCount());
     }
 
     public float getLatitude(){
@@ -22,6 +27,14 @@ public class MouseState extends MouseEvent{
     }
 
     public void addLatitude(float lat) { latitude += lat; }
+
+    public void consume(){
+        consumed = true;
+    }
+
+    public void adjustForLatitude(){
+
+    }
 
 
 }

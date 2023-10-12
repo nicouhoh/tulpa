@@ -54,7 +54,11 @@ public class tulpa extends PApplet {
 //    }
 
     public void mouseEvent(MouseEvent e) {
-        controller.passMouseInput(e);
+        switch(e.getAction()){
+            case MouseEvent.KEY, MouseEvent.WHEEL ->{
+                controller.visipalp.receiveMouseEvent(e);
+            }
+        }
     }
 
     //public void dropEvent(DropEvent dropEvent){

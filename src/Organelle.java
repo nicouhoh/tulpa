@@ -4,6 +4,10 @@ import processing.core.PGraphics;
 public abstract class Organelle {
 
     ArrayList<Organelle> children = new ArrayList<Organelle>();
+    Organelle parent;
+
+    Mousish mousish;
+    Wheelish wheelish;
 
     float x, y, w, h;
     boolean hot, active, held;
@@ -72,22 +76,60 @@ public abstract class Organelle {
         g.rect(x, y, w - 1, h - 1);
     }
 
-    public boolean checkMouseOver(float mouseX, float mouseY){
-        return !(mouseX < x) && !(mouseX > x + w) && !(mouseY < y) && !(mouseY > y + h);
+    public boolean mouseOver(float mouseX, float mouseY){
+        return (mouseX > x) && (mouseX < x + w) && (mouseY > y) && (mouseY < y + h);
     }
 
-    // I thought I was going to cry from figuring out this method ;__;
-    public Organelle pinpoint(MouseState state, Class<? extends Palpable> palp) {
-        if (!checkMouseOver(state.getX(), state.getY() + state.getLatitude())) return null;
-        for (Organelle child : getChildren()) {
-            Organelle childResult = child.pinpoint(state, palp);
-            if (childResult != null) return childResult;
+//    // I thought I was going to cry from figuring out this method ;__;
+//    public Organelle pinpoint(MouseState state, Class<? extends Palpable> palp) {
+//        if (!mouseOver(state.getX(), state.getY() + state.getLatitude())) return null;
+//        for (Organelle child : getChildren()) {
+//            Organelle childResult = child.pinpoint(state, palp);
+//            if (childResult != null) return childResult;
+//        }
+//        if (palp.isInstance(this)) return this;
+//        else return null;
+//    }
+
+    // It took me more than a week to get here, I want to cry
+    public void captureAndBubble(MouseState state){
+        if (state.consumed) return;
+        if (!mouseOver(state.getX(), state.getY() + state.getLatitude())) return;
+
+        for (Organelle child : getChildren()){
+            child.captureAndBubble(state);
+            if (state.consumed) return;
         }
-        if (palp.isInstance(this)) return this;
-        else return null;
+        receiveMouseState(state);
+    }
+
+    public void receiveMouseState(MouseState state){
+        switch (state.getAction()){
+            case MouseState.KEY -> {
+                if (mousish == null) return;
+                mousish.click();
+                state.consume();
+            }
+            case MouseState.WHEEL -> {
+                if (wheelish == null) return;
+                wheelish.wheel(state.getCount());
+                state.consume();
+            }
+        }
+    }
+
+//    public boolean receiveEvent(MouseState state){return null;}
+
+    public void addMousish(Mousish mousish){
+        this.mousish = mousish;
+    }
+
+    public void addWheelish(Wheelish wheelish){
+        this.wheelish = wheelish;
     }
 
     public float getLatitude(){
         return 0;
     }
+
 }

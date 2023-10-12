@@ -1,4 +1,5 @@
-public interface Wheelish extends Palpable{
+public interface Wheelish extends Palpable {
 
     void wheel(int count);
+
 }

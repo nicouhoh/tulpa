@@ -1,6 +1,6 @@
 import processing.core.PGraphics;
 
-public class ScrollerRail extends Organelle implements Clickish{
+public class ScrollerRail extends Organelle implements Mousish {
 
     int color = 0xff1A1A1A;
     Scroller scroller;
@@ -14,6 +14,7 @@ public class ScrollerRail extends Organelle implements Clickish{
         setPos(parentX + parentW - scroller.scrollW, parentY);
         setSize(scroller.scrollW, parentH);
         updateChildren();
+        addMousish(this);
     }
 
     @Override
@@ -25,6 +26,7 @@ public class ScrollerRail extends Organelle implements Clickish{
     }
 
     @Override
-    public void click(){
+    public void click() {
+        System.out.println("clicked " + this);
     }
 }

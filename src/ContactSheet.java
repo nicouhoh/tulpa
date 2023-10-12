@@ -7,7 +7,7 @@ public class ContactSheet extends Organelle {
 
     Virgo virgo;
 
-    public ContactSheet(){
+    public ContactSheet(Mouse mouse){
         virgo = new Agnes();
     }
 

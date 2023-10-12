@@ -1,13 +1,14 @@
 import processing.core.PGraphics;
 import processing.core.PApplet;
 
-public class ScrollerGrip extends Organelle implements Draggish {
+public class ScrollerGrip extends Organelle implements Mousish {
 
     Scroller scroller;
     int inactiveColor = 0xff6C6C6C, hotColor = 130;
 
     public ScrollerGrip(Scroller scroller){
         this.scroller = scroller;
+        addMousish(this);
     }
 
     @Override
@@ -44,4 +45,8 @@ public class ScrollerGrip extends Organelle implements Draggish {
         else return inactiveColor;
     }
 
+    @Override
+    public void click() {
+        System.out.println("clicked " + this);
+    }
 }

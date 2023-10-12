@@ -2,10 +2,13 @@ import processing.core.PGraphics;
 import processing.core.PApplet;
 import processing.event.MouseEvent;
 import processing.core.PVector;
+import java.util.ArrayList;
 
 public class Mouse {
 
-    Draggish heldItem;
+    ArrayList<Palpable> palps = new ArrayList<Palpable>();
+
+//    Draggish heldItem;
     Organelle hotItem;
     Organelle activeItem;
 
@@ -16,25 +19,30 @@ public class Mouse {
     PVector dragOrigin = new PVector(0, 0);
     PVector grabOffset = new PVector(0, 0);
 
+//    public void palpate(MouseState state, Organelle root){
+//        switch(state.getAction()){
+//            case MouseEvent.MOVE, MouseEvent.DRAG -> notifyMove(state);//updateMouse(root, state);
+//            case MouseEvent.KEY -> mouseDown(state);
+////            case MouseEvent.WHEEL -> receiveWheel(root, state);
+////            case MouseEvent.RELEASE -> mouseUp(state);
+//        }
+//    }
+
     public void palpate(MouseState state, Organelle root){
-        switch(state.getAction()){
-            case MouseEvent.MOVE, MouseEvent.DRAG -> updateMouse(root, state);
-            case MouseEvent.KEY -> mouseDown(state);
-            case MouseEvent.WHEEL -> receiveWheel(root, state);
-            case MouseEvent.RELEASE -> mouseUp(state);
-        }
+        root.captureAndBubble(state);
     }
+
 
     public void setActiveItem(Palpable palp){
         activeItem = (Organelle)palp;
     }
 
-    public void updateMouse(Organelle root, MouseState state){
-        updateHotItem(root.pinpoint(state, Palpable.class));
-        if (heldItem != null){
-            heldItem.drag(state.getX(), state.getY(), grabOffset.x, grabOffset.y);
-        } else if (activeItem instanceof Draggish) checkForGrab(state);
-    }
+//    public void updateMouse(Organelle root, MouseState state){
+//        updateHotItem(root.pinpoint(state, Palpable.class));
+//        if (heldItem != null){
+//            heldItem.drag(state.getX(), state.getY(), grabOffset.x, grabOffset.y);
+//        } else if (activeItem instanceof Draggish) checkForGrab(state);
+//    }
 
     public void updateHotItem(Organelle item){
         if (hotItem != item) clearHotItem();
@@ -58,15 +66,15 @@ public class Mouse {
         if (hotItem != null) setActiveItem(hotItem);
     }
 
-    public void mouseUp(MouseState state){
-        if (heldItem != null) clearHeldItem();
-        if (activeItem != null) {
-            if (activeItem == hotItem){
-                System.out.println("Pressed " + activeItem + " like a button");
-            }
-            clearActiveItem();
-        }
-    }
+//    public void mouseUp(MouseState state){
+//        if (heldItem != null) clearHeldItem();
+//        if (activeItem != null) {
+//            if (activeItem == hotItem){
+//                System.out.println("Pressed " + activeItem + " like a button");
+//            }
+//            clearActiveItem();
+//        }
+//    }
 
     public void setActiveItem(Organelle o){
         activeItem = o;
@@ -78,62 +86,62 @@ public class Mouse {
         activeItem = null;
     }
 
-    public void checkForGrab(MouseState state){
-        if (PApplet.dist(state.getX(), state.getY(), getDragOrigin().x, getDragOrigin().y ) > dragStickiness){
-            grabItem(state);
-        }
-    }
+//    public void checkForGrab(MouseState state){
+//        if (PApplet.dist(state.getX(), state.getY(), getDragOrigin().x, getDragOrigin().y ) > dragStickiness){
+//            grabItem(state);
+//        }
+//    }
 
-    public void grabItem(MouseState state) {
-        if (activeItem == null) return;
-        grabOffset = new PVector(getDragOrigin().x - activeItem.x, getDragOrigin().y - activeItem.y);
-        setHeldItem((Draggish)activeItem);
-        activeItem.held = true;
-        heldItem.grab();
-    }
+//    public void grabItem(MouseState state) {
+//        if (activeItem == null) return;
+//        grabOffset = new PVector(getDragOrigin().x - activeItem.x, getDragOrigin().y - activeItem.y);
+//        setHeldItem((Draggish)activeItem);
+//        activeItem.held = true;
+//        heldItem.grab();
+//    }
 
     public void debug(PGraphics g, MouseState state){
         g.fill(255,0, 255, 200);
         g.textSize(24);
         g.text("mouse: " + state.getX() + ", " + state.getY() + '\n' +
                 "hot item: " + hotItem + '\n' +
-                "active item: " + activeItem + '\n' +
-                "held item: " + getHeldItem() + ", offset: " + getGrabOffset().x + ", " + getGrabOffset().y,
-                50, 50);
+                "active item: " + activeItem + '\n' // +
+//                "held item: " + getHeldItem() + ", offset: " + getGrabOffset().x + ", " + getGrabOffset().y
+                , 50, 50);
 //        System.out.println("held item: " + heldItem + ", offset: " + grabOffset.x + ", " + grabOffset.y);
 
     }
 
-    public void receiveWheel(Organelle organelle, MouseState state){
-        Organelle o = organelle.pinpoint(state, Wheelish.class);
-        if (o == null) return;
-        ((Wheelish)o).wheel(state.getCount());
-    }
-
-    public void setHeldItem(Draggish item){
-        heldItem = item;
-        ((Organelle)heldItem).held = true;
-    }
-
-    public void setHeldItem(Organelle organelle){
-        if (organelle instanceof Draggish){
-            heldItem = (Draggish)organelle;
-        }
-    }
-
-    public Draggish getHeldItem(){
-        return heldItem;
-    }
-
-    public void clearHeldItem(){
-        ((Organelle)heldItem).held = false;
-        heldItem = null;
-        dragOrigin = null;
-    }
-
-    public Organelle getHeldOrganelle(){
-        return (Organelle)heldItem;
-    }
+//    public void receiveWheel(Organelle organelle, MouseState state){
+//        Organelle o = organelle.pinpoint(state, Wheelish.class);
+//        if (o == null) return;
+//        ((Wheelish)o).wheel(state.getCount());
+//    }
+//
+//    public void setHeldItem(Draggish item){
+//        heldItem = item;
+//        ((Organelle)heldItem).held = true;
+//    }
+//
+//    public void setHeldItem(Organelle organelle){
+//        if (organelle instanceof Draggish){
+//            heldItem = (Draggish)organelle;
+//        }
+//    }
+//
+//    public Draggish getHeldItem(){
+//        return heldItem;
+//    }
+//
+//    public void clearHeldItem(){
+//        ((Organelle)heldItem).held = false;
+//        heldItem = null;
+//        dragOrigin = null;
+//    }
+//
+//    public Organelle getHeldOrganelle(){
+//        return (Organelle)heldItem;
+//    }
 
     public void setDragOrigin(float x, float y){
         dragOrigin = new PVector(x, y);
@@ -157,5 +165,21 @@ public class Mouse {
 //        }
 //        g.tint(255, 255);
 //    }
+
+    public void registerPalp(Palpable palp){
+        palps.add(palp);
+    }
+
+    public void registerPalp(Organelle palp){
+        palps.add((Palpable)palp);
+    }
+
+    public void removePalp(Palpable palp){
+        palps.remove(palp);
+    }
+
+    public void shoutToPalps(){
+
+    }
 
 }
