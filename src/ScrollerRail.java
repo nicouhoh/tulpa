@@ -22,7 +22,6 @@ public class ScrollerRail extends Organelle implements Mousish {
         g.noStroke();
         g.fill(color);
         g.rect(x, y, w, h);
-        drawChildren(g);
     }
 
     @Override

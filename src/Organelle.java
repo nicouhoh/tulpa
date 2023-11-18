@@ -1,18 +1,24 @@
 import java.util.ArrayList;
 import processing.core.PGraphics;
 
+// Abstract base for components
+
 public abstract class Organelle {
 
     ArrayList<Organelle> children = new ArrayList<Organelle>();
     Organelle parent;
 
-    Mousish mousish;
+    ArrayList<Mousish> mousishes = new ArrayList<Mousish>();
+    Hoverish hoverish;
     Wheelish wheelish;
+    Draggish draggish;
+
+    Katla katla;
 
     float x, y, w, h;
-    boolean hot, active, held;
+    float latitude = 0;
 
-    float latitude;
+    boolean hot, active, held;
 
     public void addChild(Organelle organelle){
         children.add(organelle);
@@ -46,17 +52,28 @@ public abstract class Organelle {
         }
     }
 
-    public void drawAt(PGraphics g,  float drawX, float drawY, float drawW, float drawH){
-        drawChildren(g);
+    public void performDraw(PGraphics g){
+        // if we're scrolled, translate before drawing. Otherwise, don't bother.
+        // Call this to draw, but override draw() for actual draw behavior.
+        if (latitude != 0){
+            g.push();
+            g.translate(0, -latitude);
+            draw(g);
+            drawChildren(g);
+            g.pop();
+        } else {
+            draw(g);
+            drawChildren(g);
+        }
     }
 
     public void draw(PGraphics g){
-        drawChildren(g);
+        // Override this for the draw behavior of each Organelle. It actually gets called in performDraw()
     }
 
     public void drawChildren(PGraphics g){
         for (Organelle child : getChildren()){
-            child.draw(g);
+            child.performDraw(g);
         }
     }
 
@@ -92,7 +109,7 @@ public abstract class Organelle {
 //    }
 
     // It took me more than a week to get here, I want to cry
-    public void captureAndBubble(MouseState state){
+    public void captureAndBubble(Squeak state){
         if (state.consumed) return;
         if (!mouseOver(state.getX(), state.getY() + state.getLatitude())) return;
 
@@ -100,19 +117,44 @@ public abstract class Organelle {
             child.captureAndBubble(state);
             if (state.consumed) return;
         }
-        receiveMouseState(state);
+        handleMouseState(state);
     }
 
-    public void receiveMouseState(MouseState state){
+//    public Palpable captureAndBubbleNEW(Squeak squeak, Mouse mouse){
+//        if (squeak.consumed) return null;
+//        if (!mouseOver(squeak.getX(), squeak.getY() + squeak.getLatitude())) return null;
+//
+//        Palpable deepestWithListener = null;
+//
+//        for (Organelle child : getChildren()){
+//            Palpable result = child.captureAndBubbleNEW(squeak,mouse);
+//            if (result != null) deepestWithListener = result;
+//            if (squeak.consumed) return deepestWithListener;
+//        }
+//
+//        if (deepestWithListener == null){
+//            deepestWithListener = handleMouseState(squeak);
+//        }
+//
+//        return deepestWithListener;
+//    }
+
+    public void handleMouseState(Squeak state){ // TODO could we do this stuff better by subclassing the MouseState?
         switch (state.getAction()){
-            case MouseState.KEY -> {
-                if (mousish == null) return;
-                mousish.click();
-                state.consume();
+            case Squeak.KEY -> {
+                for (Mousish mousish : mousishes) {
+                    mousish.click();
+                    state.consume();
+                }
             }
-            case MouseState.WHEEL -> {
+            case Squeak.WHEEL -> {
                 if (wheelish == null) return;
                 wheelish.wheel(state.getCount());
+                state.consume();
+            }
+            case Squeak.DRAG -> {
+                if (draggish == null) return;
+                state.katla.handleDrag(draggish, state.getX(), state.getY());
                 state.consume();
             }
         }
@@ -121,15 +163,23 @@ public abstract class Organelle {
 //    public boolean receiveEvent(MouseState state){return null;}
 
     public void addMousish(Mousish mousish){
-        this.mousish = mousish;
+        mousishes.add(mousish);
     }
 
     public void addWheelish(Wheelish wheelish){
         this.wheelish = wheelish;
     }
 
+    public void addDraggish(Draggish draggish){
+        this.draggish = draggish;
+    }
+
+    public void registerKatla(Katla katla){
+        this.katla = katla;
+    }
+
     public float getLatitude(){
-        return 0;
+        return latitude;
     }
 
 }

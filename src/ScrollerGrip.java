@@ -1,7 +1,7 @@
 import processing.core.PGraphics;
 import processing.core.PApplet;
 
-public class ScrollerGrip extends Organelle implements Mousish {
+public class ScrollerGrip extends Organelle implements Mousish, Draggish {
 
     Scroller scroller;
     int inactiveColor = 0xff6C6C6C, hotColor = 130;
@@ -9,6 +9,7 @@ public class ScrollerGrip extends Organelle implements Mousish {
     public ScrollerGrip(Scroller scroller){
         this.scroller = scroller;
         addMousish(this);
+        addDraggish(this);
     }
 
     @Override
@@ -30,13 +31,23 @@ public class ScrollerGrip extends Organelle implements Mousish {
     }
 
     public void grab(){
-        held = true;
+        System.out.println("Grabbed " + this);
     }
 
-    public void drag(float dragX, float dragY, float offsetX, float offsetY){
+    @Override
+    public void drag() {
         System.out.println("Dragging " + this);
-        scroller.moveGrip(dragY - offsetY);
     }
+
+    @Override
+    public void release() {
+
+    }
+
+//    public void drag(float dragX, float dragY, float offsetX, float offsetY){
+//        System.out.println("Dragging " + this);
+//        scroller.moveGrip(dragY - offsetY);
+//    }
 
     public void drawCasper(PGraphics g, float dragX, float dragY, float offsetX, float offsetY) {}
 

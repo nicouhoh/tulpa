@@ -1,6 +1,6 @@
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
-import processing.core.PVector;
+
 import java.util.ArrayList;
 
 public class Visipalp { // TODO later we'll implement some Observer interfaces
@@ -27,16 +27,13 @@ public class Visipalp { // TODO later we'll implement some Observer interfaces
         sycamore = new Nothing();
         contactSheet = new ContactSheet(mouse);
         contactSheet.addChildren(manifestClippings(heart.getLibrary().clippings));
-        for (Organelle thumb : contactSheet.getChildren()){
-            mouse.registerPalp(thumb);
-        }
         contactSheet = new Scroller(contactSheet);
         sycamore.addChild(contactSheet);
         sycamore.update(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     public void draw(){
-        sycamore.draw(g);
+        sycamore.performDraw(g);
 //        mouse.debug(g,);
 //        mouse.drawHeldItem(g);
     }
@@ -44,7 +41,7 @@ public class Visipalp { // TODO later we'll implement some Observer interfaces
     public ArrayList<Organelle> manifestClippings(ArrayList<Clipping> clippings){
         ArrayList<Organelle> thumbs = new ArrayList<Organelle>();
         for (Clipping clip : clippings){
-            thumbs.add(new Thumbnail(g, clip));
+            thumbs.add(new Thumbnail(g, clip, mouse.katla));
         }
         return thumbs;
     }
@@ -52,7 +49,7 @@ public class Visipalp { // TODO later we'll implement some Observer interfaces
     public void receiveMouseEvent(MouseEvent e){
 //        MouseState mouseState = new MouseState(e);
 //        mouse.palpate(mouseState, sycamore);
-        mouse.palpate(new MouseState(e), sycamore);
+        mouse.receiveMouseySqueak(new Squeak(e, mouse), sycamore);
     }
 
 

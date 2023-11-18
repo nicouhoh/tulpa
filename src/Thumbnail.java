@@ -2,15 +2,17 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Thumbnail extends Organelle implements Mousish {
+public class Thumbnail extends Organelle implements Mousish, Draggish{
 
     Clipping clipping;
 
     PVector offset = new PVector(0,0);
 
-    public Thumbnail(PGraphics g, Clipping clipping){
+    public Thumbnail(PGraphics g, Clipping clipping, Katla katla){
         this.clipping = clipping;
         addMousish(this);
+        addDraggish(this);
+        registerKatla(katla);
     }
 
     @Override
@@ -76,6 +78,21 @@ public class Thumbnail extends Organelle implements Mousish {
     @Override
     public void click() {
         System.out.println("clicked " + this);
+    }
+
+    @Override
+    public void grab() {
+
+    }
+
+    @Override
+    public void drag() {
+        System.out.println("Dragging " + this);
+    }
+
+    @Override
+    public void release() {
+
     }
 
 //    @Override

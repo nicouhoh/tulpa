@@ -17,11 +17,7 @@ public class ContactSheet extends Organelle {
         setSize(parentW, parentH);
         virgo.arrangeThumbnails(getChildren(), x, y, w, getColumns());
         h = virgo.getFoot(getChildren());
-    }
-
-    @Override
-    public void draw(PGraphics g){
-        drawChildren(g);
+        updateChildren();
     }
 
     public int getColumns(){

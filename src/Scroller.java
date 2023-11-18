@@ -1,89 +1,76 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
-public class Scroller extends Symbiote implements Mousish, Wheelish {
+public class Scroller extends Organelle implements Mousish, Wheelish {
 
+    Organelle host;
     ScrollerRail rail;
     ScrollerGrip grip;
 
-    float latitude = 0;
     float scrollW = 10;
     float scrollSpeed = 50;
 
     public Scroller(Organelle organelle) {
-        this.host = organelle;
+        host = organelle;
         rail = new ScrollerRail(this);
         grip = new ScrollerGrip(this);
+        addChild(rail);
+        addChild(host);
         rail.addChild(grip);
         addMousish(this);
         addWheelish(this);
     }
 
     @Override
-    public void update(float parentX, float parentY, float parentW, float parentH) {
+    public void update(float parentX, float parentY, float parentW, float parentH){
         setPos(parentX, parentY);
         setSize(parentW, parentH);
-        host.update(parentX, parentY, parentW - scrollW, parentH);
         updateChildren();
-        grip.setGrip(h, host.h, latitude);
     }
 
     @Override
     public void updateChildren(){
+        host.update(x, y, w - scrollW, h);
         rail.update(x, y, w, h);
-        host.updateChildren();
+        grip.setGrip(h, host.h, host.latitude);
     }
 
-    @Override
-    public void draw(PGraphics g){
-        g.push();
-        g.translate(0, -getLatitude());
-        host.draw(g);
-        g.pop();
-        rail.draw(g);
+    public void changeHostLatitude(float amount){
+        host.latitude = PApplet.constrain(host.latitude + amount, 0, host.h - h);
+        grip.setGrip(rail.h, host.h, host.latitude);
     }
 
-    @Override
-    public float getLatitude(){
-        return latitude;
-    }
-
-    public void changeLatitude(float amount){
-        latitude = PApplet.constrain(latitude + amount, 0, host.h - h);
-        grip.setGrip(rail.h, host.h, latitude);
-    }
-
-    public void setLatitudeToGrip(){
-        latitude = (grip.y * host.h) / h;
+    public void setHostLatitudeToGrip(){
+        host.latitude = (grip.y * host.h) / h;
     }
 
     public void moveGrip(float y){
         grip.y = PApplet.constrain(y, this.y, this.h - grip.h);
-        setLatitudeToGrip();
+        setHostLatitudeToGrip();
     }
 
-    @Override
-    public void captureAndBubble(MouseState state){
-        if (state.consumed) return;
-        if (!mouseOver(state.getX(), state.getY() + state.getLatitude())) return;
-
-        MouseState adjustedState = new MouseState(state, latitude);
-
-        for (Organelle child : getChildren()){
-            child.captureAndBubble(adjustedState);
-            if (adjustedState.consumed){
-                state.consume();
-                return;
-            }
-        }
-
-        rail.captureAndBubble(state);
-
-        receiveMouseState(state);
-    }
+//    @Override
+//    public void captureAndBubble(MouseState state){
+//        if (state.consumed) return;
+//        if (!mouseOver(state.getX(), state.getY() + state.getLatitude())) return;
+//
+//        MouseState adjustedState = new MouseState(state, latitude);
+//
+//        for (Organelle child : getChildren()){
+//            child.captureAndBubble(adjustedState);
+//            if (adjustedState.consumed){
+//                state.consume();
+//                return;
+//            }
+//        }
+//
+//        rail.captureAndBubble(state);
+//
+//        receiveMouseState(state);
+//    }
 
     public void wheel(int count){
-        changeLatitude(count * scrollSpeed);
+        changeHostLatitude(count * scrollSpeed);
     }
 
     @Override

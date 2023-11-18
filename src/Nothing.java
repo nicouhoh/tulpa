@@ -12,8 +12,5 @@ public class Nothing extends Organelle {
     @Override
     public void draw(PGraphics g){
         g.background(BG_COLOR);
-        for (Organelle child : getChildren()){
-            child.draw(g);
-        }
     }
 }

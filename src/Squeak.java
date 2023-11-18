@@ -1,20 +1,31 @@
 import processing.event.MouseEvent;
-import processing.core.PVector;
 
-public class MouseState extends MouseEvent{
+public class Squeak extends MouseEvent{
+
+    // TODO I had some kind of idea about making an adjustedMouseEvent subclass for use with scrollers but I can't remember why.
 
     float latitude;
     boolean consumed = false;
+    Mouse mouse;
+    Katla katla;
 
-    public MouseState(Object nativeObject, long millis, int action, int modifiers, int x, int y, int button, int count) {
+    public Squeak(Object nativeObject, long millis, int action, int modifiers, int x, int y, int button, int count, Mouse mouse) {
         super(nativeObject, millis, action, modifiers, x, y, button, count);
+        this.mouse = mouse;
     }
 
-    public MouseState(MouseEvent e){
+    public Squeak(MouseEvent e, Mouse mouse){
         super(e.getNative(), e.getMillis(), e.getAction(), e.getModifiers(), e.getX(), e.getY(), e.getButton(), e.getCount());
+        this.mouse = mouse;
     }
 
-    public MouseState(MouseState s, float latitude){
+    public Squeak(MouseEvent e, Mouse mouse, Katla k){
+        super(e.getNative(), e.getMillis(), e.getAction(), e.getModifiers(), e.getX(), e.getY(), e.getButton(), e.getCount());
+        this.mouse = mouse;
+        this.katla = k;
+    }
+
+    public Squeak(Squeak s, float latitude){
         super(s.getNative(), s.getMillis(), s.getAction(), s.getModifiers(), s.getX(), s.getY() + (int)latitude, s. getButton(), s.getCount());
     }
 
