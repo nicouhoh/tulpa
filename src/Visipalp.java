@@ -41,7 +41,7 @@ public class Visipalp { // TODO later we'll implement some Observer interfaces
     public ArrayList<Organelle> manifestClippings(ArrayList<Clipping> clippings){
         ArrayList<Organelle> thumbs = new ArrayList<Organelle>();
         for (Clipping clip : clippings){
-            thumbs.add(new Thumbnail(g, clip, mouse.katla));
+            thumbs.add(new Thumbnail(g, clip, mouse.claw));
         }
         return thumbs;
     }

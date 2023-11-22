@@ -8,7 +8,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish{
 
     PVector offset = new PVector(0,0);
 
-    public Thumbnail(PGraphics g, Clipping clipping, Katla katla){
+    public Thumbnail(PGraphics g, Clipping clipping, ClawMachine katla){
         this.clipping = clipping;
         addMousish(this);
         addDraggish(this);
@@ -86,7 +86,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish{
     }
 
     @Override
-    public void drag() {
+    public void drag(float mouseX, float mouseY, float originX, float originY, float offsetX, float offsetY) {
         System.out.println("Dragging " + this);
     }
 

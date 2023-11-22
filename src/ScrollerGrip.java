@@ -35,19 +35,15 @@ public class ScrollerGrip extends Organelle implements Mousish, Draggish {
     }
 
     @Override
-    public void drag() {
+    public void drag(float mouseX, float mouseY, float originX, float originY, float offsetX, float offsetY) {
         System.out.println("Dragging " + this);
+        scroller.moveGrip(mouseY - offsetY);
     }
 
     @Override
     public void release() {
 
     }
-
-//    public void drag(float dragX, float dragY, float offsetX, float offsetY){
-//        System.out.println("Dragging " + this);
-//        scroller.moveGrip(dragY - offsetY);
-//    }
 
     public void drawCasper(PGraphics g, float dragX, float dragY, float offsetX, float offsetY) {}
 

@@ -7,6 +7,7 @@ public class ScrollerRail extends Organelle implements Mousish {
 
     public ScrollerRail(Scroller scroller){
         this.scroller = scroller;
+        addMousish(this);
     }
 
     @Override
@@ -14,7 +15,6 @@ public class ScrollerRail extends Organelle implements Mousish {
         setPos(parentX + parentW - scroller.scrollW, parentY);
         setSize(scroller.scrollW, parentH);
         updateChildren();
-        addMousish(this);
     }
 
     @Override

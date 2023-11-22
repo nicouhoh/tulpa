@@ -1,14 +1,13 @@
-import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
-import processing.core.PVector;
+
 import java.util.ArrayList;
 
 public class Mouse {
 
     ArrayList<Palpable> palps = new ArrayList<Palpable>();
 
-    Katla katla;
+    ClawMachine claw;
 
     Organelle hotItem;
     Organelle activeItem;
@@ -18,44 +17,33 @@ public class Mouse {
     int scrollSpeed = 50;
 
     public Mouse(){
-        katla = new Katla();
+        claw = new ClawMachine();
     }
 
     public void receiveMouseySqueak(MouseEvent e, Organelle root){
+
+        // TODO I think I could do all this better by subclassing the Squeak, but that's for another time
+
+        Squeak squeak = new Squeak(e, this);
+
+        // TODO it works, now clean it up
         switch (e.getAction()){
 
-            case MouseEvent.KEY -> {
-                // set our drag origin right here in case we grab something
-                Squeak squeak = new Squeak(e, this);
-                Organelle cheese = captureAndBubble(root, squeak);
-                palpateOrganelle(cheese, squeak);
+            case MouseEvent.KEY-> {
+                captureAndBubble(root, squeak);
             }
+
+            case MouseEvent.WHEEL -> captureAndBubble(root, squeak);
+
             case MouseEvent.DRAG -> {
-                if (katla.heldItem == null){
-                    root.captureAndBubble(new Squeak(e, this, katla));
-                } else {
-
-                }
+                if (!claw.grabLock && claw.isEmpty()) captureAndBubble(root, squeak);
+                else if (!claw.isEmpty()) claw.drag(squeak.getX(), squeak.getY()); // moving the mouse while holding something
+                claw.grabLock = true;
             }
-
-//            case MouseEvent.DRAG -> {
-//                if (heldItem != null){
-//                    heldItem.drag();
-//                }
-//                else if (PApplet.dist(dragOrigin.x, dragOrigin.y, e.getX(), e.getY()) > dragStickiness){
-//                    setHeldItem(draggish);
-//                }
-//            }
-
-//            case MouseEvent.RELEASE -> {
-//                clearDragOrigin();
-//                // if youre holding something drop it
-//            }
-
-            case MouseEvent.WHEEL -> {
-                root.captureAndBubble(new Squeak(e, this));
+            case MouseEvent.RELEASE -> { // if you're holding something drop it
+                if (!claw.isEmpty()) claw.release();
+                claw.grabLock = false;
             }
-
         }
     }
 
@@ -70,27 +58,35 @@ public class Mouse {
 
         for (Organelle child : root.getChildren()){
             Organelle result = captureAndBubble(child, squeak);
-            if (result != null) return result;
-            if (squeak.consumed) return null;
+            if (squeak.consumed) return result;
         }
-        squeak.consume();
+        palpate(root, squeak);
         return root;
     }
 
-    public void palpateOrganelle(Organelle organelle, Squeak state){ // TODO could we do this stuff better by subclassing the MouseState?
-        switch (state.getAction()){
+    public void palpate(Organelle organelle, Squeak squeak){
+
+        // TODO I think I could do this better by subclassing the Squeak
+
+        // TODO another question: should I just pass the entire event to the component so it can just use whatever info it needs?
+
+        switch (squeak.getAction()){
             case Squeak.KEY -> {
                 for (Mousish mousish : organelle.mousishes) {
                     mousish.click();
+                    squeak.consume();
                 }
             }
             case Squeak.WHEEL -> {
                 if (organelle.wheelish == null) return;
-                organelle.wheelish.wheel(state.getCount());
+                organelle.wheelish.wheel(squeak.getCount());
+                squeak.consume();
             }
             case Squeak.DRAG -> {
                 if (organelle.draggish == null) return;
-                katla.handleDrag(organelle.draggish, state.getX(), state.getY());
+                claw.setDragOffset(squeak.getX() - organelle.x, squeak.getY() - organelle.y);
+                claw.startDrag(organelle.draggish, squeak.getX(), squeak.getY() + squeak.getLatitude());
+                squeak.consume();
             }
         }
     }
