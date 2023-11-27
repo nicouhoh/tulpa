@@ -54,13 +54,12 @@ public class Controller implements Keyish {
                     case PConstants.RIGHT -> horizontalStepSelect(1);
                     case PConstants.UP -> verticalStepSelect(-1);
                     case PConstants.DOWN -> verticalStepSelect(1);
-                    case PConstants.BACKSPACE -> {
-                        heart.deleteSelectedClippings();
-                        visipalp.refreshContactSheet(); // TODO Is there a way to do this without rebuilding the whole library of thumbnails each time?
-                    }
                 }
             }
-
+            case PConstants.BACKSPACE -> {
+                heart.deleteSelectedClippings();
+                visipalp.refreshContactSheet(); // TODO Is there a way to do this without rebuilding the whole library of thumbnails each time?
+            }
             case '0' -> {
                 visipalp.contactSheet.toggleViewMode();
                 visipalp.update();
@@ -83,6 +82,10 @@ public class Controller implements Keyish {
         heart.selectClipping(clipping);
     }
 
+    public void toggleSelection(Clipping clipping){
+        heart.toggleSelection(clipping);
+    }
+
     public Thumbnail findThumbnail(Clipping clipping){
         for (Thumbnail thumbnail : visipalp.contactSheet.getThumbnails()){
             if (thumbnail.clipping == clipping) return thumbnail;
@@ -91,6 +94,7 @@ public class Controller implements Keyish {
     }
 
     public void horizontalStepSelect(int direction){
+        if (heart.selectedClippings.size() != 1) return;
         Clipping clip = heart.stepSelection(direction);
         Thumbnail thumb = findThumbnail(clip);
         visipalp.scroller.jumpToOrganelle(thumb, visipalp.contactSheet.getGutter());

@@ -2,8 +2,6 @@ import processing.event.MouseEvent;
 
 public class Squeak extends MouseEvent{
 
-    // TODO I had some kind of idea about making an adjustedMouseEvent subclass for use with scrollers but I can't remember why.
-
     float latitude;
     boolean consumed = false;
     Mouse mouse;
@@ -43,8 +41,26 @@ public class Squeak extends MouseEvent{
         consumed = true;
     }
 
-    public void adjustForLatitude(){
-
+    // consumes only if the organelle has a Palpable for this type of Squeak
+    // TODO I think there's a more elegant way, and if so I would be happy
+    public void consume(Organelle organelle){
+        switch (getAction()){
+            case Squeak.MOVE -> {
+                consume();
+            }
+            case Squeak.KEY -> {
+                if (organelle.mousishes.isEmpty()) return;
+                consume();
+            }
+            case Squeak.WHEEL -> {
+                if (organelle.wheelish == null) return;
+                consume();
+            }
+            case Squeak.DRAG -> {
+                if (organelle.draggish == null) return;
+                consume();
+            }
+        }
     }
 
 

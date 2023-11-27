@@ -9,6 +9,8 @@ public class Mouse {
     Organelle hotItem;
     Organelle activeItem;
 
+    Mousish mouseUpCheck;
+
     public Mouse(Controller controller){
         this.controller = controller;
         claw = new ClawMachine();
@@ -23,14 +25,20 @@ public class Mouse {
         // TODO it works, now clean it up
         switch (e.getAction()){
 
-            case MouseEvent.KEY-> {
-                captureAndBubble(root, squeak);
+            case MouseEvent.MOVE -> {
+                Organelle target = captureAndBubble(root, squeak);
+                if (target != hotItem) setHotItem(target);
+                System.out.println(hotItem);
             }
-
-            case MouseEvent.WHEEL -> captureAndBubble(root, squeak);
-
+            case MouseEvent.KEY, MouseEvent.WHEEL -> {
+                Organelle target = captureAndBubble(root, squeak);
+                palpate(target, squeak);
+            }
             case MouseEvent.DRAG -> {
-                if (!claw.grabLock && claw.isEmpty()) captureAndBubble(root, squeak);
+                if (!claw.grabLock && claw.isEmpty()) {
+                    Organelle target = captureAndBubble(root, squeak);
+                    palpate(target, squeak);
+                }
                 else if (!claw.isEmpty()) claw.drag(squeak.getX(), squeak.getY()); // moving the mouse while holding something
                 claw.grabLock = true;
             }
@@ -41,6 +49,8 @@ public class Mouse {
         }
     }
 
+    // Finds the deepest organelle under the mouse that accepts this kind of squeak,
+    // triggers the appropriate behavior, and returns the organelle.
     public Organelle captureAndBubble(Organelle root, Squeak squeak){
         if (squeak.consumed) return null;
         if (!root.mouseOver(squeak.getX(), squeak.getY() + squeak.getLatitude())) return null;
@@ -50,35 +60,48 @@ public class Mouse {
             Organelle result = captureAndBubble(child, squeak);
             if (squeak.consumed) return result;
         }
-        palpate(root, squeak);
+        squeak.consume(root); // in here is where we check whether the organelle accepts this kind of squeak.
         return root;
     }
 
+    // Takes an organelle and a Squeak and smooshes them together, kiss kiss
     public void palpate(Organelle organelle, Squeak squeak){
 
         // TODO I think I could do this better by subclassing the Squeak
-
         // TODO another question: should I just pass the entire event to the component so it can just use whatever info it needs?
 
         switch (squeak.getAction()){
             case Squeak.KEY -> {
                 for (Mousish mousish : organelle.mousishes) {
-                    mousish.click(controller);
-                    squeak.consume();
+                    mousish.mouseDown(controller, squeak.getModifiers());
                 }
             }
             case Squeak.WHEEL -> {
                 if (organelle.wheelish == null) return;
                 organelle.wheelish.wheel(controller, squeak.getCount());
-                squeak.consume();
             }
             case Squeak.DRAG -> {
                 if (organelle.draggish == null) return;
                 claw.setDragOffset(squeak.getX() - organelle.x, squeak.getY() - organelle.y);
                 claw.startDrag(organelle.draggish, squeak.getX(), squeak.getY() + squeak.getLatitude());
-                squeak.consume();
             }
         }
+    }
+
+    public void setHotItem(Organelle organelle){
+        hotItem = organelle;
+    }
+
+    public void clearHotItem(){
+        hotItem = null;
+    }
+
+    public void setActiveItem(Organelle organelle){
+        activeItem = organelle;
+    }
+
+    public void clearActiveItem(){
+        activeItem = null;
     }
 
     public void debug(PGraphics g, Squeak state){

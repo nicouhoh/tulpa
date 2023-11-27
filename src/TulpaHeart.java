@@ -73,6 +73,13 @@ public class TulpaHeart {
         selectedClippings.remove(c);
     }
 
+    public void toggleSelection(Clipping c){
+        if (selectedClippings.contains(c)){
+            removeFromSelection(c);
+        }
+        else addToSelection(c);
+    }
+
     public ArrayList<Clipping> getSelectedClippings(){
         return selectedClippings;
     }

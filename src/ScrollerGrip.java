@@ -53,7 +53,7 @@ public class ScrollerGrip extends Organelle implements Mousish, Draggish {
     }
 
     @Override
-    public void click(Controller controller) {
+    public void mouseDown(Controller controller, int mod) {
         System.out.println("clicked " + this);
     }
 }

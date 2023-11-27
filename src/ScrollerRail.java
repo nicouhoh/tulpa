@@ -25,7 +25,7 @@ public class ScrollerRail extends Organelle implements Mousish {
     }
 
     @Override
-    public void click(Controller controller) {
+    public void mouseDown(Controller controller, int mod) {
         System.out.println("clicked " + this);
     }
 }

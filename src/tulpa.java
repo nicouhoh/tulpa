@@ -55,7 +55,7 @@ public class tulpa extends PApplet {
     }
 
     public void mouseEvent(MouseEvent e) {
-        if (e.getAction() == MouseEvent.MOVE) return;
+//        if (e.getAction() == MouseEvent.MOVE) return;
         controller.receiveMouseEvent(e);
     }
 
