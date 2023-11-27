@@ -19,4 +19,8 @@ public class Library {
     public void remove(Clipping clipping){
         clippings.remove(clipping);
     }
+
+    public int indexOf(Clipping clipping){
+        return clippings.indexOf(clipping);
+    }
 }

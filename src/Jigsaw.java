@@ -1,3 +1,5 @@
+import processing.core.PVector;
+
 import java.util.ArrayList;
 
 public class Jigsaw implements Virgo{
@@ -24,6 +26,7 @@ public class Jigsaw implements Virgo{
                 float ratio = (w - (row.size() + 1) * gutter) / rowW;
                 float rowX = gutter;
                 for (Thumbnail t : row){
+                    t.clearOffset();
                     t.fitToHeight(ratio * rowH);
                     t.setPos(rowX, rowY);
                     rowX += t.w + gutter;
@@ -44,5 +47,10 @@ public class Jigsaw implements Virgo{
     public float getFoot(ArrayList<Organelle> thumbs) {
         Organelle lastThumb = thumbs.get(thumbs.size() - 1);
         return lastThumb.y + lastThumb.h + gutter;
+    }
+
+    @Override
+    public float getGutter(){
+        return gutter;
     }
 }

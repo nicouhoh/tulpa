@@ -8,11 +8,10 @@ public class Thumbnail extends Organelle implements Mousish, Draggish{
 
     PVector offset = new PVector(0,0);
 
-    public Thumbnail(PGraphics g, Clipping clipping, ClawMachine katla){
+    public Thumbnail(PGraphics g, Clipping clipping){
         this.clipping = clipping;
         addMousish(this);
         addDraggish(this);
-        registerKatla(katla);
     }
 
     @Override
@@ -22,12 +21,15 @@ public class Thumbnail extends Organelle implements Mousish, Draggish{
     public void draw(PGraphics g){
         if (clipping.img != null)
             g.image(clipping.img, x, y, w, h);
+        if (clipping.isSelected){
+            drawSelect(g, x, y);
+        }
     }
 
     public void draw(PGraphics g, float x, float y, float w, float h){
         if (clipping.img != null)
             g.image(clipping.img, x, y, w, h);
-        if (hot){
+        if (clipping.isSelected){
             drawSelect(g, x, y);
         }
     }
@@ -75,15 +77,18 @@ public class Thumbnail extends Organelle implements Mousish, Draggish{
         }
     }
 
+    public void clearOffset(){
+        offset = new PVector(0, 0);
+    }
+
     @Override
-    public void click() {
+    public void click(Controller controller) {
+        controller.selectClipping(clipping);
         System.out.println("clicked " + this);
     }
 
     @Override
-    public void grab() {
-
-    }
+    public void grab() {}
 
     @Override
     public void drag(float mouseX, float mouseY, float originX, float originY, float offsetX, float offsetY) {
@@ -91,25 +96,5 @@ public class Thumbnail extends Organelle implements Mousish, Draggish{
     }
 
     @Override
-    public void release() {
-
-    }
-
-//    @Override
-//    public void click(){
-//        System.out.println(this);
-//    }
-//
-//    @Override
-//    public void grab(){}
-//
-//    @Override
-//    public void drag(float dragX, float dragY, float offsetX, float offsetY){}
-//
-//    @Override
-//    public void drawCasper(PGraphics g, float dragX, float dragY, float offsetX, float offsetY) {
-//        draw(g, dragX - offsetX, dragY - offsetY, w, h);
-//    }
-//
-
+    public void release() {}
 }

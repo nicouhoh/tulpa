@@ -1,13 +1,28 @@
+import com.jogamp.common.net.Uri;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
-public class Controller {
+import processing.event.KeyEvent;
+import processing.core.PConstants;
 
-    TulpaHeartInterface heart;
+import java.security.interfaces.RSAPrivateCrtKey;
+
+public class Controller implements Keyish {
+
+    // NOTICE: Controller itself implements Keyish and can recognize keyboard commands
+
+    TulpaHeart heart;
     Visipalp visipalp;
 
-    public Controller(TulpaHeartInterface heart, PGraphics g){
+    Mouse mouse;
+    Ouija ouija;
+
+    public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
         visipalp = new Visipalp(g, this, heart);
+        this.mouse = new Mouse(this);
+        this.ouija = new Ouija();
+        ouija.setFocus(this);
+
     }
 
     public void draw(){
@@ -18,7 +33,76 @@ public class Controller {
         visipalp.sycamore.update(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
-//    public void passMouseInput(MouseEvent e){
-//        visipalp.receiveMouseInput(e);
-//    }
+    public void receiveMouseEvent(MouseEvent e){
+        mouse.receiveMouseySqueak(new Squeak(e, mouse), visipalp.sycamore);
+    }
+
+    public void receiveKeyEvent(KeyEvent e){
+        if (e.getAction() != KeyEvent.PRESS) return;
+        ouija.focus.receiveKey(e);
+    }
+
+    @Override
+    public void receiveKey(KeyEvent e) {
+        System.out.println("Key: " + e.getKey() + " KeyCode: " + e.getKeyCode());
+
+        switch (e.getKey()){
+
+            case PConstants.CODED -> {
+                switch(e.getKeyCode()){
+                    case PConstants.LEFT -> horizontalStepSelect(-1);
+                    case PConstants.RIGHT -> horizontalStepSelect(1);
+                    case PConstants.UP -> verticalStepSelect(-1);
+                    case PConstants.DOWN -> verticalStepSelect(1);
+                    case PConstants.BACKSPACE -> {
+                        heart.deleteSelectedClippings();
+                        visipalp.refreshContactSheet(); // TODO Is there a way to do this without rebuilding the whole library of thumbnails each time?
+                    }
+                }
+            }
+
+            case '0' -> {
+                visipalp.contactSheet.toggleViewMode();
+                visipalp.update();
+            }
+            case '.' -> visipalp.update();
+            case '-' -> {
+                visipalp.contactSheet.zoom(1);
+                visipalp.scroller.updateChildren();
+                System.out.println("zooming out");
+            }
+            case '=' -> {
+                visipalp.contactSheet.zoom(-1);
+                visipalp.scroller.updateChildren();
+                System.out.println("zooming in");
+            }
+        }
+    }
+
+    public void selectClipping(Clipping clipping){
+        heart.selectClipping(clipping);
+    }
+
+    public Thumbnail findThumbnail(Clipping clipping){
+        for (Thumbnail thumbnail : visipalp.contactSheet.getThumbnails()){
+            if (thumbnail.clipping == clipping) return thumbnail;
+        }
+        return null;
+    }
+
+    public void horizontalStepSelect(int direction){
+        Clipping clip = heart.stepSelection(direction);
+        Thumbnail thumb = findThumbnail(clip);
+        visipalp.scroller.jumpToOrganelle(thumb, visipalp.contactSheet.getGutter());
+
+    }
+
+    public void verticalStepSelect(int direction){
+        if (heart.selectedClippings.size() != 1) return;
+        Thumbnail selectedThumb = findThumbnail(heart.selectedClippings.get(0));
+        Thumbnail targetThumb = visipalp.verticalStep(selectedThumb, direction);
+        heart.selectClipping(targetThumb.clipping);
+        visipalp.scroller.jumpToOrganelle(targetThumb, visipalp.contactSheet.getGutter());
+    }
+
 }

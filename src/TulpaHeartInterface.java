@@ -10,4 +10,6 @@ public interface TulpaHeartInterface {
 
     Library getLibrary();
 
+    void selectClipping(Clipping clipping);
+
 }

@@ -1,22 +1,16 @@
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
 
-import java.util.ArrayList;
-
 public class Mouse {
 
-    ArrayList<Palpable> palps = new ArrayList<Palpable>();
-
+    Controller controller;
     ClawMachine claw;
 
     Organelle hotItem;
     Organelle activeItem;
 
-    float dragStickiness = 10;
-
-    int scrollSpeed = 50;
-
-    public Mouse(){
+    public Mouse(Controller controller){
+        this.controller = controller;
         claw = new ClawMachine();
     }
 
@@ -47,10 +41,6 @@ public class Mouse {
         }
     }
 
-//    public boolean checkDrag(MouseEvent e){
-//        return PApplet.dist(dragOrigin.x, dragOrigin.y, e.getX(), e.getY()) > dragStickiness;
-//    }
-
     public Organelle captureAndBubble(Organelle root, Squeak squeak){
         if (squeak.consumed) return null;
         if (!root.mouseOver(squeak.getX(), squeak.getY() + squeak.getLatitude())) return null;
@@ -73,13 +63,13 @@ public class Mouse {
         switch (squeak.getAction()){
             case Squeak.KEY -> {
                 for (Mousish mousish : organelle.mousishes) {
-                    mousish.click();
+                    mousish.click(controller);
                     squeak.consume();
                 }
             }
             case Squeak.WHEEL -> {
                 if (organelle.wheelish == null) return;
-                organelle.wheelish.wheel(squeak.getCount());
+                organelle.wheelish.wheel(controller, squeak.getCount());
                 squeak.consume();
             }
             case Squeak.DRAG -> {
@@ -91,131 +81,13 @@ public class Mouse {
         }
     }
 
-    public void setActiveItem(Palpable palp){
-        activeItem = (Organelle)palp;
-    }
-
-    public void updateHotItem(Organelle item){
-        if (hotItem != item) clearHotItem();
-        if (item == null) return;
-        setHotItem(item);
-    }
-
-    public void setHotItem(Organelle item){
-        hotItem = item;
-        hotItem.hot = true;
-    }
-
-    public void clearHotItem(){
-        if (hotItem == null) return;
-        hotItem.hot = false;
-        hotItem = null;
-    }
-
-
-//    public void mouseDown(Squeak state){
-//        setDragOrigin(state.getX(), state.getY());
-//        if (hotItem != null) setActiveItem(hotItem);
-//    }
-
-//    public void mouseUp(MouseState state){
-//        if (heldItem != null) clearHeldItem();
-//        if (activeItem != null) {
-//            if (activeItem == hotItem){
-//                System.out.println("Pressed " + activeItem + " like a button");
-//            }
-//            clearActiveItem();
-//        }
-//    }
-
-    public void setActiveItem(Organelle o){
-        activeItem = o;
-        activeItem.active = true;
-    }
-
-    public void clearActiveItem(){
-        activeItem.active = false;
-        activeItem = null;
-    }
-
-//    public void checkForGrab(MouseState state){
-//        if (PApplet.dist(state.getX(), state.getY(), getDragOrigin().x, getDragOrigin().y ) > dragStickiness){
-//            grabItem(state);
-//        }
-//    }
-
-    // TODO ---------------- NEXT STEP HERE: Figure out dragging -----------------------
-
-//    public void grabItem(Squeak squeak) {
-//        if (activeItem == null) return;
-//        grabOffset = new PVector(getDragOrigin().x - activeItem.x, getDragOrigin().y - activeItem.y);
-//        setHeldItem((Draggish)activeItem);
-//        activeItem.held = true;
-//        heldItem.grab();
-//    }
-
     public void debug(PGraphics g, Squeak state){
         g.fill(255,0, 255, 200);
         g.textSize(24);
         g.text("mouse: " + state.getX() + ", " + state.getY() + '\n' +
                 "hot item: " + hotItem + '\n' +
                 "active item: " + activeItem + '\n' // +
-//                "held item: " + getHeldItem() + ", offset: " + getGrabOffset().x + ", " + getGrabOffset().y
                 , 50, 50);
-//        System.out.println("held item: " + heldItem + ", offset: " + grabOffset.x + ", " + grabOffset.y);
-
     }
-
-//    public void setHeldItem(Draggish item){
-//        heldItem = item;
-//        ((Organelle)heldItem).held = true;
-//    }
-//
-//    public void setHeldItem(Organelle organelle){
-//        if (organelle instanceof Draggish){
-//            heldItem = (Draggish)organelle;
-//        }
-//    }
-//
-//    public Draggish getHeldItem(){
-//        return heldItem;
-//    }
-//
-//    public void clearHeldItem(){
-//        ((Organelle)heldItem).held = false;
-//        heldItem = null;
-//        dragOrigin = null;
-//    }
-//
-//    public Organelle getHeldOrganelle(){
-//        return (Organelle)heldItem;
-//    }
-
-//    public void setDragOrigin(float x, float y){
-//        dragOrigin = new PVector(x, y);
-//    }
-//
-//    public PVector getDragOrigin(){
-//        return dragOrigin;
-//    }
-//
-//    public void clearDragOrigin(){
-//        dragOrigin = null;
-//    }
-//
-//    public void setGrabOffset(float x, float y){
-//        grabOffset = new PVector(x, y);
-//    }
-//
-//    public PVector getGrabOffset(){
-//        return grabOffset;
-//    }
-////    public void drawHeldItem(PGraphics g, MouseState state){
-////        g.tint(255, 190);
-////        if (heldItem != null){
-////            heldItem.drawCasper(g, mousePos.x, mousePos.y, grabOffset.x, grabOffset.y);
-////        }
-////        g.tint(255, 255);
-////    }
 
 }

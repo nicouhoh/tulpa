@@ -1,5 +1,6 @@
 import processing.core.PApplet;
-import processing.core.PGraphics;
+
+import javax.swing.*;
 
 public class Scroller extends Organelle implements Mousish, Wheelish {
 
@@ -35,8 +36,12 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
         grip.setGrip(h, host.h, host.latitude);
     }
 
-    public void changeHostLatitude(float amount){
-        host.latitude = PApplet.constrain(host.latitude + amount, 0, host.h - h);
+    public void nudgeHostLatitude(float amount){
+        jumpToLatitude(host.latitude + amount);
+    }
+
+    public void jumpToLatitude(float y){
+        host.latitude = PApplet.constrain(y, 0, host.h - h);
         grip.setGrip(rail.h, host.h, host.latitude);
     }
 
@@ -49,32 +54,29 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
         setHostLatitudeToGrip();
     }
 
-//    @Override
-//    public void captureAndBubble(MouseState state){
-//        if (state.consumed) return;
-//        if (!mouseOver(state.getX(), state.getY() + state.getLatitude())) return;
-//
-//        MouseState adjustedState = new MouseState(state, latitude);
-//
-//        for (Organelle child : getChildren()){
-//            child.captureAndBubble(adjustedState);
-//            if (adjustedState.consumed){
-//                state.consume();
-//                return;
-//            }
-//        }
-//
-//        rail.captureAndBubble(state);
-//
-//        receiveMouseState(state);
-//    }
+    public int isOffscreen(Organelle organelle){
+        // returns 0 if the organelle is onscreen, 1 if it's off the bottom of the screen, and -1 if it's off the top.
+        // for now it counts as "offscreen" if more than half of the organelle isn't visible
+        if (organelle.y + organelle.h/2 < host.getLatitude()) return -1;
+        else if (organelle.y + organelle.h/2 - host.getLatitude() > h) return 1;
+        else return 0;
+    }
 
-    public void wheel(int count){
-        changeHostLatitude(count * scrollSpeed);
+    public void jumpToOrganelle(Organelle organelle, float padding){
+        switch (isOffscreen(organelle)){
+            case 0 -> {return;}
+            case -1 -> jumpToLatitude(organelle.y - padding);
+            case 1 -> jumpToLatitude(organelle.y + organelle.h - h + padding);
+        }
+    }
+
+    public void wheel(Controller controller, int count){
+        nudgeHostLatitude(count * scrollSpeed);
     }
 
     @Override
-    public void click() {
+    public void click(Controller controller) {
         System.out.println("clicked " + this);
     }
+
 }

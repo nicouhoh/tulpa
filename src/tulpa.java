@@ -1,13 +1,14 @@
 // import drop.*;
 import processing.core.PApplet;
 import processing.event.MouseEvent;
+import processing.event.KeyEvent;
 //import processing.core.PConstants;
 
 
 public class tulpa extends PApplet {
 
 
-    private TulpaHeartInterface heart;
+    private TulpaHeart heart;
     private Controller controller;
 
     int w, h;
@@ -30,7 +31,7 @@ public class tulpa extends PApplet {
 
         // sdrop = new SDrop(this);
 
-//        registerMethod("keyEvent", this);
+        registerMethod("keyEvent", this);
         registerMethod("mouseEvent", this);
     }
 
@@ -49,13 +50,13 @@ public class tulpa extends PApplet {
 
     // INPUT -----------------------------------------------------------------
 
-//    public void keyEvent(KeyEvent e) {
-//        visipalp.receiveKeyInput(e);
-//    }
+    public void keyEvent(KeyEvent e) {
+        controller.receiveKeyEvent(e);
+    }
 
     public void mouseEvent(MouseEvent e) {
         if (e.getAction() == MouseEvent.MOVE) return;
-        controller.visipalp.receiveMouseEvent(e);
+        controller.receiveMouseEvent(e);
     }
 
     //public void dropEvent(DropEvent dropEvent){

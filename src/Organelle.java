@@ -12,6 +12,7 @@ public abstract class Organelle {
     Hoverish hoverish;
     Wheelish wheelish;
     Draggish draggish;
+    Keyish keyish;
 
     ClawMachine katla;
 
@@ -107,6 +108,10 @@ public abstract class Organelle {
 
     public void addDraggish(Draggish draggish){
         this.draggish = draggish;
+    }
+
+    public void addKeyish(Keyish keyish){
+        this.keyish = keyish;
     }
 
     public void registerKatla(ClawMachine katla){

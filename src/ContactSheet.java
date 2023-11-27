@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+
+import processing.core.PApplet;
 import processing.core.PGraphics;
+import processing.event.KeyEvent;
 
 public class ContactSheet extends Organelle {
 
@@ -7,7 +10,7 @@ public class ContactSheet extends Organelle {
 
     Virgo virgo;
 
-    public ContactSheet(Mouse mouse){
+    public ContactSheet(){
         virgo = new Agnes();
     }
 
@@ -24,6 +27,12 @@ public class ContactSheet extends Organelle {
         return columns;
     }
 
+    public void zoom(int amount){
+        columns = PApplet.constrain(columns + amount, 1, 30);
+        virgo.arrangeThumbnails(getChildren(), x, y, w, getColumns());
+        h = virgo.getFoot(getChildren());
+    }
+
     public ArrayList<Thumbnail> getThumbnails(){
         ArrayList<Thumbnail> thumbs = new ArrayList<Thumbnail>();
         for (Organelle o : getChildren()){
@@ -31,4 +40,17 @@ public class ContactSheet extends Organelle {
         }
         return thumbs;
     }
+
+    public void toggleViewMode(){
+        if (virgo instanceof Agnes){
+            virgo = new Jigsaw();
+        } else if (virgo instanceof Jigsaw){
+            virgo = new Agnes();
+        }
+    }
+
+    public float getGutter(){
+        return virgo.getGutter();
+    }
+
 }

@@ -21,4 +21,8 @@ public class Agnes implements Virgo {
         return lastThumb.y + lastThumb.h + gutter;
     }
 
+    public float getGutter(){
+        return gutter;
+    }
+
 }

@@ -1,5 +1,5 @@
 public interface Mousish extends Palpable {
 
-    void click();
+    void click(Controller controller);
 
 }

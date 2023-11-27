@@ -1,10 +1,15 @@
+import processing.core.PApplet;
+
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class TulpaHeart implements TulpaHeartInterface {
+public class TulpaHeart {
 
     Library library;
     String path;
+
+    ArrayList<Clipping> selectedClippings = new ArrayList<Clipping>();
 
     public TulpaHeart(){
         path = tulpa.SOLE.sketchPath() + "/data/";
@@ -14,17 +19,14 @@ public class TulpaHeart implements TulpaHeartInterface {
         //TODO we'll register observers here
     }
 
-    @Override
     public Clipping createClipping() {
         return new Clipping();
     }
 
-    @Override
     public Library getLibrary(){
         return library;
     }
 
-    @Override
     public Clipping ingestFile(File file) {
         System.out.println("INGESTING FILE: " + file.getName());
         if (file.getName().contains(".jpg") || file.getName().contains(".txt")) {
@@ -33,7 +35,6 @@ public class TulpaHeart implements TulpaHeartInterface {
         else return null;
     }
 
-    @Override
     public ArrayList<Clipping> ingestDirectory(File dir) {
         System.out.println("INCUBATE DIR");
         File[] files = tulpa.SOLE.listFiles(dir);
@@ -49,4 +50,57 @@ public class TulpaHeart implements TulpaHeartInterface {
         System.out.println("BROOD: " + brood);
         return brood;
     }
+
+    public void selectClipping(Clipping clipping){
+        clearSelection();
+        addToSelection(clipping);
+    }
+
+    public void clearSelection(){
+        for (Clipping c : selectedClippings){
+            c.isSelected = false;
+        }
+        selectedClippings.clear();
+    }
+
+    public void addToSelection(Clipping c){
+        c.isSelected = true;
+        selectedClippings.add(c);
+    }
+
+    public void removeFromSelection(Clipping c){
+        c.isSelected = false;
+        selectedClippings.remove(c);
+    }
+
+    public ArrayList<Clipping> getSelectedClippings(){
+        return selectedClippings;
+    }
+
+    public void deleteClipping(Clipping clipping){
+        removeFromSelection(clipping);
+        library.remove(clipping);
+    }
+
+    public void deleteSelectedClippings(){
+        for (Clipping clipping : selectedClippings){
+            library.remove(clipping);
+        }
+        clearSelection();
+    }
+
+    public Clipping stepClipping(Clipping clipping, int step){
+        int index = library.indexOf(clipping);
+        index = PApplet.constrain(index + step, 0, library.clippings.size() - 1);
+        return library.clippings.get(index);
+    }
+
+    public Clipping stepSelection(int amount){
+        // steps the selection forward or back by amount; returns the newly selected clipping if successful
+        if (selectedClippings.size() != 1) return null;
+        Clipping clipping = stepClipping(selectedClippings.get(0), amount);
+        selectClipping(clipping);
+        return clipping;
+    }
+
 }
