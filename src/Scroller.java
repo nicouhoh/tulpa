@@ -11,6 +11,9 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
     float scrollW = 10;
     float scrollSpeed = 50;
 
+
+    // TODO keep the same width visually but make the scroll rail and grip wider for mouse collision purposes! easier to grab
+
     public Scroller(Organelle organelle) {
         host = organelle;
         rail = new ScrollerRail(this);
@@ -75,8 +78,11 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
     }
 
     @Override
-    public void mouseDown(Controller controller, int mod) {
+    public void mouseDown(Controller controller, Mouse mouse, int mod) {
         System.out.println("clicked " + this);
     }
+
+    @Override
+    public void buttonPress(Controller controller, int mod){}
 
 }

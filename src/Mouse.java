@@ -9,14 +9,14 @@ public class Mouse {
     Organelle hotItem;
     Organelle activeItem;
 
-    Mousish mouseUpCheck;
+    Organelle preventUnclick; // use in special cases to prevent a buttonPress afer mouseDown. see ctrl/cmd click on Thumbnails
 
     public Mouse(Controller controller){
         this.controller = controller;
         claw = new ClawMachine();
     }
 
-    public void receiveMouseySqueak(MouseEvent e, Organelle root){
+    public void interpretSqueak(MouseEvent e, Organelle root){
 
         // TODO I think I could do all this better by subclassing the Squeak, but that's for another time
 
@@ -26,31 +26,44 @@ public class Mouse {
         switch (e.getAction()){
 
             case MouseEvent.MOVE -> {
-                Organelle target = captureAndBubble(root, squeak);
-                if (target != hotItem) setHotItem(target);
-                System.out.println(hotItem);
+                findHotItem(root, squeak);
             }
-            case MouseEvent.KEY, MouseEvent.WHEEL -> {
+            case MouseEvent.KEY -> {
+                if(hotItem == null) return;
+                setActiveItem(hotItem);
+                for (Mousish mousish : hotItem.mousishes) {
+                    mousish.mouseDown(controller, this, squeak.getModifiers());
+                }
+            }
+            case MouseEvent.RELEASE -> {
+                if (activeItem == hotItem && activeItem != preventUnclick){
+                    for (Mousish mousish : activeItem.mousishes){
+                        mousish.buttonPress(controller, squeak.getModifiers());
+                    }
+                }
+                else if (!claw.isEmpty()) claw.release(); // if you're holding something drop it
+                clearActiveItem();
+                clearPreventUnclick();
+            }
+            case MouseEvent.WHEEL -> {
                 Organelle target = captureAndBubble(root, squeak);
-                palpate(target, squeak);
+                if (target.wheelish == null) return;
+                target.wheelish.wheel(controller, squeak.getCount());
             }
             case MouseEvent.DRAG -> {
-                if (!claw.grabLock && claw.isEmpty()) {
-                    Organelle target = captureAndBubble(root, squeak);
-                    palpate(target, squeak);
+                findHotItem(root, squeak);
+                if (activeItem != null && claw.isEmpty()) {
+                    Organelle target = activeItem;
+                    claw.setDragOffset(squeak.getX() - target.x, squeak.getY() - target.y);
+                    claw.startDrag(target.draggish, squeak.getX(), squeak.getY() + squeak.getLatitude());
                 }
                 else if (!claw.isEmpty()) claw.drag(squeak.getX(), squeak.getY()); // moving the mouse while holding something
-                claw.grabLock = true;
             }
-            case MouseEvent.RELEASE -> { // if you're holding something drop it
-                if (!claw.isEmpty()) claw.release();
-                claw.grabLock = false;
-            }
+            case MouseEvent.EXIT -> clearHotItem();
         }
     }
 
-    // Finds the deepest organelle under the mouse that accepts this kind of squeak,
-    // triggers the appropriate behavior, and returns the organelle.
+    // Returns the deepest organelle under the mouse that accepts this kind of squeak
     public Organelle captureAndBubble(Organelle root, Squeak squeak){
         if (squeak.consumed) return null;
         if (!root.mouseOver(squeak.getX(), squeak.getY() + squeak.getLatitude())) return null;
@@ -60,48 +73,55 @@ public class Mouse {
             Organelle result = captureAndBubble(child, squeak);
             if (squeak.consumed) return result;
         }
-        squeak.consume(root); // in here is where we check whether the organelle accepts this kind of squeak.
+        squeak.consume(root); // in here is where we check whether the organelle accepts this kind of squeak and make sure if it does we don't trigger additional squeaks up the chain.
         return root;
     }
 
-    // Takes an organelle and a Squeak and smooshes them together, kiss kiss
-    public void palpate(Organelle organelle, Squeak squeak){
 
-        // TODO I think I could do this better by subclassing the Squeak
-        // TODO another question: should I just pass the entire event to the component so it can just use whatever info it needs?
-
-        switch (squeak.getAction()){
-            case Squeak.KEY -> {
-                for (Mousish mousish : organelle.mousishes) {
-                    mousish.mouseDown(controller, squeak.getModifiers());
-                }
-            }
-            case Squeak.WHEEL -> {
-                if (organelle.wheelish == null) return;
-                organelle.wheelish.wheel(controller, squeak.getCount());
-            }
-            case Squeak.DRAG -> {
-                if (organelle.draggish == null) return;
-                claw.setDragOffset(squeak.getX() - organelle.x, squeak.getY() - organelle.y);
-                claw.startDrag(organelle.draggish, squeak.getX(), squeak.getY() + squeak.getLatitude());
-            }
-        }
+    public void findHotItem(Organelle root, Squeak squeak){
+        Organelle target = captureAndBubble(root, squeak);
+        if (target != hotItem) setHotItem(target);
     }
 
     public void setHotItem(Organelle organelle){
+        if (hotItem != null && hotItem != organelle){
+            clearHotItem();
+        }
         hotItem = organelle;
+        if (hotItem != null) hotItem.setHot(true);
     }
 
     public void clearHotItem(){
+        if (hotItem == null) return;
+        hotItem.setHot(false);
         hotItem = null;
     }
 
     public void setActiveItem(Organelle organelle){
+        if (activeItem != null && activeItem != organelle){
+            clearActiveItem();
+        }
         activeItem = organelle;
+        activeItem.setHot(true);
     }
 
     public void clearActiveItem(){
+        if (activeItem == null) return;
+        activeItem.setActive(false);
         activeItem = null;
+    }
+
+    public void setPreventUnclick(Organelle organelle){
+        preventUnclick = organelle;
+    }
+
+    public void clearPreventUnclick(){
+        preventUnclick = null;
+    }
+
+    public boolean justClicked(Mousish mousish){
+        if (activeItem == mousish) return true;
+        else return false;
     }
 
     public void debug(PGraphics g, Squeak state){

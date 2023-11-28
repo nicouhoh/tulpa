@@ -64,11 +64,13 @@ public class TulpaHeart {
     }
 
     public void addToSelection(Clipping c){
+        if (selectedClippings.contains(c)) return;
         c.isSelected = true;
         selectedClippings.add(c);
     }
 
     public void removeFromSelection(Clipping c){
+        if (!selectedClippings.contains(c)) return;
         c.isSelected = false;
         selectedClippings.remove(c);
     }

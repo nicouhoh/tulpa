@@ -1,10 +1,7 @@
-import com.jogamp.common.net.Uri;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
 import processing.core.PConstants;
-
-import java.security.interfaces.RSAPrivateCrtKey;
 
 public class Controller implements Keyish {
 
@@ -34,7 +31,7 @@ public class Controller implements Keyish {
     }
 
     public void receiveMouseEvent(MouseEvent e){
-        mouse.receiveMouseySqueak(new Squeak(e, mouse), visipalp.sycamore);
+        mouse.interpretSqueak(new Squeak(e, mouse), visipalp.sycamore);
     }
 
     public void receiveKeyEvent(KeyEvent e){
@@ -84,6 +81,14 @@ public class Controller implements Keyish {
 
     public void toggleSelection(Clipping clipping){
         heart.toggleSelection(clipping);
+    }
+
+    public void addSelection(Clipping clipping){
+        heart.addToSelection(clipping);
+    }
+
+    public void removeSelection(Clipping clipping){
+        heart.removeFromSelection(clipping);
     }
 
     public Thumbnail findThumbnail(Clipping clipping){

@@ -82,12 +82,24 @@ public class Thumbnail extends Organelle implements Mousish, Draggish{
     }
 
     @Override
-    public void mouseDown(Controller controller, int mod) {
+    public void mouseDown(Controller controller, Mouse mouse, int mod) {
         switch (mod){
-            case 2, 4 -> controller.toggleSelection(clipping);
+            case 2, 4 -> {
+                if (!clipping.isSelected){
+                    controller.addSelection(clipping);
+                    mouse.setPreventUnclick(this);
+                }
+            }
             default -> controller.selectClipping(clipping);
         }
         System.out.println("clicked " + this);
+    }
+
+    @Override
+    public void buttonPress(Controller controller, int mod){
+        switch (mod){
+            case 2, 4 -> {if (clipping.isSelected) controller.removeSelection(clipping);}
+        }
     }
 
     @Override

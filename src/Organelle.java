@@ -122,4 +122,12 @@ public abstract class Organelle {
         return latitude;
     }
 
+    public void setHot(boolean hot){
+        this.hot = hot;
+    }
+
+    public void setActive(boolean active){
+        this.active = active;
+    }
+
 }

@@ -10,13 +10,11 @@ public class ClawMachine {
     Draggish heldItem;
     PVector dragOrigin = new PVector(0, 0);
     PVector dragOffset = new PVector(0, 0);
-    boolean grabLock = false;
 
     public void startDrag(Draggish draggish, float originX, float originY){
-        if (grabLock) return;
         setHeldItem(draggish);
         setDragOrigin(originX, originY);
-        heldItem.grab();
+        if (heldItem != null) heldItem.grab();
     }
 
     public void drag(float mouseX, float mouseY){
@@ -28,7 +26,6 @@ public class ClawMachine {
         clearHeldItem();
         clearDragOrigin();
         clearDragOffset();
-        grabLock = false;
     }
 
     public void handleDrop(int mouseX, int mouseY){}
