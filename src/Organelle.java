@@ -14,7 +14,6 @@ public abstract class Organelle {
     Draggish draggish;
     Keyish keyish;
 
-    ClawMachine katla;
 
     float x, y, w, h;
     float latitude = 0;
@@ -61,15 +60,21 @@ public abstract class Organelle {
             g.translate(0, -latitude);
             draw(g);
             drawChildren(g);
+            drawAfter(g);
             g.pop();
         } else {
             draw(g);
             drawChildren(g);
+            drawAfter(g);
         }
     }
 
     public void draw(PGraphics g){
         // Override this for the draw behavior of each Organelle. It actually gets called in performDraw()
+    }
+
+    public void drawAfter(PGraphics g){
+        // Like draw, but draws *after* children. Good for things like the contact sheet drawing dropzones.
     }
 
     public void drawChildren(PGraphics g){
@@ -114,10 +119,6 @@ public abstract class Organelle {
         this.keyish = keyish;
     }
 
-    public void registerKatla(ClawMachine katla){
-        this.katla = katla;
-    }
-
     public float getLatitude(){
         return latitude;
     }
@@ -129,5 +130,7 @@ public abstract class Organelle {
     public void setActive(boolean active){
         this.active = active;
     }
+
+    public void casper(PGraphics g, float x, float y, float w, float h){}
 
 }

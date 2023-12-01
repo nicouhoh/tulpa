@@ -11,16 +11,17 @@ public class Mouse {
 
     Organelle preventUnclick; // use in special cases to prevent a buttonPress afer mouseDown. see ctrl/cmd click on Thumbnails
 
+    Squeak lastSqueak;
+
     public Mouse(Controller controller){
         this.controller = controller;
-        claw = new ClawMachine();
+        claw = new ClawMachine(controller);
     }
 
     public void interpretSqueak(MouseEvent e, Organelle root){
 
-        // TODO I think I could do all this better by subclassing the Squeak, but that's for another time
-
         Squeak squeak = new Squeak(e, this);
+        lastSqueak = squeak;
 
         // TODO it works, now clean it up
         switch (e.getAction()){
@@ -36,12 +37,12 @@ public class Mouse {
                 }
             }
             case MouseEvent.RELEASE -> {
-                if (activeItem == hotItem && activeItem != preventUnclick){
+                if (!claw.isEmpty()) claw.release(); // if you're holding something drop it
+                else if (activeItem == hotItem && activeItem != preventUnclick){
                     for (Mousish mousish : activeItem.mousishes){
                         mousish.buttonPress(controller, squeak.getModifiers());
                     }
                 }
-                else if (!claw.isEmpty()) claw.release(); // if you're holding something drop it
                 clearActiveItem();
                 clearPreventUnclick();
             }
@@ -54,8 +55,8 @@ public class Mouse {
                 findHotItem(root, squeak);
                 if (activeItem != null && claw.isEmpty()) {
                     Organelle target = activeItem;
-                    claw.setDragOffset(squeak.getX() - target.x, squeak.getY() - target.y);
-                    claw.startDrag(target.draggish, squeak.getX(), squeak.getY() + squeak.getLatitude());
+                    claw.setDragOffset(squeak.getX() - target.x, squeak.getY() - target.y + squeak.getLatitude());
+                    claw.grab(target.draggish, squeak.getX(), squeak.getY() + squeak.getLatitude());
                 }
                 else if (!claw.isEmpty()) claw.drag(squeak.getX(), squeak.getY()); // moving the mouse while holding something
             }
@@ -119,11 +120,6 @@ public class Mouse {
         preventUnclick = null;
     }
 
-    public boolean justClicked(Mousish mousish){
-        if (activeItem == mousish) return true;
-        else return false;
-    }
-
     public void debug(PGraphics g, Squeak state){
         g.fill(255,0, 255, 200);
         g.textSize(24);
@@ -131,6 +127,13 @@ public class Mouse {
                 "hot item: " + hotItem + '\n' +
                 "active item: " + activeItem + '\n' // +
                 , 50, 50);
+    }
+
+    public void drawHeldItem(PGraphics g){
+        if (claw.heldItem != null){
+            Organelle o = (Organelle)claw.heldItem;
+            o.casper(g, lastSqueak.getX() - claw.dragOffset.x, lastSqueak.getY() - claw.dragOffset.y, 0, 0);
+        }
     }
 
 }

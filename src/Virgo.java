@@ -7,4 +7,5 @@ public interface Virgo {
     float getFoot(ArrayList<Organelle> thumbs);
 
     float getGutter();
+
 }

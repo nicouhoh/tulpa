@@ -63,5 +63,4 @@ public class Visipalp {
         }
         return thumbnail;
     }
-
 }

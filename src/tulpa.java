@@ -17,10 +17,10 @@ public class tulpa extends PApplet {
     // SDrop sdrop;
 
     public void setup() {
-        surface.setSize(1000, 1000);
         w = width;
         h = height;
         surface.setResizable(true);
+        surface.setSize(1000, 1000);
         registerMethod("pre", this); // set up for detecting window resize
 
         SOLE = this;

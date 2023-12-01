@@ -2,6 +2,7 @@ import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
 import processing.core.PConstants;
+import java.util.ArrayList;
 
 public class Controller implements Keyish {
 
@@ -13,17 +14,19 @@ public class Controller implements Keyish {
     Mouse mouse;
     Ouija ouija;
 
+    ArrayList<DropZone> dropZones = new ArrayList<DropZone>();
+
     public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
         visipalp = new Visipalp(g, this, heart);
         this.mouse = new Mouse(this);
         this.ouija = new Ouija();
         ouija.setFocus(this);
-
     }
 
     public void draw(){
         visipalp.draw();
+        mouse.drawHeldItem(visipalp.g);
     }
 
     public void resizeWindow(){
@@ -103,7 +106,6 @@ public class Controller implements Keyish {
         Clipping clip = heart.stepSelection(direction);
         Thumbnail thumb = findThumbnail(clip);
         visipalp.scroller.jumpToOrganelle(thumb, visipalp.contactSheet.getGutter());
-
     }
 
     public void verticalStepSelect(int direction){
@@ -113,5 +115,4 @@ public class Controller implements Keyish {
         heart.selectClipping(targetThumb.clipping);
         visipalp.scroller.jumpToOrganelle(targetThumb, visipalp.contactSheet.getGutter());
     }
-
 }

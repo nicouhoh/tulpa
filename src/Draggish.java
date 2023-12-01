@@ -1,8 +1,8 @@
 public interface Draggish extends Palpable{
 
-    void grab();
+    void grab(Controller controller);
 
-    void drag(float mouseX, float mouseY, float originX, float originY, float offsetX, float offsetY);
+    void drag(Controller controller, float mouseX, float mouseY, float originX, float originY, float offsetX, float offsetY);
 
-    void release();
+    void release(Controller controller);
 }

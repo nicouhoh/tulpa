@@ -1,5 +1,4 @@
 import processing.core.PVector;
-import java.util.ArrayList;
 
 public class ClawMachine {
 
@@ -7,22 +6,27 @@ public class ClawMachine {
 
     // TODO Ghost image
 
+    Controller controller;
     Draggish heldItem;
     PVector dragOrigin = new PVector(0, 0);
     PVector dragOffset = new PVector(0, 0);
 
-    public void startDrag(Draggish draggish, float originX, float originY){
+    public ClawMachine(Controller controller){
+        this.controller = controller;
+    }
+
+    public void grab(Draggish draggish, float originX, float originY){
         setHeldItem(draggish);
         setDragOrigin(originX, originY);
-        if (heldItem != null) heldItem.grab();
+        if (heldItem != null) heldItem.grab(controller);
     }
 
     public void drag(float mouseX, float mouseY){
-        heldItem.drag(mouseX, mouseY, dragOrigin.x, dragOrigin.y, dragOffset.x, dragOffset.y);
+        heldItem.drag(controller, mouseX, mouseY, dragOrigin.x, dragOrigin.y, dragOffset.x, dragOffset.y);
     }
 
     public void release(){
-        heldItem.release();
+        heldItem.release(controller);
         clearHeldItem();
         clearDragOrigin();
         clearDragOffset();
@@ -55,5 +59,4 @@ public class ClawMachine {
     public void clearDragOffset(){
         dragOrigin = null;
     }
-
 }

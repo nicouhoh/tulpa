@@ -6,7 +6,7 @@ public class Agnes implements Virgo {
 
     @Override
     public void arrangeThumbnails(ArrayList<Organelle> thumbs, float x, float y, float w, int columns) {
-        float thumbSize = (w - gutter * (columns + 1)) / columns;
+        float thumbSize = getThumbSize(w, columns);
         for (int i = 0; i < thumbs.size(); i++){
             Organelle t = thumbs.get(i);
             t.setSize(thumbSize, thumbSize);
@@ -23,6 +23,10 @@ public class Agnes implements Virgo {
 
     public float getGutter(){
         return gutter;
+    }
+
+    public float getThumbSize(float w, int columns){
+        return (w - gutter * (columns + 1)) / columns;
     }
 
 }
