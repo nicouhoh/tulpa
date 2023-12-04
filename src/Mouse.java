@@ -37,7 +37,13 @@ public class Mouse {
                 }
             }
             case MouseEvent.RELEASE -> {
-                if (!claw.isEmpty()) claw.release(); // if you're holding something drop it
+                if (!claw.isEmpty()) {
+                    if (hoveredZone != null){
+                        System.out.println("Dropped " + claw.heldItem + " onto " + hoveredZone);
+                        hoveredZone.drop(controller, claw.heldItem);
+                    }
+                    claw.release(); // if you're holding something drop it
+                }
                 else if (activeItem == hotItem && activeItem != preventUnclick){
                     for (Mousish mousish : activeItem.mousishes){
                         mousish.buttonPress(controller, squeak.getModifiers());

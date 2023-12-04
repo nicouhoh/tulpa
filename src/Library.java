@@ -1,6 +1,8 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Library {
+    // TODO ermm can't this just extend ArrayList instead of having a reference to one
 
     ArrayList<Clipping> clippings;
 

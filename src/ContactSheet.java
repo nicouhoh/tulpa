@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -98,5 +99,17 @@ public class ContactSheet extends Organelle {
 
     public void clearDropZones(){
         dropZones.clear();
+    }
+
+    public void rearrangeThumbnails(Thumbnail frog, Thumbnail lily){
+        int frogIndex = children.indexOf(frog);
+        int lilyIndex = children.indexOf(lily);
+        if (frogIndex < lilyIndex) {
+            Collections.rotate(children.subList(frogIndex, lilyIndex), -1);
+        }
+        else if (frogIndex > lilyIndex){
+            Collections.rotate(children.subList(lilyIndex, frogIndex + 1), 1);
+        }
+        System.out.println("moved " + frog + " in front of " + lily);
     }
 }

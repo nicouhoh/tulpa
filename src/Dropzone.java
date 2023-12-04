@@ -34,12 +34,15 @@ public abstract class Dropzone {
         g.rect(x, y, w, h);
     }
 
+
+    public void setHovered(boolean h){
+        hovered = h;
+    }
+
     // TODO hovering dropzones is a mess for now, clean it up someday.
     public void onHovered(){
         System.out.println("Hovering " + this);
     }
 
-    public void setHovered(boolean h){
-        hovered = h;
-    }
+    public abstract void drop(Controller controller, Draggish draggish);
 }

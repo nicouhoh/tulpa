@@ -3,6 +3,7 @@ import processing.event.MouseEvent;
 import processing.event.KeyEvent;
 import processing.core.PConstants;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Controller implements Keyish {
 //    private static Controller uniqueInstance;
@@ -128,5 +129,10 @@ public class Controller implements Keyish {
         Thumbnail targetThumb = visipalp.verticalStep(selectedThumb, direction);
         heart.selectClipping(targetThumb.clipping);
         visipalp.scroller.jumpToOrganelle(targetThumb, visipalp.contactSheet.getGutter());
+    }
+
+    public void rearrangeThumbnails(Thumbnail moving, Thumbnail destination){
+        visipalp.contactSheet.rearrangeThumbnails(moving, destination);
+        visipalp.update();
     }
 }

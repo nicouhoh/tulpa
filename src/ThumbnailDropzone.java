@@ -3,12 +3,10 @@ import processing.core.PGraphics;
 public class ThumbnailDropzone extends Dropzone {
 
     Thumbnail thumb;
-    Clipping clipping;
 
     public ThumbnailDropzone(Droppish droppish, Thumbnail thumb, float allowance){
         super(droppish, thumb.x + allowance, thumb.y, thumb.w - allowance * 2, thumb.h);
         this.thumb = thumb;
-        this.clipping = thumb.clipping;
     }
 
     @Override
@@ -22,4 +20,9 @@ public class ThumbnailDropzone extends Dropzone {
     }
 
     public void onHovered(){ System.out.println("Hovering " + thumb);}
+
+    @Override
+    public void drop(Controller controller, Draggish draggish){
+        controller.rearrangeThumbnails((Thumbnail)draggish, thumb);
+    }
 }
