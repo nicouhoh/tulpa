@@ -14,6 +14,8 @@ public abstract class Organelle {
     Draggish draggish;
     Keyish keyish;
 
+    ArrayList<Dropzone> dropZones = new ArrayList<Dropzone>();
+
 
     float x, y, w, h;
     float latitude = 0;
@@ -99,9 +101,6 @@ public abstract class Organelle {
         g.rect(x, y, w - 1, h - 1);
     }
 
-    public boolean mouseOver(float mouseX, float mouseY){
-        return (mouseX > x) && (mouseX < x + w) && (mouseY > y) && (mouseY < y + h);
-    }
 
     public void addMousish(Mousish mousish){
         mousishes.add(mousish);

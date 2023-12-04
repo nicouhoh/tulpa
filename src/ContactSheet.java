@@ -2,15 +2,12 @@ import java.util.ArrayList;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import processing.event.KeyEvent;
 
 public class ContactSheet extends Organelle {
 
     private int columns = 5;
 
     Virgo virgo;
-
-    ArrayList<DropZone> dropZones = new ArrayList<DropZone>();
 
     public ContactSheet(){
         virgo = new Jigsaw();
@@ -31,10 +28,9 @@ public class ContactSheet extends Organelle {
     }
 
     public void drawAfter(PGraphics g){
-        for (DropZone z : dropZones){
-            z.debugDraw(g);
+        for (Dropzone z : dropZones){
+            z.draw(g);
         }
-
     }
 
     public int getColumns(){
@@ -69,22 +65,25 @@ public class ContactSheet extends Organelle {
 
     public void createDropZones(){
 
+        clearDropZones();
+
         int allowance = 20;
 
         for (int i = 0; i < getThumbnails().size() - 1; i++){
             Thumbnail left = getThumbnails().get(i);
             Thumbnail right = getThumbnails().get(i + 1);
             if (i == 0){
-                dropZones.add(new ThumbArrangeDropZone(left, x, left.y, left.x - x + allowance, left.h));
+                dropZones.add(new ThumbArrangeDropZone(left, x, left.y, left.x - x + allowance, left.h, x));
             }
             if (right.x <= left.x){
                 dropZones.add(new ThumbArrangeDropZone(right,
                         left.x + left.w - allowance,
                         left.y,
                         w - (left.x + left.w) + allowance,
-                        left.h));
+                        left.h,
+                        left.x + left.w));
                 dropZones.add(new ThumbArrangeDropZone(right,
-                        x, right.y, right.x + allowance, right.h));
+                        x, right.y, right.x + allowance, right.h, right.x));
             }
             else {
                 dropZones.add(
@@ -92,7 +91,7 @@ public class ContactSheet extends Organelle {
                                 left.x + left.w - allowance,
                                 PApplet.min(left.y, right.y),
                                 right.x - (left.x + left.w) + 2 * allowance,
-                                PApplet.max(left.h, right.h)));
+                                PApplet.max(left.h, right.h), (left.x + left.w + right.x)/2));
             }
         }
     }

@@ -1,5 +1,3 @@
-import java.sql.Array;
-import java.util.ArrayList;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -9,8 +7,6 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     Clipping clipping;
 
     PVector offset = new PVector(0,0);
-    ArrayList<DropZone> dropZones = new ArrayList<DropZone>();
-
 
     public Thumbnail(PGraphics g, Clipping clipping){
         this.clipping = clipping;
@@ -28,8 +24,8 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
         if (clipping.isSelected){
             drawSelect(g, x, y);
         }
-        for (DropZone d : dropZones){
-            d.debugDraw(g);
+        for (Dropzone d : dropZones){
+            d.draw(g);
         }
     }
 
@@ -115,13 +111,12 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
 
     @Override
     public void drag(Controller controller, float mouseX, float mouseY, float originX, float originY, float offsetX, float offsetY) {
-        System.out.println("Dragging " + this);
     }
 
     @Override
     public void casper(PGraphics g, float casperX, float casperY, float casperW, float casperH){
         if (clipping.img != null){
-            g.tint(255, 128);
+            g.tint(255, 64);
             g.image(clipping.img, casperX, casperY, w, h);
             g.tint(255, 255);
         }
@@ -132,7 +127,8 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     public void createDropZones(){
-//        dropZones.add(new ThumbArrangeDropZone(this, x, y, w, h));
+        clearDropZones();
+        dropZones.add(new ThumbnailDropzone(this, this, 20));
     }
 
     public void clearDropZones(){

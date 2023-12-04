@@ -5,6 +5,7 @@ import processing.core.PConstants;
 import java.util.ArrayList;
 
 public class Controller implements Keyish {
+//    private static Controller uniqueInstance;
 
     // NOTICE: Controller itself implements Keyish and can recognize keyboard commands
 
@@ -14,7 +15,7 @@ public class Controller implements Keyish {
     Mouse mouse;
     Ouija ouija;
 
-    ArrayList<DropZone> dropZones = new ArrayList<DropZone>();
+    ArrayList<Dropzone> dropZones = new ArrayList<Dropzone>();
 
     public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
@@ -23,6 +24,19 @@ public class Controller implements Keyish {
         this.ouija = new Ouija();
         ouija.setFocus(this);
     }
+
+//    // TODO this might cause problems if we mess with multithreading. nico, check that book to see what to do about it.
+//    public static Controller getInstance(TulpaHeart heart, PGraphics g){
+//        if (uniqueInstance == null){
+//            uniqueInstance = new Controller(heart, g);
+//        }
+//        return uniqueInstance;
+//    }
+//
+//    public static Controller getInstance(){
+//        if (uniqueInstance != null) return uniqueInstance;
+//        else return null;
+//    }
 
     public void draw(){
         visipalp.draw();
