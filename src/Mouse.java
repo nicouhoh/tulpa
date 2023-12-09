@@ -22,7 +22,7 @@ public class Mouse {
 
     public void interpretSqueak(MouseEvent e, Organelle root){
 
-        Squeak squeak = new Squeak(e, this);
+        Squeak squeak = new Squeak(e);
         lastSqueak = squeak;
 
         // TODO it works, now clean it up
@@ -80,7 +80,9 @@ public class Mouse {
     // Returns the deepest organelle under the mouse that accepts this kind of squeak
     public Organelle captureAndBubble(Organelle root, Squeak squeak){
         if (squeak.consumed) return null;
-        if (!mouseOver(root, squeak.getX(), squeak.getY() + squeak.getLatitude())) return null;
+        if (!mouseOver(root, squeak.getX(), squeak.getY() + squeak.getLatitude())){
+            return null;
+        }
         squeak.addLatitude(root.getLatitude());
 
         for (Organelle child : root.getChildren()){
@@ -128,9 +130,7 @@ public class Mouse {
 
     public void findHotItem(Organelle root, Squeak squeak){
         Organelle target = captureAndBubble(root, squeak);
-        if (target != hotItem) {
-            setHotItem(target);
-        }
+        if (target != hotItem) setHotItem(target);
     }
 
     public void setHotItem(Organelle organelle){
@@ -192,7 +192,7 @@ public class Mouse {
     public void drawHeldItem(PGraphics g){
         if (claw.heldItem != null){
             Organelle o = (Organelle)claw.heldItem;
-            o.casper(g, lastSqueak.getX() - claw.dragOffset.x, lastSqueak.getY() - claw.dragOffset.y, 0, 0);
+            o.mirage(g, lastSqueak.getX() - claw.dragOffset.x, lastSqueak.getY() - claw.dragOffset.y, 0, 0);
         }
     }
 

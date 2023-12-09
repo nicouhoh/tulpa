@@ -51,6 +51,9 @@ public class tulpa extends PApplet {
     // INPUT -----------------------------------------------------------------
 
     public void keyEvent(KeyEvent e) {
+        if (key == ESC){
+            key = '\uDD1E';
+        }
         controller.receiveKeyEvent(e);
     }
 

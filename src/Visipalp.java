@@ -1,7 +1,5 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
-import processing.event.MouseEvent;
-import processing.event.KeyEvent;
 
 import java.util.ArrayList;
 
@@ -11,9 +9,9 @@ public class Visipalp {
     TulpaHeart heart;
     Controller instrument;
 
-    Organelle sycamore;
-    ContactSheet contactSheet;
-    Scroller scroller;
+    ContactSheetView contactSheetView;
+
+    ExaminerView examinerView;
 
     public Visipalp(PGraphics g, Controller instrument, TulpaHeart heart){
         this.g = g;
@@ -24,20 +22,28 @@ public class Visipalp {
     }
 
     public void materialize(){
-        sycamore = new Nothing();
-        contactSheet = new ContactSheet();
-        contactSheet.addChildren(manifestClippings(heart.getLibrary().clippings));
-        scroller = new Scroller(contactSheet);
-        sycamore.addChild(scroller);
+        contactSheetView = new ContactSheetView();
+        contactSheetView.contactSheet.addChildren(manifestClippings(heart.getLibrary().clippings));
+
+        examinerView = new ExaminerView();
+
         update();
     }
 
     public void draw(){
-        sycamore.performDraw(g);
+        g.clip(0, 0, tulpa.SOLE.w, tulpa.SOLE.h);
+        contactSheetView.performDraw(g);
+    }
+
+    public void drawClippingView(){
+        if (heart.selectedClippings.size() == 1) {
+            examinerView.performDraw(g);
+        }
     }
 
     public void update() {
-        sycamore.update(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        examinerView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     public ArrayList<Organelle> manifestClippings(ArrayList<Clipping> clippings){
@@ -49,15 +55,15 @@ public class Visipalp {
     }
 
     public void refreshContactSheet(){
-        contactSheet.children = manifestClippings(heart.getLibrary().clippings);
+        contactSheetView.contactSheet.children = manifestClippings(heart.getLibrary().clippings);
         update();
     }
 
     public Thumbnail verticalStep(Thumbnail thumbnail, int direction){
-        int thumbIndex = contactSheet.getThumbnails().indexOf(thumbnail);
-        while (thumbIndex + direction >= 0 && thumbIndex + direction < contactSheet.getThumbnails().size()) {
-            thumbIndex = PApplet.constrain(thumbIndex + direction, 0, contactSheet.getThumbnails().size());
-            Thumbnail t2 = contactSheet.getThumbnails().get(thumbIndex);
+        int thumbIndex = contactSheetView.contactSheet.getThumbnails().indexOf(thumbnail);
+        while (thumbIndex + direction >= 0 && thumbIndex + direction < contactSheetView.contactSheet.getThumbnails().size()) {
+            thumbIndex = PApplet.constrain(thumbIndex + direction, 0, contactSheetView.contactSheet.getThumbnails().size());
+            Thumbnail t2 = contactSheetView.contactSheet.getThumbnails().get(thumbIndex);
             float centerX = thumbnail.x + thumbnail.w / 2;
             if (centerX > t2.x && centerX < t2.x + t2.w) return t2;
         }

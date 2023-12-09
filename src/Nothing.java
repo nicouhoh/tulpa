@@ -2,15 +2,18 @@ import processing.core.PGraphics;
 
 public class Nothing extends Organelle {
 
-    int BG_COLOR = 49;
+    int bgColor;
+    int bgAlpha;
 
-    public Nothing(){
+    public Nothing(int bgColor, int bgAlpha){
         x = 0;
         y = 0;
+        this.bgColor = bgColor;
+        this.bgAlpha = bgAlpha;
     }
 
     @Override
     public void draw(PGraphics g){
-        g.background(BG_COLOR);
+        g.background(bgColor, bgAlpha);
     }
 }

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import processing.core.PGraphics;
+import processing.core.PVector;
 
 // Abstract base for components
 
@@ -42,15 +43,21 @@ public abstract class Organelle {
         return children;
     }
 
+    public void performUpdate(float parentX, float parentY, float parentW, float parentH){
+        update(parentX, parentY, parentW, parentH);
+        updateChildren();
+    }
+
     public void update(float parentX, float parentY, float parentW, float parentH){
+        // Override this for update behavior specific to an Organelle. Actually gets called in performUpdate().
+        // The default behavior is to fill the parent Organelle.
         setPos(parentX, parentY);
         setSize(parentW, parentH);
-        updateChildren();
     }
 
     public void updateChildren(){
         for (Organelle child : getChildren()){
-            child.update(x, y, w, h);
+            child.performUpdate(x, y, w, h);
         }
     }
 
@@ -95,6 +102,11 @@ public abstract class Organelle {
         h = newH;
     }
 
+    public void setSize(PVector v){
+        w = v.x;
+        h = v.y;
+    }
+
     public void drawDebug(PGraphics g){
         g.stroke(255, 0, 255);
         g.noFill();
@@ -122,6 +134,10 @@ public abstract class Organelle {
         return latitude;
     }
 
+    public void setLatitude(float lat){
+        latitude = lat;
+    }
+
     public void setHot(boolean hot){
         this.hot = hot;
     }
@@ -130,6 +146,6 @@ public abstract class Organelle {
         this.active = active;
     }
 
-    public void casper(PGraphics g, float x, float y, float w, float h){}
+    public void mirage(PGraphics g, float x, float y, float w, float h){}
 
 }

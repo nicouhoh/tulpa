@@ -4,22 +4,18 @@ public class Squeak extends MouseEvent{
 
     float latitude;
     boolean consumed = false;
-    Mouse mouse;
     ClawMachine katla;
 
-    public Squeak(Object nativeObject, long millis, int action, int modifiers, int x, int y, int button, int count, Mouse mouse) {
+    public Squeak(Object nativeObject, long millis, int action, int modifiers, int x, int y, int button, int count) {
         super(nativeObject, millis, action, modifiers, x, y, button, count);
-        this.mouse = mouse;
     }
 
-    public Squeak(MouseEvent e, Mouse mouse){
+    public Squeak(MouseEvent e){
         super(e.getNative(), e.getMillis(), e.getAction(), e.getModifiers(), e.getX(), e.getY(), e.getButton(), e.getCount());
-        this.mouse = mouse;
     }
 
-    public Squeak(MouseEvent e, Mouse mouse, ClawMachine k){
+    public Squeak(MouseEvent e, ClawMachine k){
         super(e.getNative(), e.getMillis(), e.getAction(), e.getModifiers(), e.getX(), e.getY(), e.getButton(), e.getCount());
-        this.mouse = mouse;
         this.katla = k;
     }
 

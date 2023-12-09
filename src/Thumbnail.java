@@ -114,7 +114,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     @Override
-    public void casper(PGraphics g, float casperX, float casperY, float casperW, float casperH){
+    public void mirage(PGraphics g, float casperX, float casperY, float casperW, float casperH){
         if (clipping.img != null){
             g.tint(255, 64);
             g.image(clipping.img, casperX, casperY, w, h);

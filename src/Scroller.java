@@ -34,8 +34,8 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
 
     @Override
     public void updateChildren(){
-        host.update(x, y, w - scrollW, h);
-        rail.update(x, y, w, h);
+        host.performUpdate(x, y, w - scrollW, h);
+        rail.performUpdate(x, y, w, h);
         grip.setGrip(h, host.h, host.latitude);
     }
 
@@ -44,12 +44,12 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
     }
 
     public void jumpToLatitude(float y){
-        host.latitude = PApplet.constrain(y, 0, host.h - h);
+        host.setLatitude(PApplet.constrain(y, 0, host.h - h));
         grip.setGrip(rail.h, host.h, host.latitude);
     }
 
     public void setHostLatitudeToGrip(){
-        host.latitude = (grip.y * host.h) / h;
+        host.setLatitude((grip.y * host.h) / h);
     }
 
     public void moveGrip(float y){

@@ -1,14 +1,13 @@
 import processing.core.PImage;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class Clipping {
 
     PImage img;
     String imgPath;
 
-//    ClippingText text;
+    Passage passage;
     String textPath;
 
     boolean isSelected;

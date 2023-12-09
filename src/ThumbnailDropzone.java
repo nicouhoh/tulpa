@@ -23,6 +23,5 @@ public class ThumbnailDropzone extends Dropzone {
 
     @Override
     public void drop(Controller controller, Draggish draggish){
-        controller.rearrangeThumbnails((Thumbnail)draggish, thumb);
     }
 }
