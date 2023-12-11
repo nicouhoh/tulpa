@@ -31,8 +31,9 @@ public class Clipping {
             String newText = "";
             for (String s : tulpa.SOLE.loadStrings(textPath)){
                 newText += s;
+                newText += '\n';
             }
-//            text = new ClippingText(newText, "Type here");
+            passage = new Passage(newText);
         }
     }
 

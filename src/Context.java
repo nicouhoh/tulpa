@@ -12,4 +12,5 @@ public interface Context {
     void zero();
     void minus();
     void equals();
+    void type(char c);
 }

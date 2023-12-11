@@ -14,8 +14,15 @@ public class Examiner extends Organelle implements Mousish {
     }
 
     public void updateChildren(){
-        picture.performUpdate(x, y, w, h);
-        skrivbord.performUpdate(picture.x, picture.y + picture.h + 50, picture.w, h);
+        if (clipping == null) return;
+        if (clipping.img == null){
+            picture.performUpdate(0, 0, 0, 0);
+            skrivbord.performUpdate(x, y + 50, w, h);
+        }
+        else {
+            picture.performUpdate(x, y, w, h);
+            skrivbord.performUpdate(picture.x, picture.y + picture.h + 50, picture.w, h);
+        }
     }
 
     public void setClipping(Clipping c){
@@ -25,12 +32,13 @@ public class Examiner extends Organelle implements Mousish {
 
      public void setUp(){
         picture.setImage(clipping.img);
-        skrivbord.setPassage(new Passage("Test String"));
-//        skrivbord.setPassage(clipping.passage);
+        if (clipping.passage == null) skrivbord.setBuffer(new Passage("Test String"));
+        else skrivbord.setBuffer(clipping.passage);
      }
 
     @Override
     public void mouseDown(Controller controller, Mouse mouse, int mod) {
+        System.out.println(clipping.imgPath);
         controller.changeMode(new ContactSheetMode(controller));
     }
 

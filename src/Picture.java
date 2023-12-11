@@ -35,11 +35,9 @@ public class Picture extends Organelle {
         }else {
             float maxW = parentW - margin * 2;
             float maxH = parentH - margin * 2;
-
             if (image.width > maxW || image.height > maxH) {
                 setSize(sizeCalc(image.width, image.height, maxW, maxH));
             } else setSize(image.width, image.height);
         }
-
     }
 }

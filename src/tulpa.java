@@ -2,6 +2,9 @@
 import processing.core.PApplet;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
+import processing.core.PFont;
+
+import java.util.Arrays;
 //import processing.core.PConstants;
 
 
@@ -24,6 +27,9 @@ public class tulpa extends PApplet {
         registerMethod("pre", this); // set up for detecting window resize
 
         SOLE = this;
+
+
+        System.out.println(Arrays.toString(PFont.list()));
         heart = new TulpaHeart();
         controller = new Controller(heart, g);
 
@@ -65,6 +71,12 @@ public class tulpa extends PApplet {
     //public void dropEvent(DropEvent dropEvent){
     //    callosum.ear.dropEvent(dropEvent);
     //}
+
+    public PFont getSkrivBordFont(){
+        String fontPath = sketchPath() + "/data/iA Writer Duo/Variable/iAWriterDuoV.ttf";
+        PFont font = createFont(fontPath, 22, false);
+        return font;
+    }
     //
 
 

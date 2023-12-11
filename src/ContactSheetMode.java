@@ -66,4 +66,9 @@ public class ContactSheetMode extends BaseMode implements Context {
         controller.visipalp.contactSheetView.contactSheet.zoom(-1);
         controller.visipalp.contactSheetView.scroller.updateChildren();
     }
+
+    @Override
+    public void type(char c){
+
+    }
 }

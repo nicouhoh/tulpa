@@ -52,4 +52,8 @@ public class ExaminerViewMode extends BaseMode implements Context {
     public void minus(){}
     @Override
     public void equals(){}
+
+    @Override
+    public void type(char c){
+    }
 }

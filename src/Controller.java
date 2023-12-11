@@ -14,6 +14,7 @@ public class Controller implements Keyish {
     Mouse mouse;
 
     Context mode;
+    Context lastContext;
 
     public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
@@ -35,8 +36,10 @@ public class Controller implements Keyish {
     }
 
     public void receiveKeyEvent(KeyEvent e){
-        if (e.getAction() != KeyEvent.PRESS) return;
-        receiveKey(e);
+        switch (e.getAction()){
+            case KeyEvent.PRESS -> receiveKey(e);
+            case KeyEvent.TYPE -> receiveType(e.getKey());
+        }
     }
 
     @Override
@@ -61,6 +64,10 @@ public class Controller implements Keyish {
             case ' ' -> mode.space();
             case PConstants.ESC -> mode.esc();
         }
+    }
+
+    public void receiveType(char c){
+        mode.type(c);
     }
 
     public void selectClipping(Clipping clipping){
@@ -110,8 +117,9 @@ public class Controller implements Keyish {
         visipalp.update();
     }
 
-    public void changeMode(Context mode){
-        this.mode = mode;
+    public void changeMode(Context newMode){
+        lastContext = mode;
+        mode = newMode;
         visipalp.update();
     }
 
