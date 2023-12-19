@@ -1,6 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PFont;
+import java.util.ArrayList;
 
 public class Skrivbord extends Organelle implements Mousish {
 
@@ -23,7 +24,7 @@ public class Skrivbord extends Organelle implements Mousish {
     }
 
     @Override
-    public void update(float parentX, float parentY, float parentW, float parentH){
+    public void resize(float parentX, float parentY, float parentW, float parentH){
         setSize(parentW, parentH);
         setPos(parentX + parentW/2 - w/2, parentY);
     }
@@ -37,7 +38,7 @@ public class Skrivbord extends Organelle implements Mousish {
         g.textFont(font);
         if (buffer != null){
 //            g.text(insertCursor(buffer), x + margin, y + margin, w - margin * 2, h - margin * 2);
-            drawText(g, buffer.toString(), buffer.gapStart, x + margin, y + margin);//, w - margin * 2, h - margin * 2);
+            drawText(g, buffer.toString(), buffer.gapStart, x + margin, y + margin, w - margin * 2, h - margin * 2);
         }
     }
 
@@ -61,21 +62,17 @@ public class Skrivbord extends Organelle implements Mousish {
     }
 
     @Override
-    public void buttonPress(Controller controller, int mod) {
+    public void buttonPress(Controller controller, int mod){}
 
+    public void drawText(PGraphics g, String string, int cursorPos, float textX, float textY, float textW, float textH){
+        g.text(string, textX, textY, textW, textH);
     }
 
-    public void drawText(PGraphics g, String string, int cursorPos, float textX, float textY){
-        float drawX = textX;
-        float drawY = textY;
-        for (int i = 0; i < string.length(); i++){
-            if (i == cursorPos) {
-                g.stroke(192);
-                g.line(drawX, drawY - font.getSize() * .7f, drawX, drawY + font.getSize() * .2f);
-                g.noStroke();
-            }
-            g.text(string.charAt(i), drawX, drawY);
-            drawX += g.textWidth(string.charAt(i));
-        }
+    public void drawCursor(PGraphics g, float cursorX, float cursorY){
+        // TODO is it insane to calculate this constantly
+        g.stroke(128);
+        g.strokeWeight(2);
+        g.line(cursorX, cursorY - font.ascent() * font.getSize(), cursorX, cursorY + font.descent() * font.getSize());
+        g.noStroke();
     }
 }

@@ -31,8 +31,8 @@ public abstract class Symbiote extends Organelle {
     }
 
     @Override
-    public void update(float parentX, float parentY, float parentW, float parentH) {
-        host.update(parentX, parentY, parentW, parentH);
+    public void resize(float parentX, float parentY, float parentW, float parentH) {
+        host.resize(parentX, parentY, parentW, parentH);
     }
 
     @Override
@@ -46,8 +46,8 @@ public abstract class Symbiote extends Organelle {
     }
 
     @Override
-    public void drawChildren(PGraphics g){
-        host.drawChildren(g);
+    public void drawChildren(PGraphics g, float clipMin, float clipMax){
+        host.drawChildren(g, clipMin, clipMax);
     }
 
     @Override

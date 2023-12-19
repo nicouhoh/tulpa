@@ -1,6 +1,6 @@
-public class ContactSheetMode extends BaseMode implements Context {
+public class ContactSheetContext extends BaseContext implements Context {
 
-    public ContactSheetMode(Controller controller){
+    public ContactSheetContext(Controller controller){
         super(controller);
     }
 
@@ -8,6 +8,11 @@ public class ContactSheetMode extends BaseMode implements Context {
     public void draw(Visipalp visipalp, Mouse mouse){
         visipalp.draw();
         mouse.drawHeldItem(controller.visipalp.g); // FIXME
+    }
+
+    @Override
+    public void resize(Visipalp visipalp){
+        visipalp.contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override
@@ -52,7 +57,7 @@ public class ContactSheetMode extends BaseMode implements Context {
     @Override
     public void zero(){
         controller.visipalp.contactSheetView.contactSheet.toggleViewMode();
-        controller.visipalp.update();
+        controller.visipalp.contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override

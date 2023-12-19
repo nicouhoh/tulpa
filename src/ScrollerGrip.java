@@ -13,7 +13,7 @@ public class ScrollerGrip extends Organelle implements Mousish, Draggish {
     }
 
     @Override
-    public void update(float parentX, float parentY, float parentW, float parentH){
+    public void resize(float parentX, float parentY, float parentW, float parentH){
         x = parentX;
         w = parentW;
     }

@@ -2,6 +2,7 @@ import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
 import processing.core.PConstants;
+import java.util.ArrayList;
 
 public class Controller implements Keyish {
 //    private static Controller uniqueInstance;
@@ -13,26 +14,27 @@ public class Controller implements Keyish {
 
     Mouse mouse;
 
-    Context mode;
+    Context context;
     Context lastContext;
 
     public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
         visipalp = new Visipalp(g, this, heart);
         this.mouse = new Mouse(this);
-        mode = new ContactSheetMode(this);
+        context = new ContactSheetContext(this);
     }
 
     public void draw(){
-        mode.draw(visipalp, mouse);
+        context.draw(visipalp, mouse);
     }
 
     public void resizeWindow(){
         visipalp.update();
+        context.resize(visipalp);
     }
 
     public void receiveMouseEvent(MouseEvent e){
-        mode.mouseEvent(mouse, new Squeak(e));
+        context.mouseEvent(mouse, new Squeak(e));
     }
 
     public void receiveKeyEvent(KeyEvent e){
@@ -50,24 +52,24 @@ public class Controller implements Keyish {
 
             case PConstants.CODED -> {
                 switch(e.getKeyCode()){
-                    case PConstants.LEFT -> mode.left();
-                    case PConstants.RIGHT -> mode.right();
-                    case PConstants.UP -> mode.up();
-                    case PConstants.DOWN -> mode.down();
+                    case PConstants.LEFT -> context.left();
+                    case PConstants.RIGHT -> context.right();
+                    case PConstants.UP -> context.up();
+                    case PConstants.DOWN -> context.down();
                 }
             }
-            case PConstants.BACKSPACE -> mode.backspace();
-            case '0' -> mode.zero();
+            case PConstants.BACKSPACE -> context.backspace();
+            case '0' -> context.zero();
             case '.' -> visipalp.update();
-            case '-' -> mode.minus();
-            case '=' -> mode.equals();
-            case ' ' -> mode.space();
-            case PConstants.ESC -> mode.esc();
+            case '-' -> context.minus();
+            case '=' -> context.equals();
+            case ' ' -> context.space();
+            case PConstants.ESC -> context.esc();
         }
     }
 
     public void receiveType(char c){
-        mode.type(c);
+        context.type(c);
     }
 
     public void selectClipping(Clipping clipping){
@@ -118,14 +120,23 @@ public class Controller implements Keyish {
     }
 
     public void changeMode(Context newMode){
-        lastContext = mode;
-        mode = newMode;
+        lastContext = context;
+        context = newMode;
         visipalp.update();
     }
 
     public void setUpClippingView(){
         visipalp.examinerView.examiner.setClipping(heart.getSelectedClippings().get(0));
         visipalp.update();
+    }
+
+    public void saveCurrentClippingData(){
+        String string = visipalp.examinerView.examiner.skrivbord.buffer.toString();
+        Clipping clipping = visipalp.examinerView.examiner.clipping;
+        ArrayList<Tag> tags = heart.library.parseTags(string);
+        heart.library.addTag(tags);
+        clipping.addTag(tags);
+        clipping.passage = new Passage(string);
     }
 
 }

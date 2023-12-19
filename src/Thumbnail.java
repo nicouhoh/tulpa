@@ -15,7 +15,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     @Override
-    public void update(float parentX, float parentY, float parentW, float parentH){}
+    public void resize(float parentX, float parentY, float parentW, float parentH){}
 
     @Override
     public void draw(PGraphics g){

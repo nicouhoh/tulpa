@@ -32,13 +32,13 @@ public class Visipalp {
     }
 
     public void draw(){
-        g.clip(0, 0, tulpa.SOLE.w, tulpa.SOLE.h);
-        contactSheetView.performDraw(g);
+//        g.clip(0, 0, tulpa.SOLE.w, tulpa.SOLE.h);
+        contactSheetView.performDraw(g, 0, tulpa.SOLE.h);
     }
 
     public void drawClippingView(){
         if (heart.selectedClippings.size() == 1) {
-            examinerView.performDraw(g);
+            examinerView.performDraw(g, 0, tulpa.SOLE.height);
         }
     }
 

@@ -1,8 +1,8 @@
-public class BaseMode {
+public class BaseContext {
 
     Controller controller;
 
-    public BaseMode(Controller controller){
+    public BaseContext(Controller controller){
         this.controller = controller;
     }
 }

@@ -9,5 +9,4 @@ public class Passage {
     public Passage(String string){
         this.text = string;
     }
-
 }

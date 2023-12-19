@@ -1,4 +1,4 @@
-public class ExaminerViewMode extends BaseMode implements Context {
+public class ExaminerViewMode extends BaseContext implements Context {
 
     public ExaminerViewMode(Controller controller){
         super(controller);
@@ -12,13 +12,19 @@ public class ExaminerViewMode extends BaseMode implements Context {
     }
 
     @Override
+    public void resize(Visipalp visipalp){
+        visipalp.contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        visipalp.examinerView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+    }
+
+    @Override
     public void mouseEvent(Mouse mouse, Squeak squeak){
         mouse.interpretSqueak(squeak, controller.visipalp.examinerView);
     }
 
     @Override
     public void space() {
-        controller.changeMode(new ContactSheetMode(controller));
+        controller.changeMode(new ContactSheetContext(controller));
     }
 
     @Override
@@ -42,7 +48,8 @@ public class ExaminerViewMode extends BaseMode implements Context {
 
     @Override
     public void esc(){
-        controller.changeMode(new ContactSheetMode(controller));
+        controller.saveCurrentClippingData();
+        controller.changeMode(new ContactSheetContext(controller));
     }
 
     @Override

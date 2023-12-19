@@ -1,6 +1,4 @@
-import processing.event.KeyEvent;
-
-public class SkrivbordContext extends BaseMode implements Context {
+public class SkrivbordContext extends BaseContext implements Context {
 
     Skrivbord skrivbord;
 
@@ -15,6 +13,12 @@ public class SkrivbordContext extends BaseMode implements Context {
         visipalp.draw();
         visipalp.drawClippingView();
         mouse.drawHeldItem(visipalp.g); // FIXME
+    }
+
+    @Override
+    public void resize(Visipalp visipalp){
+        visipalp.contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        visipalp.examinerView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override

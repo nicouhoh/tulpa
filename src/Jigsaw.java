@@ -24,7 +24,7 @@ public class Jigsaw implements Virgo{
                 }
                 //resize current row
                 float ratio = (w - (row.size() + 1) * gutter) / rowW;
-                float rowX = gutter;
+                float rowX = x + gutter;
                 for (Thumbnail t : row){
                     t.clearOffset();
                     t.fitToHeight(ratio * rowH);

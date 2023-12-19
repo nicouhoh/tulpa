@@ -9,9 +9,9 @@ public class Picture extends Organelle {
     float margin = 50;
 
     @Override
-    public void update(float parentX, float parentY, float parentW, float parentH){
+    public void resize(float parentX, float parentY, float parentW, float parentH){
         resize(parentW, parentH);
-        setPos(parentW/2 - w/2, parentH/2 - h/2);
+        setPos(parentW/2 - w/2, parentY + margin);
     }
 
     @Override

@@ -2,6 +2,9 @@ import java.util.Arrays;
 
 public class GapBuffer {
 
+    // TODO Can we also think about lines and possibly even words in this data structure?
+
+
     char[] buffer;
     int gapStart;
     int gapEnd;
@@ -85,13 +88,22 @@ public class GapBuffer {
 
     @Override
     public String toString(){
+        char[] chars = removeGap();
+        return new String(chars);
+    }
+
+    public char[] removeGap(){
         int gapSize = gapEnd - gapStart + 1;
         char[] chars = new char[buffer.length - gapSize];
         System.arraycopy(buffer, 0, chars, 0, gapStart);
         if (gapEnd < buffer.length - 1) {
             System.arraycopy(buffer, gapEnd + 1, chars, gapStart, buffer.length - gapEnd - 1);
         }
-        return new String(chars);
+        return chars;
+    }
+
+    public String[] toWords(){
+        return toString().split(" ");
     }
 
 //    public String toString(){

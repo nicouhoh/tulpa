@@ -28,7 +28,6 @@ public class tulpa extends PApplet {
 
         SOLE = this;
 
-
         System.out.println(Arrays.toString(PFont.list()));
         heart = new TulpaHeart();
         controller = new Controller(heart, g);

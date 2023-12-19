@@ -44,15 +44,16 @@ public abstract class Organelle {
     }
 
     public void performUpdate(float parentX, float parentY, float parentW, float parentH){
-        update(parentX, parentY, parentW, parentH);
+        resize(parentX, parentY, parentW, parentH);
         updateChildren();
     }
 
-    public void update(float parentX, float parentY, float parentW, float parentH){
+    public void resize(float parentX, float parentY, float parentW, float parentH){
         // Override this for update behavior specific to an Organelle. Actually gets called in performUpdate().
         // The default behavior is to fill the parent Organelle.
-        setPos(parentX, parentY);
-        setSize(parentW, parentH);
+        // TODO ^^ actually might not be true! I might be in the middle of changing this!
+//        setPos(parentX, parentY);
+//        setSize(parentW, parentH);
     }
 
     public void updateChildren(){
@@ -61,19 +62,19 @@ public abstract class Organelle {
         }
     }
 
-    public void performDraw(PGraphics g){
+    public void performDraw(PGraphics g, float trimMin, float trimMax){
         // if we're scrolled, translate before drawing. Otherwise, don't bother.
         // Call this to draw, but override draw() for actual draw behavior.
         if (latitude != 0){
             g.push();
             g.translate(0, -latitude);
             draw(g);
-            drawChildren(g);
+            drawChildren(g, trimMin, trimMax);
             drawAfter(g);
             g.pop();
         } else {
             draw(g);
-            drawChildren(g);
+            drawChildren(g, trimMin, trimMax);
             drawAfter(g);
         }
     }
@@ -86,10 +87,22 @@ public abstract class Organelle {
         // Like draw, but draws *after* children. Good for things like the contact sheet drawing dropzones.
     }
 
-    public void drawChildren(PGraphics g){
+    public void drawChildren(PGraphics g, float clipMin, float clipMax){
         for (Organelle child : getChildren()){
-            child.performDraw(g);
+            if (child.y > clipMax + latitude) return;
+            if (child.y + child.h < clipMin + latitude) continue;
+            child.performDraw(g, clipMin, clipMax);
         }
+    }
+
+    public void setBounds(float x, float y, float w, float h){
+        setPos(x, y);
+        setSize(w, h);
+    }
+
+    public void setBounds(Cell c){
+        setPos(c.x, c.y);
+        setSize(c.w, c.h);
     }
 
     public void setPos(float newX, float newY){

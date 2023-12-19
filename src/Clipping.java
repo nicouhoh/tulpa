@@ -1,6 +1,7 @@
 import processing.core.PImage;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Clipping {
 
@@ -10,9 +11,10 @@ public class Clipping {
     Passage passage;
     String textPath;
 
+
     boolean isSelected;
 
-//    ArrayList<Tag> tags = new ArrayList<Tag>();
+    ArrayList<Tag> tags = new ArrayList<Tag>();
 
     public Clipping(){
         imgPath = "";
@@ -43,29 +45,35 @@ public class Clipping {
 //        text = new ClippingText(string,"Type here");
     }
 
-//    public void addTag(Tag t){
-//        tags.add(t);
-//    }
+    public void addTag(Tag t){
+        if (!tags.contains(t)) tags.add(t);
+    }
 
-//    public boolean taggedWith(String s){
-////        for (Tag t : tags){
-////            if (t.name.equalsIgnoreCase(s)){
-//                return true;
-//            }
-//        }
-////        return false;
-//    }
+    public void addTag(ArrayList<Tag> tags){
+        for (Tag t : tags){
+            addTag(t);
+        }
+    }
 
-//    public boolean taggedWith(Tag gubbe){
-//        for (Tag t : tags){
-//            if (t.name.toLowerCase() == gubbe.name.toLowerCase()){
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
-//    public ArrayList<Tag> getTags(){
-//        return tags;
-//    }
+    public boolean taggedWith(String s){
+        for (Tag t : tags){
+            if (t.name.equalsIgnoreCase(s)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean taggedWith(Tag gubbe){
+        for (Tag t : tags){
+            if (t.name.toLowerCase() == gubbe.name.toLowerCase()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<Tag> getTags(){
+        return tags;
+    }
 }

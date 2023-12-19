@@ -14,4 +14,14 @@ public class ExaminerView extends Organelle {
         scroller = new Scroller(examiner);
         scrim.addChild(scroller);
     }
+
+    @Override
+    public void resize(float parentX, float parentY, float parentW, float parentH){
+        setBounds(parentX, parentY, parentW, parentH);
+
+        Cell view = new Cell(x, y, w, h);
+        scrim.setBounds(view);
+        scroller.setBounds(view);
+        examiner.setBounds(view);
+    }
 }

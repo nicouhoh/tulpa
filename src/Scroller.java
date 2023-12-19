@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PGraphics;
 
 import javax.swing.*;
 
@@ -11,7 +12,6 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
     float scrollW = 10;
     float scrollSpeed = 50;
 
-
     // TODO keep the same width visually but make the scroll rail and grip wider for mouse collision purposes! easier to grab
 
     public Scroller(Organelle organelle) {
@@ -23,13 +23,6 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
         rail.addChild(grip);
         addMousish(this);
         addWheelish(this);
-    }
-
-    @Override
-    public void update(float parentX, float parentY, float parentW, float parentH){
-        setPos(parentX, parentY);
-        setSize(parentW, parentH);
-        updateChildren();
     }
 
     @Override
@@ -84,5 +77,4 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
 
     @Override
     public void buttonPress(Controller controller, int mod){}
-
 }
