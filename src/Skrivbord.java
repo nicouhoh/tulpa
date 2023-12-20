@@ -1,12 +1,13 @@
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PFont;
-import java.util.ArrayList;
 
 public class Skrivbord extends Organelle implements Mousish {
 
-    Passage passage;
     PFont font;
+
+    String palimpsest;
+    int palimpsestColor = 96;
 
     GapBuffer buffer;
 
@@ -20,25 +21,35 @@ public class Skrivbord extends Organelle implements Mousish {
     public Skrivbord(){
         font = tulpa.SOLE.getSkrivBordFont();
         maxTextWidth = font.getSize() * 3;
+        buffer = new GapBuffer(50);
         addMousish(this);
     }
 
-    @Override
-    public void resize(float parentX, float parentY, float parentW, float parentH){
-        setSize(parentW, parentH);
-        setPos(parentX + parentW/2 - w/2, parentY);
+    public Skrivbord(String palimpsest){
+        font = tulpa.SOLE.getSkrivBordFont();
+        maxTextWidth = font.getSize() * 3;
+        addMousish(this);
+        this.palimpsest = palimpsest;
     }
+
 
     @Override
     public void draw(PGraphics g){
         g.fill(49);
         g.noStroke();
         g.rect(x, y, w, h, 8);
-        g.fill(223);
         g.textFont(font);
-        if (buffer != null){
-//            g.text(insertCursor(buffer), x + margin, y + margin, w - margin * 2, h - margin * 2);
-            drawText(g, buffer.toString(), buffer.gapStart, x + margin, y + margin, w - margin * 2, h - margin * 2);
+        float textX = x + margin;
+        float textY = y + margin;
+        float textW  = w - margin * 2;
+        float textH = h - margin * 2;
+        if (buffer != null && !buffer.isEmpty()){
+            g.fill(223);
+            drawText(g, buffer.toString(), buffer.gapStart, textX, textY, textW, textH);
+        }
+        else if (palimpsest != null){
+            g.fill(palimpsestColor);
+            drawText(g, palimpsest, 0, textX, textY, textW, textH);
         }
     }
 
@@ -52,13 +63,18 @@ public class Skrivbord extends Organelle implements Mousish {
         buffer = new GapBuffer(passage.text);
     }
 
+    public void setBuffer(Clipping clipping){
+        if (clipping.passage != null) buffer = new GapBuffer(clipping.passage.text);
+        else buffer = new GapBuffer(50);
+    }
+
     public void type(char c){
         buffer.insert(c);
     }
 
     @Override
     public void mouseDown(Controller controller, Mouse mouse, int mod) {
-        controller.changeMode(new SkrivbordContext(controller, this));
+        controller.changeContext(new SkrivbordContext(controller, this));
     }
 
     @Override

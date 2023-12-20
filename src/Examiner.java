@@ -1,3 +1,6 @@
+import processing.core.PApplet;
+import processing.core.PVector;
+
 public class Examiner extends Organelle implements Mousish {
 
     Picture picture;
@@ -5,9 +8,11 @@ public class Examiner extends Organelle implements Mousish {
 
     Clipping clipping;
 
+    float margin = 50;
+
     public Examiner(){
         picture = new Picture();
-        skrivbord = new Skrivbord();
+        skrivbord = new Skrivbord("Click here to type");
         addChild(picture);
         addChild(skrivbord);
         addMousish(this);
@@ -15,21 +20,18 @@ public class Examiner extends Organelle implements Mousish {
 
     @Override
     public void resize(float parentX, float parentY, float parentW, float parentH){
-        x = parentX;
-        y = parentY;
-        w = parentW;
-        h = parentH * 3;
-    }
+        Cell exam = getBounds();
 
-    public void updateChildren(){
-        if (clipping == null) return;
-        if (clipping.img == null){
-            picture.performUpdate(x, y, w, 0);
-            skrivbord.performUpdate(x, y + 50, w, h);
+        exam.divideTop(margin);
+
+        if (picture.image != null){
+            PVector size = picture.fitImage(exam.w - margin * 2, PApplet.min(exam.h - margin * 2, clipping.img.height));
+            picture.setBounds(exam.divideTop(size.y).shrink((exam.w - size.x) / 2, 0));
+            exam.divideTop(margin);
+            skrivbord.setBounds(exam.fit(PApplet.constrain(picture.w, skrivbord.minW, skrivbord.maxW), exam.h));
         }
         else {
-            picture.performUpdate(x, y, w, h);
-            skrivbord.performUpdate(picture.x, picture.y + picture.h + 50, picture.w, h);
+            skrivbord.setBounds(exam.fit(PApplet.constrain(skrivbord.maxW, skrivbord.minW, exam.w - margin * 2), exam.h));
         }
     }
 
@@ -38,16 +40,16 @@ public class Examiner extends Organelle implements Mousish {
         setUp();
     }
 
-     public void setUp(){
-        picture.setImage(clipping.img);
-        if (clipping.passage == null) skrivbord.setBuffer(new Passage("Test String"));
-        else skrivbord.setBuffer(clipping.passage);
-     }
+    public void setUp(){
+        if (clipping.img != null) picture.setUp(clipping.img);
+        else picture.noImage();
+        skrivbord.setBuffer(clipping);
+    }
 
     @Override
     public void mouseDown(Controller controller, Mouse mouse, int mod) {
         controller.saveCurrentClippingData();
-        controller.changeMode(new ContactSheetContext(controller));
+        controller.changeContext(new ContactSheetContext(controller));
     }
 
     @Override

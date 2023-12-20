@@ -21,7 +21,7 @@ public class ContactSheetView extends Organelle {
     public void resize(float windowX, float windowY, float windowW, float windowH){
         setBounds(windowX, windowY, windowW, windowH);
 
-        Cell main = new Cell(x, y, w, h);
+        Cell main = getBounds();
         Cell sidePanel = main.divideLeft(searchPanel.openWidth);
         nothing.setBounds(main);
         scroller.setBounds(main);

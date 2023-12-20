@@ -22,7 +22,7 @@ public class ContactSheetContext extends BaseContext implements Context {
 
     @Override
     public void space() {
-        controller.changeMode(new ExaminerViewMode(controller));
+        controller.changeContext(new ExaminerContext(controller));
     }
 
     @Override
@@ -61,8 +61,14 @@ public class ContactSheetContext extends BaseContext implements Context {
     }
 
     @Override
-    public void minus(){
+    public void plus(){
         controller.visipalp.contactSheetView.contactSheet.zoom(-1);
+        controller.visipalp.contactSheetView.scroller.updateChildren();
+    }
+
+    @Override
+    public void minus(){
+        controller.visipalp.contactSheetView.contactSheet.zoom(1);
         controller.visipalp.contactSheetView.scroller.updateChildren();
     }
 

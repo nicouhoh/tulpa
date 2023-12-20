@@ -9,12 +9,6 @@ public class Picture extends Organelle {
     float margin = 50;
 
     @Override
-    public void resize(float parentX, float parentY, float parentW, float parentH){
-        resize(parentW, parentH);
-        setPos(parentW/2 - w/2, parentY + margin);
-    }
-
-    @Override
     public void draw(PGraphics g){
         if (image == null) return;
         g.image(image, x, y, w, h);
@@ -29,15 +23,20 @@ public class Picture extends Organelle {
         image = i;
     }
 
-    public void resize(float parentW, float parentH){
-        if (image == null){
-            x = 0; y = 0; w = 0; h = 0;
-        }else {
-            float maxW = parentW - margin * 2;
-            float maxH = parentH - margin * 2;
-            if (image.width > maxW || image.height > maxH) {
-                setSize(sizeCalc(image.width, image.height, maxW, maxH));
-            } else setSize(image.width, image.height);
+    public void noImage(){
+        image = null;
+    }
+
+    public void setUp(PImage i){
+        setImage(i);
+        fitImage(i.width, i.height);
+    }
+
+    public PVector fitImage(float maxW, float maxH){
+        if (image == null) return null;
+        if (image.width > maxW || image.height > maxH) {
+            return sizeCalc(image.width, image.height, maxW, maxH);
         }
+        else return new PVector(image.width, image.height);
     }
 }

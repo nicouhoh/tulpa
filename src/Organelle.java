@@ -51,7 +51,7 @@ public abstract class Organelle {
     public void resize(float parentX, float parentY, float parentW, float parentH){
         // Override this for update behavior specific to an Organelle. Actually gets called in performUpdate().
         // The default behavior is to fill the parent Organelle.
-        // TODO ^^ actually might not be true! I might be in the middle of changing this!
+        // TODO ^^ actually might not be true! I might be in the middle of changing this
 //        setPos(parentX, parentY);
 //        setSize(parentW, parentH);
     }
@@ -93,6 +93,10 @@ public abstract class Organelle {
             if (child.y + child.h < clipMin + latitude) continue;
             child.performDraw(g, clipMin, clipMax);
         }
+    }
+
+    public Cell getBounds(){
+        return new Cell(x, y, w, h);
     }
 
     public void setBounds(float x, float y, float w, float h){

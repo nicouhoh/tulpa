@@ -1,6 +1,6 @@
-public class ExaminerViewMode extends BaseContext implements Context {
+public class ExaminerContext extends BaseContext implements Context {
 
-    public ExaminerViewMode(Controller controller){
+    public ExaminerContext(Controller controller){
         super(controller);
     }
 
@@ -24,7 +24,7 @@ public class ExaminerViewMode extends BaseContext implements Context {
 
     @Override
     public void space() {
-        controller.changeMode(new ContactSheetContext(controller));
+        controller.changeContext(new ContactSheetContext(controller));
     }
 
     @Override
@@ -49,12 +49,13 @@ public class ExaminerViewMode extends BaseContext implements Context {
     @Override
     public void esc(){
         controller.saveCurrentClippingData();
-        controller.changeMode(new ContactSheetContext(controller));
+        controller.changeContext(new ContactSheetContext(controller));
     }
 
     @Override
     public void zero(){}
-
+    @Override
+    public void plus(){}
     @Override
     public void minus(){}
     @Override

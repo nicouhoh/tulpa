@@ -58,17 +58,17 @@ public class SkrivbordContext extends BaseContext implements Context {
 
     @Override
     public void esc() {
+        controller.saveCurrentClippingData();
+        controller.changeContext(new ContactSheetContext(controller));
     }
 
     @Override
-    public void zero() {
-
-    }
+    public void zero() {}
 
     @Override
-    public void minus() {
-
-    }
+    public void plus(){}
+    @Override
+    public void minus() {}
 
     @Override
     public void equals() {
@@ -81,7 +81,7 @@ public class SkrivbordContext extends BaseContext implements Context {
             case '\b' -> {
                 skrivbord.buffer.delete();
             }
-            case '\u001B' -> controller.changeMode(controller.lastContext);
+            case '\u001B' -> {}
             default -> skrivbord.type(c);
         }
     }

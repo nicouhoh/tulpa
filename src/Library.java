@@ -57,6 +57,7 @@ public class Library {
     }
 
     public ArrayList<String> findTagStrings(String string){
+        if (string.isBlank()) return null;
         // this just finds strings that look like tags and separates them out.
         ArrayList<String> result = new ArrayList<String>();
         String[] words = string.split(" |\n");

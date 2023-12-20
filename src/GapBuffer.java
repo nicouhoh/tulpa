@@ -12,7 +12,7 @@ public class GapBuffer {
     public GapBuffer(int capacity){
         buffer = new char[capacity];
         gapStart = 0;
-        gapEnd = capacity;
+        gapEnd = capacity - 1;
     }
 
     public GapBuffer(String string){
@@ -93,7 +93,7 @@ public class GapBuffer {
     }
 
     public char[] removeGap(){
-        int gapSize = gapEnd - gapStart + 1;
+        int gapSize = (gapEnd - gapStart) + 1;
         char[] chars = new char[buffer.length - gapSize];
         System.arraycopy(buffer, 0, chars, 0, gapStart);
         if (gapEnd < buffer.length - 1) {
@@ -104,6 +104,11 @@ public class GapBuffer {
 
     public String[] toWords(){
         return toString().split(" ");
+    }
+
+    public boolean isEmpty(){
+        if (gapEnd - gapStart >= buffer.length - 1) return true;
+        return false;
     }
 
 //    public String toString(){

@@ -5,7 +5,6 @@ import processing.core.PConstants;
 import java.util.ArrayList;
 
 public class Controller implements Keyish {
-//    private static Controller uniqueInstance;
 
     // NOTICE: Controller itself implements Keyish and can recognize keyboard commands (FOR NOW)
 
@@ -119,7 +118,7 @@ public class Controller implements Keyish {
         visipalp.update();
     }
 
-    public void changeMode(Context newMode){
+    public void changeContext(Context newMode){
         lastContext = context;
         context = newMode;
         visipalp.update();
@@ -133,10 +132,11 @@ public class Controller implements Keyish {
     public void saveCurrentClippingData(){
         String string = visipalp.examinerView.examiner.skrivbord.buffer.toString();
         Clipping clipping = visipalp.examinerView.examiner.clipping;
-        ArrayList<Tag> tags = heart.library.parseTags(string);
-        heart.library.addTag(tags);
-        clipping.addTag(tags);
         clipping.passage = new Passage(string);
-    }
 
+        if (string.isBlank()) return;
+        ArrayList<Tag> tags = heart.library.parseTags(string);
+        if (tags != null) heart.library.addTag(tags);
+        clipping.addTag(tags);
+    }
 }

@@ -19,9 +19,11 @@ public class ExaminerView extends Organelle {
     public void resize(float parentX, float parentY, float parentW, float parentH){
         setBounds(parentX, parentY, parentW, parentH);
 
-        Cell view = new Cell(x, y, w, h);
+        Cell view = getBounds();
         scrim.setBounds(view);
         scroller.setBounds(view);
-        examiner.setBounds(view);
+
+        Cell exam = new Cell(parentX, parentY, parentW, parentH * 3);
+        examiner.setBounds(exam);
     }
 }

@@ -38,7 +38,7 @@ public class ContactSheet extends Organelle {
     }
 
     public void zoom(int amount){
-        columns = PApplet.constrain(columns + amount, 1, 30);
+        columns = PApplet.constrain(columns + amount, 2, 30);
         virgo.arrangeThumbnails(getChildren(), x, y, w, getColumns());
         h = virgo.getFoot(getChildren());
     }
