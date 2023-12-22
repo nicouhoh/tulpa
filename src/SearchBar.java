@@ -1,16 +1,25 @@
-import processing.core.PGraphics;
+public class SearchBar extends Skrivsak {
 
-public class SearchBar extends Organelle {
-
-    @Override
-    public void resize(float parentX, float parentY, float parentW, float parentH){
-
+    public SearchBar(){
+        super();
+        setFont(tulpa.SOLE.getSkrivBordFont());
+        setMargin(2);
+        this.palimpsest = "WIP search bar";
+        buffer = new GapBuffer(50);
+        addMousish(this);
     }
 
     @Override
-    public void draw(PGraphics g){
-        g.noStroke();
-        g.fill(16);
-        g.rect(x, y, w, h);
+    public void enter(Controller controller){
+        search(buffer.toString());
+    }
+
+    @Override
+    public void esc(Controller controller){
+        controller.changeContext(new ContactSheetContext(controller));
+    }
+
+    public void search(String string){
+        System.out.println("SEARCH: " + string);
     }
 }

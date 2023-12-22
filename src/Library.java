@@ -60,7 +60,7 @@ public class Library {
         if (string.isBlank()) return null;
         // this just finds strings that look like tags and separates them out.
         ArrayList<String> result = new ArrayList<String>();
-        String[] words = string.split(" |\n");
+        String[] words = string.trim().split(" +|\n+");
         for (String word : words){
             if (word.charAt(0) == '#'){
                 result.add(word.substring(1));

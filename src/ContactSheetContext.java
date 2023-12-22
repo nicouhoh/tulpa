@@ -1,4 +1,4 @@
-public class ContactSheetContext extends BaseContext implements Context {
+public class ContactSheetContext extends BaseContext {
 
     public ContactSheetContext(Controller controller){
         super(controller);
@@ -16,13 +16,13 @@ public class ContactSheetContext extends BaseContext implements Context {
     }
 
     @Override
-    public void mouseEvent(Mouse mouse, Squeak squeak){
+    public void receiveMouseEvent(Mouse mouse, Squeak squeak){
         mouse.interpretSqueak(squeak, controller.visipalp.contactSheetView);
     }
 
     @Override
     public void space() {
-        controller.changeContext(new ExaminerContext(controller));
+        controller.changeContext(new ExaminerContext(controller, controller.visipalp.examinerView.examiner));
     }
 
     @Override
@@ -80,6 +80,6 @@ public class ContactSheetContext extends BaseContext implements Context {
 
     @Override
     public void type(char c){
-
+        if (c == ' ') controller.changeContext(new ExaminerContext(controller, controller.visipalp.examinerView.examiner));
     }
 }

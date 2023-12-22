@@ -12,7 +12,7 @@ public class Examiner extends Organelle implements Mousish {
 
     public Examiner(){
         picture = new Picture();
-        skrivbord = new Skrivbord("Click here to type");
+        skrivbord = new Skrivbord();
         addChild(picture);
         addChild(skrivbord);
         addMousish(this);
@@ -53,6 +53,6 @@ public class Examiner extends Organelle implements Mousish {
     }
 
     @Override
-    public void buttonPress(Controller controller, int mod) {
-    }
+    public void buttonPress(Controller controller, int mod) {}
+
 }

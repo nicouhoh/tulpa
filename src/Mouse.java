@@ -161,6 +161,10 @@ public class Mouse {
         return mouseOver(z, squeak.getX(), squeak.getY() + squeak.getLatitude());
     }
 
+    public boolean mouseOver(Cell c, Squeak squeak){
+        return mouseOver(c.x, c.y, c.w, c.h, squeak.getX(), squeak.getY() + squeak.getLatitude());
+    }
+
     public void clearHotItem(){
         if (hotItem == null) return;
         hotItem.setHot(false);

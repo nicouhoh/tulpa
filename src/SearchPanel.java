@@ -10,6 +10,7 @@ public class SearchPanel extends Organelle {
 
     public SearchPanel(){
         searchBar = new SearchBar();
+        searchBar.setMargin(2);
         tagList = new TagList();
         addChild(searchBar);
         addChild(tagList);

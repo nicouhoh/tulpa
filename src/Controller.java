@@ -4,7 +4,7 @@ import processing.event.KeyEvent;
 import processing.core.PConstants;
 import java.util.ArrayList;
 
-public class Controller implements Keyish {
+public class Controller {
 
     // NOTICE: Controller itself implements Keyish and can recognize keyboard commands (FOR NOW)
 
@@ -13,8 +13,7 @@ public class Controller implements Keyish {
 
     Mouse mouse;
 
-    Context context;
-    Context lastContext;
+    BaseContext context;
 
     public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
@@ -33,42 +32,11 @@ public class Controller implements Keyish {
     }
 
     public void receiveMouseEvent(MouseEvent e){
-        context.mouseEvent(mouse, new Squeak(e));
+        context.checkForUnfocus(mouse, new Squeak(e));
     }
 
     public void receiveKeyEvent(KeyEvent e){
-        switch (e.getAction()){
-            case KeyEvent.PRESS -> receiveKey(e);
-            case KeyEvent.TYPE -> receiveType(e.getKey());
-        }
-    }
-
-    @Override
-    public void receiveKey(KeyEvent e) {
-        System.out.println("Key: " + e.getKey() + " KeyCode: " + e.getKeyCode());
-
-        switch (e.getKey()){
-
-            case PConstants.CODED -> {
-                switch(e.getKeyCode()){
-                    case PConstants.LEFT -> context.left();
-                    case PConstants.RIGHT -> context.right();
-                    case PConstants.UP -> context.up();
-                    case PConstants.DOWN -> context.down();
-                }
-            }
-            case PConstants.BACKSPACE -> context.backspace();
-            case '0' -> context.zero();
-            case '.' -> visipalp.update();
-            case '-' -> context.minus();
-            case '=' -> context.equals();
-            case ' ' -> context.space();
-            case PConstants.ESC -> context.esc();
-        }
-    }
-
-    public void receiveType(char c){
-        context.type(c);
+        context.receiveKeyEvent(e);
     }
 
     public void selectClipping(Clipping clipping){
@@ -118,10 +86,14 @@ public class Controller implements Keyish {
         visipalp.update();
     }
 
-    public void changeContext(Context newMode){
-        lastContext = context;
-        context = newMode;
+    public void changeContext(BaseContext newContext){
+        context.clearFocusedSkrivsak();
+        context = newContext;
         visipalp.update();
+    }
+
+    public void focusSkrivsak(Skrivsak skrivsak){
+        context.setFocusedSkrivsak(skrivsak);
     }
 
     public void setUpClippingView(){
@@ -138,5 +110,11 @@ public class Controller implements Keyish {
         ArrayList<Tag> tags = heart.library.parseTags(string);
         if (tags != null) heart.library.addTag(tags);
         clipping.addTag(tags);
+
+        updateTagList();
+    }
+
+    public void updateTagList(){
+        visipalp.contactSheetView.searchPanel.tagList.setTags(heart.library.tags);
     }
 }

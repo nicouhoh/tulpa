@@ -1,5 +1,4 @@
 import processing.core.PApplet;
-import processing.core.PFont;
 import processing.core.PGraphics;
 
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ public class Visipalp {
     }
 
     public void draw(){
-//        g.clip(0, 0, tulpa.SOLE.w, tulpa.SOLE.h);
         contactSheetView.performDraw(g, 0, tulpa.SOLE.h);
     }
 

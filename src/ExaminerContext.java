@@ -1,7 +1,10 @@
-public class ExaminerContext extends BaseContext implements Context {
+public class ExaminerContext extends BaseContext {
 
-    public ExaminerContext(Controller controller){
+    Examiner examiner;
+
+    public ExaminerContext(Controller controller, Examiner examiner){
         super(controller);
+        this.examiner = examiner;
     }
 
     @Override
@@ -18,7 +21,7 @@ public class ExaminerContext extends BaseContext implements Context {
     }
 
     @Override
-    public void mouseEvent(Mouse mouse, Squeak squeak){
+    public void receiveMouseEvent(Mouse mouse, Squeak squeak){
         mouse.interpretSqueak(squeak, controller.visipalp.examinerView);
     }
 
@@ -26,15 +29,6 @@ public class ExaminerContext extends BaseContext implements Context {
     public void space() {
         controller.changeContext(new ContactSheetContext(controller));
     }
-
-    @Override
-    public void backspace(){}
-
-    @Override
-    public void up(){}
-
-    @Override
-    public void down(){}
 
     @Override
     public void left() {
@@ -51,17 +45,9 @@ public class ExaminerContext extends BaseContext implements Context {
         controller.saveCurrentClippingData();
         controller.changeContext(new ContactSheetContext(controller));
     }
-
-    @Override
-    public void zero(){}
-    @Override
-    public void plus(){}
-    @Override
-    public void minus(){}
-    @Override
-    public void equals(){}
-
     @Override
     public void type(char c){
+        controller.focusSkrivsak(examiner.skrivbord);
+        examiner.skrivbord.type(controller, c);
     }
 }

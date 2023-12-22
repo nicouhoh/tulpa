@@ -26,4 +26,5 @@ public class ExaminerView extends Organelle {
         Cell exam = new Cell(parentX, parentY, parentW, parentH * 3);
         examiner.setBounds(exam);
     }
+
 }
