@@ -1,3 +1,5 @@
+import processing.core.PConstants;
+
 public class ContactSheetContext extends BaseContext {
 
     public ContactSheetContext(Controller controller){
@@ -21,14 +23,9 @@ public class ContactSheetContext extends BaseContext {
     }
 
     @Override
-    public void space() {
-        controller.changeContext(new ExaminerContext(controller, controller.visipalp.examinerView.examiner));
-    }
-
-    @Override
     public void backspace(){
         controller.heart.deleteSelectedClippings();
-        controller.visipalp.refreshContactSheet();
+        controller.visipalp.displayAllClippings();
     }
 
     @Override
@@ -52,7 +49,8 @@ public class ContactSheetContext extends BaseContext {
     }
 
     @Override
-    public void esc(){}
+    public void esc(){
+    }
 
     @Override
     public void zero(){
@@ -80,6 +78,12 @@ public class ContactSheetContext extends BaseContext {
 
     @Override
     public void type(char c){
-        if (c == ' ') controller.changeContext(new ExaminerContext(controller, controller.visipalp.examinerView.examiner));
+        switch (c){
+            case ' ' -> controller.openExaminer(); // if we hit space, open the clipping
+            case PConstants.ESC -> {}
+            default -> {
+                controller.openExaminer(c); // if we start typing, open it and start typing immediately TODO only really feels right when it's empty. or adding tags?
+            }
+        }
     }
 }

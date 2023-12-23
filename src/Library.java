@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -44,7 +45,7 @@ public class Library {
     public Tag getTagByName(String tagName){
         // returns a tag from the library that matches the string, if it exists. otherwise returns null
         for (Tag t : tags){
-            if (t.name == tagName.toLowerCase()) return t;
+            if (t.name.equals(tagName.toLowerCase())) return t;
         }
         return null;
     }
@@ -77,6 +78,14 @@ public class Library {
             foundTags.add(stringToTag(word));
         }
         return foundTags;
+    }
+
+    public ArrayList<Clipping> getClippingsTagged(Tag tag){
+        ArrayList<Clipping> basket = new ArrayList<Clipping>();
+        for (Clipping berry : clippings){
+            if (berry.taggedWith(tag)) basket.add(berry);
+        }
+        return basket;
     }
 
     public void tagClipping(Clipping clipping, Tag tag){

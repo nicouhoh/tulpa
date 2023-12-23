@@ -11,15 +11,11 @@ public class SearchBar extends Skrivsak {
 
     @Override
     public void enter(Controller controller){
-        search(buffer.toString());
+        controller.displaySearchResults(buffer.toWords(), buffer.toString());
     }
 
     @Override
     public void esc(Controller controller){
         controller.changeContext(new ContactSheetContext(controller));
-    }
-
-    public void search(String string){
-        System.out.println("SEARCH: " + string);
     }
 }

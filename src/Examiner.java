@@ -9,6 +9,7 @@ public class Examiner extends Organelle implements Mousish {
     Clipping clipping;
 
     float margin = 50;
+    float minSkrivAllowance = 100;
 
     public Examiner(){
         picture = new Picture();
@@ -25,7 +26,7 @@ public class Examiner extends Organelle implements Mousish {
         exam.divideTop(margin);
 
         if (picture.image != null){
-            PVector size = picture.fitImage(exam.w - margin * 2, PApplet.min(exam.h - margin * 2, clipping.img.height));
+            PVector size = picture.fitImage(exam.w - margin * 2, PApplet.min(tulpa.SOLE.height - margin * 2 - minSkrivAllowance, clipping.img.height));
             picture.setBounds(exam.divideTop(size.y).shrink((exam.w - size.x) / 2, 0));
             exam.divideTop(margin);
             skrivbord.setBounds(exam.fit(PApplet.constrain(picture.w, skrivbord.minW, skrivbord.maxW), exam.h));

@@ -77,7 +77,7 @@ public class Controller {
         Thumbnail targetThumb = visipalp.verticalStep(selectedThumb, direction);
         heart.selectClipping(targetThumb.clipping);
         visipalp.contactSheetView.scroller.jumpToOrganelle(targetThumb, visipalp.contactSheetView.contactSheet.getGutter());
-        visipalp.examinerView.examiner.setClipping(targetThumb.clipping);
+        visipalp.examinerView.setup(targetThumb.clipping);
         setUpClippingView();
     }
 
@@ -92,12 +92,23 @@ public class Controller {
         visipalp.update();
     }
 
+    public void openExaminer(){
+        if(heart.selectedClippings.size() != 1) return;
+        changeContext(new ExaminerContext(this, visipalp.examinerView.examiner));
+    }
+
+    public void openExaminer(char c){
+        if(heart.selectedClippings.size() != 1) return;
+        changeContext(new ExaminerContext(this, visipalp.examinerView.examiner));
+        context.type(c);
+    }
+
     public void focusSkrivsak(Skrivsak skrivsak){
         context.setFocusedSkrivsak(skrivsak);
     }
 
     public void setUpClippingView(){
-        visipalp.examinerView.examiner.setClipping(heart.getSelectedClippings().get(0));
+        visipalp.examinerView.setup(heart.getSelectedClippings().get(0));
         visipalp.update();
     }
 
@@ -117,4 +128,34 @@ public class Controller {
     public void updateTagList(){
         visipalp.contactSheetView.searchPanel.tagList.setTags(heart.library.tags);
     }
+
+    public void displaySearchResults(String [] queryWords, String query){
+        ArrayList<Clipping> searchResults = search(queryWords);
+        if (searchResults.isEmpty()){
+            System.out.println("NO RESULTS");
+            return;
+        }
+        visipalp.displayClippings(search(queryWords), query);
+    }
+
+    public ArrayList<Clipping> search(String[] query){ // "query" to sound professional and real
+       // for now i'm only worrying about tags more to come later
+
+        ArrayList<Clipping> results = new ArrayList<Clipping>();
+
+        for (String term : query){
+            Tag tag = heart.library.getTagByName(term);
+            if (tag != null) results.addAll(heart.library.getClippingsTagged(tag));
+        }
+        return results;
+    }
+
+    public void clearSearch(){
+        visipalp.displayAllClippings();
+    }
+
+    public void setDisplayClippings(ArrayList<Clipping> clippings){
+
+    }
+
 }

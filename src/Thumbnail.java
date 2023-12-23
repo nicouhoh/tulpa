@@ -37,6 +37,11 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
         }
     }
 
+    public void drawText(PGraphics g){
+        // TODO
+    }
+
+
     public void drawSelect(PGraphics g, float drawX, float drawY){
         g.stroke(255);
         g.strokeWeight(2);

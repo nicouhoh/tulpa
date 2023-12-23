@@ -7,28 +7,25 @@ public class Visipalp {
 
     PGraphics g;
     TulpaHeart heart;
-    Controller instrument;
+    Controller controller;
 
     ContactSheetView contactSheetView;
 
     ExaminerView examinerView;
 
-    public Visipalp(PGraphics g, Controller instrument, TulpaHeart heart){
+    public Visipalp(PGraphics g, Controller controller, TulpaHeart heart){
         this.g = g;
         this.heart = heart;
-        this.instrument = instrument;
+        this.controller = controller;
 
-        materialize();
-    }
-
-    public void materialize(){
         contactSheetView = new ContactSheetView();
-        contactSheetView.contactSheet.addChildren(manifestClippings(heart.getLibrary().clippings));
-
         examinerView = new ExaminerView();
+
+        displayAllClippings();
 
         update();
     }
+
 
     public void draw(){
         contactSheetView.performDraw(g, 0, tulpa.SOLE.h);
@@ -53,8 +50,18 @@ public class Visipalp {
         return thumbs;
     }
 
-    public void refreshContactSheet(){
-        contactSheetView.contactSheet.children = manifestClippings(heart.getLibrary().clippings);
+    public void displayAllClippings(){
+        contactSheetView.clearContactSheet();
+        contactSheetView.clearSearchHeader();
+        contactSheetView.setup(manifestClippings(controller.heart.getLibrary().clippings));
+        update();
+    }
+
+
+    public void displayClippings(ArrayList<Clipping> clippings, String query){
+        contactSheetView.clearContactSheet();
+        contactSheetView.setupSearchHeader(query);
+        contactSheetView.setup(manifestClippings(clippings));
         update();
     }
 

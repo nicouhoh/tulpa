@@ -27,4 +27,9 @@ public class ExaminerView extends Organelle {
         examiner.setBounds(exam);
     }
 
+    public void setup(Clipping c){
+        examiner.setClipping(c);
+        scroller.resetScroll();
+    }
+
 }

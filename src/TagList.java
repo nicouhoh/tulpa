@@ -12,7 +12,7 @@ public class TagList extends Organelle {
     public void draw(PGraphics g){
         if (tags == null) return;
         g.noFill();
-        g.stroke(255, 128, 255);
+//        g.stroke(255, 128, 255); was just a debugging deal
         g.rect(x, y, w, h);
         float dumbY = y + g.textSize;
         g.noStroke();
