@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Agnes implements Virgo {
@@ -13,13 +14,21 @@ public class Agnes implements Virgo {
             t.setPos(x + gutter * (i % columns + 1) + thumbSize * (i % columns),
                     y + (i / columns) * thumbSize + (i / columns + 1) * gutter  );
         }
+
     }
 
-    //FIXME this isn't quite correct; thumbnails earlier in the row might be taller
-    public float getFoot(ArrayList<Organelle> thumbs){
-        Organelle lastThumb = thumbs.get(thumbs.size() - 1);
-        return lastThumb.y + lastThumb.h + gutter;
+    public float getFoot(ArrayList<Organelle> thumbs, float w, int columns){
+        int rows = thumbs.size() / columns;
+        float thumbSize = getThumbSize(w, columns);
+        return (rows + 1) * thumbSize + ((rows + 2) * getGutter());
     }
+
+//    //FIXME this isn't quite correct; thumbnails earlier in the row might be taller
+//    public float getFoot(ArrayList<Organelle> thumbs){
+//        Organelle lastThumb = thumbs.get(thumbs.size() - 1);
+//        return lastThumb.y + lastThumb.h + gutter;
+//    }
+
 
     public float getGutter(){
         return gutter;

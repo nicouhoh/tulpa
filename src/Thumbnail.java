@@ -15,32 +15,46 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     @Override
-    public void resize(float parentX, float parentY, float parentW, float parentH){}
-
-    @Override
     public void draw(PGraphics g){
-        if (clipping.img != null)
-            g.image(clipping.img, x, y, w, h);
-        if (clipping.isSelected){
-            drawSelect(g, x, y);
-        }
+        draw(g, x, y, w, h);
+    }
+
+    public void draw(PGraphics g, float x, float y, float w, float h){
+        drawThumbnail(g, x, y, w, h);
+        if (clipping.img == null) drawBackground(g, x, y, w, h, 255);
+        if (clipping.hasText()) drawText(g, x, y, w, h);
+        if (clipping.isSelected) drawSelect(g, x, y);
         for (Dropzone d : dropZones){
             d.draw(g);
         }
     }
 
-    public void draw(PGraphics g, float x, float y, float w, float h){
+    public void drawThumbnail(PGraphics g, float thumbX, float thumbY, float thumbW, float thumbH, float alpha){
+        g.tint(255, alpha);
+        drawThumbnail(g, thumbX, thumbY, thumbW, thumbH);
+        g.tint(255, 255);
+    };
+
+    public void drawThumbnail(PGraphics g, float x, float y, float w, float h){
         if (clipping.img != null)
             g.image(clipping.img, x, y, w, h);
-        if (clipping.isSelected){
-            drawSelect(g, x, y);
-        }
+    };
+
+    public void drawText(PGraphics g, float textX, float textY, float textW, float textH){
+        drawText(g, textX, textY, textW, textH, 255);
     }
 
-    public void drawText(PGraphics g){
-        // TODO
+    public void drawText(PGraphics g, float textX, float textY, float textW, float textH, float alpha){
+        g.fill(233, alpha);
+        g.textSize(16);
+        g.text(clipping.passage.text, textX + 10, textY + 10, textW - 20, textH - 20);
     }
 
+    public void drawBackground(PGraphics g, float bgX, float bgY, float bgW, float bgH, float alpha){
+        g.fill(49, alpha);
+        g.noStroke();
+        g.rect(bgX, bgY, bgW, bgH);
+    }
 
     public void drawSelect(PGraphics g, float drawX, float drawY){
         g.stroke(255);
@@ -120,11 +134,11 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
 
     @Override
     public void mirage(PGraphics g, float casperX, float casperY, float casperW, float casperH){
-        if (clipping.img != null){
             g.tint(255, 64);
-            g.image(clipping.img, casperX, casperY, w, h);
+            drawThumbnail(g, casperX, casperY, w, h);
             g.tint(255, 255);
-        }
+            if (clipping.img == null) drawBackground(g, casperX, casperY, w, h, 64);
+            if (clipping.hasText()) drawText(g, casperX, casperY, w, h, 128);
     }
 
     @Override

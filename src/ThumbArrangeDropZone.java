@@ -13,6 +13,7 @@ public class ThumbArrangeDropZone extends Dropzone {
 
     @Override
     public void draw(PGraphics g){
+//        debugDraw(g);
         if (hovered){
             g.stroke(255, 192, 0);
             g.noFill();

@@ -1,4 +1,5 @@
-// import drop.*;
+import drop.*;
+
 import processing.core.PApplet;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
@@ -17,7 +18,7 @@ public class tulpa extends PApplet {
     int w, h;
 
     public static tulpa SOLE = null;
-    // SDrop sdrop;
+    SDrop sdrop;
 
     public void setup() {
         w = width;
@@ -34,10 +35,11 @@ public class tulpa extends PApplet {
 
 
 
-        // sdrop = new SDrop(this);
-
+        sdrop = new SDrop(this);
         registerMethod("keyEvent", this);
         registerMethod("mouseEvent", this);
+//        registerMethod("dropEvent", this);
+
     }
 
     public void pre(){
@@ -67,9 +69,9 @@ public class tulpa extends PApplet {
         controller.receiveMouseEvent(e);
     }
 
-    //public void dropEvent(DropEvent dropEvent){
-    //    callosum.ear.dropEvent(dropEvent);
-    //}
+    public void dropEvent(DropEvent dropEvent){
+        controller.receiveDropEvent(dropEvent);
+    }
 
     public PFont getSkrivBordFont(){
         String fontPath = sketchPath() + "/data/iA Writer Duo/Variable/iAWriterDuoV.ttf";

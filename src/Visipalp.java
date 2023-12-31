@@ -26,7 +26,6 @@ public class Visipalp {
         update();
     }
 
-
     public void draw(){
         contactSheetView.performDraw(g, 0, tulpa.SOLE.h);
     }
@@ -54,6 +53,7 @@ public class Visipalp {
         contactSheetView.clearContactSheet();
         contactSheetView.clearSearchHeader();
         contactSheetView.setup(manifestClippings(controller.heart.getLibrary().clippings));
+        contactSheetView.filtered = false;
         update();
     }
 
@@ -62,6 +62,7 @@ public class Visipalp {
         contactSheetView.clearContactSheet();
         contactSheetView.setupSearchHeader(query);
         contactSheetView.setup(manifestClippings(clippings));
+        contactSheetView.filtered = true;
         update();
     }
 

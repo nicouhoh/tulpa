@@ -1,6 +1,8 @@
+import drop.DropEvent;
 import processing.core.PConstants;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
+import drop.DropEvent;
 public class BaseContext {
 
     Controller controller;
@@ -59,15 +61,20 @@ public class BaseContext {
     public void receiveType(char c){
         type(c);
     }
+
+    public void receiveMouseEvent(Mouse mouse, Squeak squeak){}
+    public void receiveDropEvent(DropEvent e){}
     public void draw(Visipalp visipalp, Mouse mouse) {}
     public void resize(Visipalp visipalp) {}
-    public void receiveMouseEvent(Mouse mouse, Squeak squeak){}
     public void checkForUnfocus(Mouse mouse, Squeak squeak){
         if (squeak.getAction() == 1 &&
                 focusedSkrivsak != null &&
                 !mouse.mouseOver(focusedSkrivsak, squeak))
             clearFocusedSkrivsak();
         receiveMouseEvent(mouse, squeak);
+    }
+    public void exitContext(){
+        clearFocusedSkrivsak();
     }
     public void space() {}
     public void backspace() {}

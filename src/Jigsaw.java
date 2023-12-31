@@ -44,7 +44,7 @@ public class Jigsaw implements Virgo{
     }
 
     @Override
-    public float getFoot(ArrayList<Organelle> thumbs) {
+    public float getFoot(ArrayList<Organelle> thumbs, float w, int columns) {
         Organelle lastThumb = thumbs.get(thumbs.size() - 1);
         return lastThumb.y + lastThumb.h + gutter;
     }

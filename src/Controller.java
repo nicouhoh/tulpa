@@ -1,6 +1,7 @@
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
+import drop.DropEvent;
 import processing.core.PConstants;
 import java.util.ArrayList;
 
@@ -37,6 +38,10 @@ public class Controller {
 
     public void receiveKeyEvent(KeyEvent e){
         context.receiveKeyEvent(e);
+    }
+
+    public void receiveDropEvent(DropEvent e){
+        context.receiveDropEvent(e);
     }
 
     public void selectClipping(Clipping clipping){
@@ -87,7 +92,7 @@ public class Controller {
     }
 
     public void changeContext(BaseContext newContext){
-        context.clearFocusedSkrivsak();
+        context.exitContext();
         context = newContext;
         visipalp.update();
     }

@@ -16,9 +16,9 @@ public class ContactSheet extends Organelle {
 
     @Override
     public void resize(float parentX, float parentY, float parentW, float parentH){
-        setBounds(parentX, parentY, parentW, parentH);
+//        setBounds(parentX, parentY, parentW, parentH);
         virgo.arrangeThumbnails(getChildren(), x, y, w, getColumns());
-        h = virgo.getFoot(getChildren());
+        h = virgo.getFoot(getChildren(), w, getColumns());
         clearDropZones();
         createDropZones();
         for (Thumbnail t : getThumbnails()){
@@ -40,7 +40,7 @@ public class ContactSheet extends Organelle {
     public void zoom(int amount){
         columns = PApplet.constrain(columns + amount, 2, 30);
         virgo.arrangeThumbnails(getChildren(), x, y, w, getColumns());
-        h = virgo.getFoot(getChildren());
+        h = virgo.getFoot(getChildren(), w, columns);
     }
 
     public ArrayList<Thumbnail> getThumbnails(){
@@ -72,28 +72,39 @@ public class ContactSheet extends Organelle {
         for (int i = 0; i < getThumbnails().size() - 1; i++){
             Thumbnail left = getThumbnails().get(i);
             Thumbnail right = getThumbnails().get(i + 1);
+
+            //the first thumbnail
             if (i == 0){
                 dropZones.add(new ThumbArrangeDropZone(left, x, left.y, left.x - x + allowance, left.h, x));
+                createDropZoneBetweenThumbnails(left, right, allowance);
             }
-            if (right.x <= left.x){
+
+            // beginning and ending rows
+            else if (right.x <= left.x){
                 dropZones.add(new ThumbArrangeDropZone(right,
                         left.x + left.w - allowance,
                         left.y,
-                        w - (left.x + left.w) + allowance,
+                        x + w - (left.x + left.w) + allowance,
                         left.h,
                         left.x + left.w));
                 dropZones.add(new ThumbArrangeDropZone(right,
-                        x, right.y, right.x + allowance, right.h, right.x));
+                        x, right.y, right.x - x + allowance, right.h, right.x));
             }
+
+            // everything else
             else {
-                dropZones.add(
-                        new ThumbArrangeDropZone(right,
-                                left.x + left.w - allowance,
-                                PApplet.min(left.y, right.y),
-                                right.x - (left.x + left.w) + 2 * allowance,
-                                PApplet.max(left.h, right.h), (left.x + left.w + right.x)/2));
+                createDropZoneBetweenThumbnails(left, right, allowance);
             }
         }
+    }
+
+    public void createDropZoneBetweenThumbnails(Thumbnail left, Thumbnail right, float allowance){
+        dropZones.add(
+                new ThumbArrangeDropZone(right,
+                        left.x + left.w - allowance,
+                        PApplet.min(left.y, right.y),
+                        right.x - (left.x + left.w) + 2 * allowance,
+                        PApplet.max(left.h, right.h), (left.x + left.w + right.x)/2));
     }
 
     public void clearDropZones(){

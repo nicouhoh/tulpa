@@ -9,6 +9,7 @@ public class Skrivsak extends Organelle implements Mousish{
     GapBuffer buffer;
 
     String palimpsest;
+    Scribe scribe;
 
     int paperColor = 49;
     int textColor = 223;
@@ -18,10 +19,15 @@ public class Skrivsak extends Organelle implements Mousish{
 
     boolean focused;
 
+    public Skrivsak(){
+        scribe = new Scribe();
+    }
+
     @Override
     public void draw(PGraphics g){
         g.fill(paperColor);
-        g.noStroke();
+        if (focused) g.stroke(128);
+        else g.noStroke();
         g.rect(x, y, w, h, 8);
         g.textFont(font);
         float textX = x + margin;
@@ -29,24 +35,23 @@ public class Skrivsak extends Organelle implements Mousish{
         float textW  = w - margin * 2;
         float textH = h - margin * 2;
         if (buffer != null && !buffer.isEmpty()){
-            String s;
-            if (focused) s = buffer.toStringWithCursor();
-            else s = buffer.toString();
             g.fill(textColor);
-            drawText(g, s, buffer.gapStart, textX, textY, textW, textH);
+            if (focused) drawText(g, buffer.toString(), buffer.gapStart, textX, textY, textW, textH);
+            else drawText(g, buffer.toString(), -1, textX, textY, textW, textH);
         }
         else if (palimpsest != null){
             g.fill(palimpsestColor);
-            drawText(g, palimpsest, 0, textX, textY, textW, textH);
+            drawText(g, palimpsest, -1, textX, textY, textW, textH);
         }
     }
 
     public void drawText(PGraphics g, String string, int cursorPos, float textX, float textY, float textW, float textH){
-        g.text(string, textX, textY, textW, textH);
+//        g.text(string, textX, textY, textW, textH);
+        scribe.text(g, string, cursorPos, textX, textY, textW, textH);
     }
 
     public void drawText(PGraphics g, String string, int cursorPos, Cell cell){
-        g.text(string, cell.x, cell.y, cell.w, cell.h);
+        scribe.text(g, string, cursorPos, cell.x, cell.y, cell.w, cell.h);
     }
 
     public void setBuffer(Passage passage){
@@ -112,4 +117,7 @@ public class Skrivsak extends Organelle implements Mousish{
         focused = focus;
     }
 
+    public void clear(){
+        buffer.clear();
+    }
 }

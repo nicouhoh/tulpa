@@ -76,4 +76,8 @@ public class Clipping {
     public ArrayList<Tag> getTags(){
         return tags;
     }
+
+    public boolean hasText(){
+        return passage != null && !passage.text.isBlank();
+    }
 }

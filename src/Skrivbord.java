@@ -1,3 +1,5 @@
+import processing.core.PGraphics;
+
 public class Skrivbord extends Skrivsak {
 
     int margin = 50;
@@ -18,5 +20,10 @@ public class Skrivbord extends Skrivsak {
     public void esc(Controller controller){
         controller.saveCurrentClippingData();
         controller.changeContext(new ContactSheetContext(controller));
+    }
+
+    @Override
+    public void drawText(PGraphics g, String string, int cursorPos, float textX, float textY, float textW, float textH){
+        scribe.text(g, string, cursorPos, textX, textY, textW, textH);
     }
 }

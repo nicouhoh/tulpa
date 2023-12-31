@@ -9,6 +9,8 @@ public class ContactSheetView extends Organelle {
     SearchPanel searchPanel;
     SearchHeader searchHeader;
 
+    boolean filtered = false;
+
     public ContactSheetView(){
 
         nothing = new Nothing(49, 255);
@@ -35,6 +37,8 @@ public class ContactSheetView extends Organelle {
         nothing.setBounds(main);
         scroller.setBounds(main);
         searchPanel.setBounds(sidePanel);
+        main.divideRight(scroller.scrollW);
+        contactSheet.setBounds(main);
     }
 
     public void clearContactSheet(){

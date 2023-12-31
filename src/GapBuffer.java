@@ -128,6 +128,12 @@ public class GapBuffer {
         return false;
     }
 
+    public void clear() {
+        buffer = new char[50];
+        gapStart = 0;
+        gapEnd = 49;
+    }
+
 //    public String toString(){
 //        int gapSize = gapEnd - gapStart;
 //        char[] chars = new char[buffer.length - gapSize];

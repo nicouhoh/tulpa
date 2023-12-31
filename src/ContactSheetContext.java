@@ -1,29 +1,42 @@
 import processing.core.PConstants;
+import drop.DropEvent;
 
 public class ContactSheetContext extends BaseContext {
 
+    ContactSheetView contactSheetView;
+
     public ContactSheetContext(Controller controller){
         super(controller);
+        this.contactSheetView = controller.visipalp.contactSheetView;
     }
 
     @Override
     public void draw(Visipalp visipalp, Mouse mouse){
         visipalp.draw();
-        mouse.drawHeldItem(controller.visipalp.g); // FIXME
+        mouse.drawHeldItem(controller.visipalp.g);
     }
 
     @Override
     public void resize(Visipalp visipalp){
-        visipalp.contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override
     public void receiveMouseEvent(Mouse mouse, Squeak squeak){
-        mouse.interpretSqueak(squeak, controller.visipalp.contactSheetView);
+        mouse.interpretSqueak(squeak, contactSheetView);
+    }
+
+    @Override
+    public void receiveDropEvent(DropEvent e){
+        if (e.isImage()){
+            controller.heart.library.add(controller.heart.ingestFile(e.file()));
+            controller.visipalp.displayAllClippings();
+        }
     }
 
     @Override
     public void backspace(){
+        // TODO make us stay in the same spot when deleting
         controller.heart.deleteSelectedClippings();
         controller.visipalp.displayAllClippings();
     }
@@ -50,35 +63,41 @@ public class ContactSheetContext extends BaseContext {
 
     @Override
     public void esc(){
+        if (!controller.heart.selectedClippings.isEmpty()) controller.heart.clearSelection();
+        else if (contactSheetView.filtered){
+            controller.visipalp.displayAllClippings();
+            contactSheetView.searchPanel.searchBar.clear();
+        }
     }
 
     @Override
     public void zero(){
-        controller.visipalp.contactSheetView.contactSheet.toggleViewMode();
-        controller.visipalp.contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        contactSheetView.contactSheet.toggleViewMode();
+        contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override
     public void plus(){
-        controller.visipalp.contactSheetView.contactSheet.zoom(-1);
-        controller.visipalp.contactSheetView.scroller.updateChildren();
+        contactSheetView.contactSheet.zoom(-1);
+        contactSheetView.scroller.updateChildren();
     }
 
     @Override
     public void minus(){
-        controller.visipalp.contactSheetView.contactSheet.zoom(1);
-        controller.visipalp.contactSheetView.scroller.updateChildren();
+        contactSheetView.contactSheet.zoom(1);
+        contactSheetView.scroller.updateChildren();
     }
 
     @Override
     public void equals(){
-        controller.visipalp.contactSheetView.contactSheet.zoom(-1);
-        controller.visipalp.contactSheetView.scroller.updateChildren();
+        contactSheetView.contactSheet.zoom(-1);
+        contactSheetView.scroller.updateChildren();
     }
 
     @Override
     public void type(char c){
         switch (c){
+            case '.' -> controller.visipalp.update();
             case ' ' -> controller.openExaminer(); // if we hit space, open the clipping
             case PConstants.ESC -> {}
             default -> {
