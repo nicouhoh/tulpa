@@ -30,7 +30,7 @@ public class ContactSheetContext extends BaseContext {
     public void receiveDropEvent(DropEvent e){
         if (e.isImage()){
             controller.heart.library.add(controller.heart.ingestFile(e.file()));
-            controller.visipalp.displayAllClippings();
+            controller.visipalp.displayAllClippingsAndKeepLatitude();
         }
     }
 
@@ -38,7 +38,7 @@ public class ContactSheetContext extends BaseContext {
     public void backspace(){
         // TODO make us stay in the same spot when deleting
         controller.heart.deleteSelectedClippings();
-        controller.visipalp.displayAllClippings();
+        controller.visipalp.displayAllClippings(controller.visipalp.contactSheetView.scroller.host.getLatitude());
     }
 
     @Override

@@ -26,8 +26,7 @@ public class Skrivsak extends Organelle implements Mousish{
     @Override
     public void draw(PGraphics g){
         g.fill(paperColor);
-        if (focused) g.stroke(128);
-        else g.noStroke();
+        g.noStroke();
         g.rect(x, y, w, h, 8);
         g.textFont(font);
         float textX = x + margin;
@@ -36,17 +35,17 @@ public class Skrivsak extends Organelle implements Mousish{
         float textH = h - margin * 2;
         if (buffer != null && !buffer.isEmpty()){
             g.fill(textColor);
-            if (focused) drawText(g, buffer.toString(), buffer.gapStart, textX, textY, textW, textH);
-            else drawText(g, buffer.toString(), -1, textX, textY, textW, textH);
+            int cursorPos = focused ? buffer.gapStart : -1;
+            drawText(g, buffer.toString(), cursorPos, textX, textY, textW, textH);
         }
         else if (palimpsest != null){
             g.fill(palimpsestColor);
-            drawText(g, palimpsest, -1, textX, textY, textW, textH);
+            int cursorPos = focused ? 0 : -1;
+            drawText(g, palimpsest, cursorPos, textX, textY, textW, textH);
         }
     }
 
     public void drawText(PGraphics g, String string, int cursorPos, float textX, float textY, float textW, float textH){
-//        g.text(string, textX, textY, textW, textH);
         scribe.text(g, string, cursorPos, textX, textY, textW, textH);
     }
 

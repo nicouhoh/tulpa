@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -40,7 +41,8 @@ public abstract class Organelle {
     }
 
     public ArrayList<Organelle> getChildren(){
-        return children;
+        // FIXME I did this as a fix for a concurrent modification error I was getting -- is this bad???? will this be slow?
+        return new ArrayList<Organelle>(children);
     }
 
     public void performUpdate(float parentX, float parentY, float parentW, float parentH){

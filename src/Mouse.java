@@ -28,12 +28,15 @@ public class Mouse {
         // TODO it works, now clean it up
         switch (e.getAction()){
 
-            case MouseEvent.MOVE -> findHotItem(root, squeak);
+            case MouseEvent.MOVE -> {
+                findHotItem(root, squeak);
+            }
             case MouseEvent.KEY -> {
                 if(hotItem == null) return;
                 setActiveItem(hotItem);
                 for (Mousish mousish : hotItem.mousishes) {
                     mousish.mouseDown(controller, this, squeak.getModifiers());
+                    System.out.println("Clicked " + mousish);
                 }
             }
             case MouseEvent.RELEASE -> {

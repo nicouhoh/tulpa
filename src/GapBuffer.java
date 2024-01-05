@@ -102,23 +102,6 @@ public class GapBuffer {
         return chars;
     }
 
-    // these are a temporary hack until I figure out better text
-    public char[] removeGapAndAddCursor(){
-        int gapSize = (gapEnd - gapStart) + 1;
-        char[] chars = new char[buffer.length - gapSize + 1];
-        System.arraycopy(buffer, 0, chars, 0, gapStart);
-        chars[gapStart] = '|';
-        if (gapEnd < buffer.length - 1) {
-            System.arraycopy(buffer, gapEnd + 1, chars, gapStart + 1, buffer.length - gapEnd - 1);
-        }
-        return chars;
-    }
-
-    public String toStringWithCursor(){
-        char[] chars = removeGapAndAddCursor();
-        return new String(chars);
-    }
-
     public String[] toWords(){
         return toString().trim().split(" +|\n+");
     }

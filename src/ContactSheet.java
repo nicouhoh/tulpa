@@ -28,7 +28,7 @@ public class ContactSheet extends Organelle {
     }
 
     public void drawAfter(PGraphics g){
-        for (Dropzone z : dropZones){
+        for (Dropzone z : getDropzones()){
             z.draw(g);
         }
     }
@@ -105,6 +105,10 @@ public class ContactSheet extends Organelle {
                         PApplet.min(left.y, right.y),
                         right.x - (left.x + left.w) + 2 * allowance,
                         PApplet.max(left.h, right.h), (left.x + left.w + right.x)/2));
+    }
+
+    public ArrayList<Dropzone> getDropzones(){
+        return new ArrayList<Dropzone>(dropZones);
     }
 
     public void clearDropZones(){

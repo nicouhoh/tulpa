@@ -1,3 +1,4 @@
+import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -20,12 +21,58 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     public void draw(PGraphics g, float x, float y, float w, float h){
-        drawThumbnail(g, x, y, w, h);
-        if (clipping.img == null) drawBackground(g, x, y, w, h, 255);
-        if (clipping.hasText()) drawText(g, x, y, w, h);
-        if (clipping.isSelected) drawSelect(g, x, y);
+        if (clipping.isSelected) {
+            drawSelect(g, x, y);
+        }
+        textThing(g, x, y, w, h);
         for (Dropzone d : dropZones){
             d.draw(g);
+        }
+    }
+
+    public void textThing(PGraphics g, float x, float y, float w, float h){
+
+        // TEXT
+        if (clipping.img == null && clipping.hasText()){
+            drawBackground(g, x, y, w, h, 255);
+            drawText(g, x, y, w, h);
+        }
+
+        // IMAGE
+        else if (clipping.img != null && !clipping.hasText()){
+            drawThumbnail(g, x, y, w, h);
+        }
+
+        // IMAGE AND TEXT
+        else if (clipping.img != null && clipping.hasText()){
+
+            // caption
+            if (clipping.passage.text.length() <= 300){
+                // TODO caption bg
+                Scribe scribe = new Scribe();
+                drawThumbnail(g, x, y, w, h);
+                captionBG(g, x, y + h, w, h);
+                scribe.setGravity("bottom");
+                g.fill(233);
+                scribe.text(g, clipping.passage.text, -1, x, y, w, h);
+            }
+            // long text with image
+            else{
+                g.tint(128);
+                drawThumbnail(g, x, y, w, h);
+                g.tint(255);
+                drawText(g, x, y, w, h);
+            }
+        }
+    }
+
+    public void captionBG(PGraphics g, float x, float y, float w, float h){
+        g.noFill();
+        for (int i = (int)y; i <= y+h; i++){
+            float inter = PApplet.map(i, y, y+h, 0, 1);
+            float c = PApplet.lerp(0, 255, inter);
+            g.stroke(0, c);
+            g.line(x, i, x+w, i);
         }
     }
 
@@ -41,14 +88,15 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     };
 
     public void drawText(PGraphics g, float textX, float textY, float textW, float textH){
-        drawText(g, textX, textY, textW, textH, 255);
+        drawText(g, textX, textY, textW, textH, 10, 255);
     }
 
-    public void drawText(PGraphics g, float textX, float textY, float textW, float textH, float alpha){
+    public void drawText(PGraphics g, float textX, float textY, float textW, float textH, float margin, float alpha){
         g.fill(233, alpha);
         g.textSize(16);
-        g.text(clipping.passage.text, textX + 10, textY + 10, textW - 20, textH - 20);
+        g.text(clipping.passage.text, textX + margin, textY + margin, textW - margin*2, textH - margin*2);
     }
+
 
     public void drawBackground(PGraphics g, float bgX, float bgY, float bgW, float bgH, float alpha){
         g.fill(49, alpha);
@@ -114,7 +162,6 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
             }
             default -> controller.selectClipping(clipping);
         }
-        System.out.println("clicked " + this);
     }
 
     @Override
@@ -138,7 +185,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
             drawThumbnail(g, casperX, casperY, w, h);
             g.tint(255, 255);
             if (clipping.img == null) drawBackground(g, casperX, casperY, w, h, 64);
-            if (clipping.hasText()) drawText(g, casperX, casperY, w, h, 128);
+            if (clipping.hasText()) drawText(g, casperX, casperY, w, h, 10, 128);
     }
 
     @Override

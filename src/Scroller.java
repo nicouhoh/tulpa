@@ -77,7 +77,6 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
 
     @Override
     public void mouseDown(Controller controller, Mouse mouse, int mod) {
-        System.out.println("clicked " + this);
     }
 
     @Override

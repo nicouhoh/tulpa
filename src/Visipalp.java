@@ -50,11 +50,20 @@ public class Visipalp {
     }
 
     public void displayAllClippings(){
+        displayAllClippings(0);
+    }
+
+    public void displayAllClippingsAndKeepLatitude(){
+        displayAllClippings(contactSheetView.scroller.host.getLatitude());
+    }
+
+    public void displayAllClippings(float latitude){
         contactSheetView.clearContactSheet();
         contactSheetView.clearSearchHeader();
         contactSheetView.setup(manifestClippings(controller.heart.getLibrary().clippings));
         contactSheetView.filtered = false;
         update();
+        contactSheetView.scroller.setHostLatitude(latitude);
     }
 
 

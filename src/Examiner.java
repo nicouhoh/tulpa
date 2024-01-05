@@ -32,6 +32,7 @@ public class Examiner extends Organelle implements Mousish {
             skrivbord.setBounds(exam.fit(PApplet.constrain(picture.w, skrivbord.minW, skrivbord.maxW), exam.h));
         }
         else {
+            picture.setBounds(0, 0, 0, 0);
             skrivbord.setBounds(exam.fit(PApplet.constrain(skrivbord.maxW, skrivbord.minW, exam.w - margin * 2), exam.h));
         }
     }

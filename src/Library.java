@@ -61,7 +61,7 @@ public class Library {
         if (string.isBlank()) return null;
         // this just finds strings that look like tags and separates them out.
         ArrayList<String> result = new ArrayList<String>();
-        String[] words = string.trim().split(" +|\n+");
+        String[] words = string.trim().split("\\s+");
         for (String word : words){
             if (word.charAt(0) == '#'){
                 result.add(word.substring(1));
