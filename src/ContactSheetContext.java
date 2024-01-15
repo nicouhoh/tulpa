@@ -28,10 +28,8 @@ public class ContactSheetContext extends BaseContext {
 
     @Override
     public void receiveDropEvent(DropEvent e){
-        if (e.isImage()){
-            controller.heart.library.add(controller.heart.ingestFile(e.file()));
-            controller.visipalp.displayAllClippingsAndKeepLatitude();
-        }
+        controller.heart.library.add(controller.heart.ingestFile(e.file()));
+        controller.visipalp.displayAllClippingsAndKeepLatitude();
     }
 
     @Override

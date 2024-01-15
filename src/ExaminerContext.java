@@ -42,7 +42,7 @@ public class ExaminerContext extends BaseContext {
 
     @Override
     public void esc(){
-        controller.saveCurrentClippingData();
+        controller.saveClippingText();
         controller.changeContext(new ContactSheetContext(controller));
     }
     @Override

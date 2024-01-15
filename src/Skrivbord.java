@@ -18,7 +18,7 @@ public class Skrivbord extends Skrivsak {
 
     @Override
     public void esc(Controller controller){
-        controller.saveCurrentClippingData();
+        controller.saveClippingText();
         controller.changeContext(new ContactSheetContext(controller));
     }
 

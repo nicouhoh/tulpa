@@ -2,7 +2,7 @@ import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import processing.event.KeyEvent;
 import drop.DropEvent;
-import processing.core.PConstants;
+
 import java.util.ArrayList;
 
 public class Controller {
@@ -117,12 +117,15 @@ public class Controller {
         visipalp.update();
     }
 
-    public void saveCurrentClippingData(){
+    public void saveClippingText(){
         String string = visipalp.examinerView.examiner.skrivbord.buffer.toString();
         Clipping clipping = visipalp.examinerView.examiner.clipping;
         clipping.passage = new Passage(string);
 
         if (string.isBlank()) return;
+        clipping.data.setString("text", string);
+        heart.saveClippingData(clipping);
+
         ArrayList<Tag> tags = heart.library.parseTags(string);
         if (tags != null) heart.library.addTag(tags);
         clipping.addTag(tags);

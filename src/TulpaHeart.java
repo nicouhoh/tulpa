@@ -44,7 +44,7 @@ public class TulpaHeart {
         int num = 0;
         for (Clipping c : library.clippings){
             String jsonPath = path + "/clippings/" + c.getId() + ".json";
-            tulpa.SOLE.saveJSONObject(c.data,path + "/clippings/" + c.getId() + ".json");
+            saveClippingData(c);
         }
     }
 
@@ -104,7 +104,7 @@ public class TulpaHeart {
             }
             clip.data.setString("text", text.toString());
         }
-        tulpa.SOLE.saveJSONObject(clip.data, path + "/clippings/" + clip.getId() + ".json");
+        saveClippingData(clip);
         clip.loadData();
         return clip;
     }
@@ -125,6 +125,10 @@ public class TulpaHeart {
         }
         System.out.println("BROOD: " + brood);
         return brood;
+    }
+
+    public void saveClippingData(Clipping c){
+        tulpa.SOLE.saveJSONObject(c.data, path + "/clippings/" + c.getId() + ".json");
     }
 
     public void selectClipping(Clipping clipping){

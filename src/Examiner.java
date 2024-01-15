@@ -50,7 +50,7 @@ public class Examiner extends Organelle implements Mousish {
 
     @Override
     public void mouseDown(Controller controller, Mouse mouse, int mod) {
-        controller.saveCurrentClippingData();
+        controller.saveClippingText();
         controller.changeContext(new ContactSheetContext(controller));
     }
 
