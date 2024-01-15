@@ -1,6 +1,6 @@
-import java.lang.reflect.Array;
+import processing.core.PApplet;
+
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Library {
     // TODO ermm can't this just extend ArrayList instead of having a reference to one
@@ -96,5 +96,10 @@ public class Library {
         for (Tag t : tags){
             clipping.addTag(t);
         }
+    }
+
+
+    public String getID(){
+        return "id" + PApplet.year() + PApplet.month() + PApplet.day() + PApplet.hour() + PApplet.minute() + PApplet.second();
     }
 }

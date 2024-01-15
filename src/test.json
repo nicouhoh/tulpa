@@ -1,0 +1,11 @@
+{
+  "clippingId": 312879123,
+  "author": "author name",
+  "date": "202304131309",
+  "lastEdited": "date and time",
+  "imagepath": "image path",
+  "text": "string",
+  "source": "source string",
+  "tags": [ "tag", "tag", "tag", "tag", "tag" ],
+  "glued": [ "id", "id" ]
+}

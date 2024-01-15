@@ -33,13 +33,10 @@ public class tulpa extends PApplet {
         heart = new TulpaHeart();
         controller = new Controller(heart, g);
 
-
-
         sdrop = new SDrop(this);
         registerMethod("keyEvent", this);
         registerMethod("mouseEvent", this);
 //        registerMethod("dropEvent", this);
-
     }
 
     public void pre(){

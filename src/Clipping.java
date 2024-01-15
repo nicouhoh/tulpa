@@ -3,46 +3,59 @@ import processing.core.PImage;
 import java.io.File;
 import java.util.ArrayList;
 
+import processing.core.PApplet; //FIXME TEMPORARY
+import processing.data.JSONObject;
+
 public class Clipping {
 
+    JSONObject data;
+
     PImage img;
-    String imgPath;
-
     Passage passage;
-    String textPath;
-
 
     boolean isSelected;
 
     ArrayList<Tag> tags = new ArrayList<Tag>();
 
     public Clipping(){
-        imgPath = "";
-        img = null;
-//        text = new ClippingText("", "Type here");
+        initializeMetaData();
     }
 
     public Clipping(File file) {
-        if (file.getName().contains(".jpg")) {
-            imgPath = file.getAbsolutePath();
-            img = tulpa.SOLE.loadImage(imgPath);
-//            text = new ClippingText("", "Type here");
-        } else if (file.getName().contains(".txt")){
-            textPath = file.getAbsolutePath();
-            imgPath = "";
-            String newText = "";
-            for (String s : tulpa.SOLE.loadStrings(textPath)){
-                newText += s;
-                newText += '\n';
-            }
-            passage = new Passage(newText);
-        }
+
+        initializeMetaData();
+
+//        if (file.getName().contains(".jpg")) {
+//            String imgPath = file.getAbsolutePath();
+//            data.setString("imagePath", imgPath);
+//        } else if (file.getName().contains(".txt")){
+//            String textPath = file.getAbsolutePath();
+//            StringBuilder newText = new StringBuilder();
+//            for (String s : tulpa.SOLE.loadStrings(textPath)){
+//                newText.append(s);
+//                newText.append('\n');
+//            }
+//            data.setString("text", newText.toString());
+//        }
+//        loadData();
     }
 
-    public Clipping(String string){
-        imgPath = "";
-        img = null;
-//        text = new ClippingText(string,"Type here");
+    public Clipping(JSONObject json){
+        setData(json);
+        loadData();
+    }
+
+    public void loadData(){
+        if (data.hasKey("imagePath")){
+            String path = data.getString("imagePath");
+            System.out.println("...loaded image: " + path);
+            img = tulpa.SOLE.loadImage(path);
+        }
+        if (data.hasKey("text")) {
+            String text = data.getString("text");
+            System.out.println("...loaded text: " + text);
+            passage = new Passage(text);
+        }
     }
 
     public void addTag(Tag t){
@@ -66,7 +79,7 @@ public class Clipping {
 
     public boolean taggedWith(Tag gubbe){
         for (Tag t : tags){
-            if (t.name.toLowerCase() == gubbe.name.toLowerCase()){
+            if (t.name.equalsIgnoreCase(gubbe.name.toLowerCase())){
                 return true;
             }
         }
@@ -79,5 +92,45 @@ public class Clipping {
 
     public boolean hasText(){
         return passage != null && !passage.text.isBlank();
+    }
+
+    public void setData(JSONObject data){
+        this.data = data;
+    }
+
+    public JSONObject getData(){
+        return data;
+    }
+
+    // all the metadata that doesn't involve any external information should go in here. Everything that's an assumed given.
+    public void initializeMetaData(){
+        JSONObject newData = new JSONObject();
+        String date = PApplet.str(PApplet.year()) + PApplet.nf(PApplet.month(), 2) + PApplet.nf(PApplet.day(), 2) + PApplet.nf(PApplet.hour(), 2) + PApplet.nf(PApplet.minute(), 2);
+        newData.setString("clippingId", date + System.identityHashCode(this));
+        newData.setString("dateCreated", date);
+        newData.setString("dateEdited", date);
+        newData.setString("author", "Gumby");
+        newData.setString("source", "a most reputable source");
+        setData(newData);
+    }
+
+    public String getId(){
+        return data.getString("clippingId");
+    }
+
+    public String getDateCreated(){
+        return data.getString("dateCreated");
+    }
+
+    public void setDateCreated(String date){
+        data.setString("dateCreated", date);
+    }
+
+    public String getDateEdited(){
+        return data.getString("dateEdited");
+    }
+
+    public void setDateEdited(String date){
+        data.setString("dateEdited", date);
     }
 }
