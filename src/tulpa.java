@@ -29,7 +29,6 @@ public class tulpa extends PApplet {
 
         SOLE = this;
 
-        System.out.println(Arrays.toString(PFont.list()));
         heart = new TulpaHeart();
         controller = new Controller(heart, g);
 
@@ -75,8 +74,6 @@ public class tulpa extends PApplet {
         PFont font = createFont(fontPath, 22, false);
         return font;
     }
-    //
-
 
     // -----------------------------------------------------------------
 

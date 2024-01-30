@@ -2,15 +2,18 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
+import processing.core.PFont;
 
 public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish {
 
     Clipping clipping;
 
     PVector offset = new PVector(0,0);
+    PFont font;
 
     public Thumbnail(PGraphics g, Clipping clipping){
         this.clipping = clipping;
+        font = tulpa.SOLE.getSkrivBordFont();
         addMousish(this);
         addDraggish(this);
     }
@@ -49,11 +52,12 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
             // caption
             if (clipping.passage.text.length() <= 300){
                 // TODO caption bg
-                Scribe scribe = new Scribe();
+                Twombly scribe = new Twombly();
                 drawThumbnail(g, x, y, w, h);
                 captionBG(g, x, y + h, w, h);
                 scribe.setGravity("bottom");
                 g.fill(233);
+                g.textFont(font);
                 scribe.text(g, clipping.passage.text, -1, x, y, w, h);
             }
             // long text with image
@@ -85,7 +89,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     public void drawThumbnail(PGraphics g, float x, float y, float w, float h){
         if (clipping.img != null)
             g.image(clipping.img, x, y, w, h);
-    };
+    }
 
     public void drawText(PGraphics g, float textX, float textY, float textW, float textH){
         drawText(g, textX, textY, textW, textH, 10, 255);

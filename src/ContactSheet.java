@@ -24,7 +24,7 @@ public class ContactSheet extends Organelle {
         for (Thumbnail t : getThumbnails()){
             t.createDropZones();
         }
-        updateChildren();
+        resizeChildren();
     }
 
     public void drawAfter(PGraphics g){

@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -45,9 +44,9 @@ public abstract class Organelle {
         return new ArrayList<Organelle>(children);
     }
 
-    public void performUpdate(float parentX, float parentY, float parentW, float parentH){
+    public void performResize(float parentX, float parentY, float parentW, float parentH){
         resize(parentX, parentY, parentW, parentH);
-        updateChildren();
+        resizeChildren();
     }
 
     public void resize(float parentX, float parentY, float parentW, float parentH){
@@ -58,9 +57,9 @@ public abstract class Organelle {
 //        setSize(parentW, parentH);
     }
 
-    public void updateChildren(){
+    public void resizeChildren(){
         for (Organelle child : getChildren()){
-            child.performUpdate(x, y, w, h);
+            child.performResize(x, y, w, h);
         }
     }
 

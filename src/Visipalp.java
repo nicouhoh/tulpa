@@ -18,7 +18,7 @@ public class Visipalp {
         this.heart = heart;
         this.controller = controller;
 
-        contactSheetView = new ContactSheetView();
+        contactSheetView = new ContactSheetView(heart);
         examinerView = new ExaminerView();
 
         displayAllClippings();
@@ -37,8 +37,8 @@ public class Visipalp {
     }
 
     public void update() {
-        contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
-        examinerView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        contactSheetView.performResize(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        examinerView.performResize(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     public ArrayList<Organelle> manifestClippings(ArrayList<Clipping> clippings){
@@ -84,5 +84,15 @@ public class Visipalp {
             if (centerX > t2.x && centerX < t2.x + t2.w) return t2;
         }
         return thumbnail;
+    }
+
+    public ArrayList<TagLink> createTagLinks(String[] tags){
+        ArrayList<TagLink> links = new ArrayList<TagLink>();
+        for (String tag : tags){
+            TagLink link = new TagLink(tag);
+            link.size(g);
+            links.add(link);
+        }
+        return links;
     }
 }

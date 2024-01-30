@@ -18,7 +18,7 @@ public class ContactSheetContext extends BaseContext {
 
     @Override
     public void resize(Visipalp visipalp){
-        contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        contactSheetView.performResize(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override
@@ -28,13 +28,12 @@ public class ContactSheetContext extends BaseContext {
 
     @Override
     public void receiveDropEvent(DropEvent e){
-        controller.heart.library.add(controller.heart.ingestFile(e.file()));
+        controller.heart.ingestFiles(e.file());
         controller.visipalp.displayAllClippingsAndKeepLatitude();
     }
 
     @Override
     public void backspace(){
-        // TODO make us stay in the same spot when deleting
         controller.heart.deleteSelectedClippings();
         controller.visipalp.displayAllClippings(controller.visipalp.contactSheetView.scroller.host.getLatitude());
     }
@@ -71,25 +70,7 @@ public class ContactSheetContext extends BaseContext {
     @Override
     public void zero(){
         contactSheetView.contactSheet.toggleViewMode();
-        contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
-    }
-
-    @Override
-    public void plus(){
-        contactSheetView.contactSheet.zoom(-1);
-        contactSheetView.scroller.updateChildren();
-    }
-
-    @Override
-    public void minus(){
-        contactSheetView.contactSheet.zoom(1);
-        contactSheetView.scroller.updateChildren();
-    }
-
-    @Override
-    public void equals(){
-        contactSheetView.contactSheet.zoom(-1);
-        contactSheetView.scroller.updateChildren();
+        contactSheetView.performResize(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override
@@ -103,4 +84,19 @@ public class ContactSheetContext extends BaseContext {
             }
         }
     }
+
+    @Override
+    public void ctrlType(char c){
+        switch (c){
+            case '=', '+' -> {
+                contactSheetView.contactSheet.zoom(-1);
+                contactSheetView.scroller.resizeChildren();
+            }
+            case '-' -> {
+                contactSheetView.contactSheet.zoom(1);
+                contactSheetView.scroller.resizeChildren();
+            }
+        }
+    }
+
 }

@@ -9,8 +9,8 @@ public class SkrivsakContext extends BaseContext {
 
     @Override
     public void resize(Visipalp visipalp){
-        visipalp.contactSheetView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
-        visipalp.examinerView.performUpdate(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        visipalp.contactSheetView.performResize(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
+        visipalp.examinerView.performResize(0, 0, tulpa.SOLE.width, tulpa.SOLE.height);
     }
 
     @Override

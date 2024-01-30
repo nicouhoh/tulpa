@@ -14,7 +14,7 @@ public class ScrollerRail extends Organelle implements Mousish {
     public void resize(float parentX, float parentY, float parentW, float parentH){
         setPos(parentX + parentW - scroller.scrollW, parentY);
         setSize(scroller.scrollW, parentH);
-        updateChildren();
+        resizeChildren();
     }
 
     @Override

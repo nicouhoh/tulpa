@@ -9,18 +9,16 @@ import java.util.ArrayList;
 public class TulpaHeart {
 
     Library library;
-    String path;
-
     ArrayList<Clipping> selectedClippings = new ArrayList<Clipping>();
+//    FileEater eater;
 
     public TulpaHeart(){
-        path = tulpa.SOLE.sketchPath() + "/data/";
-//        constructLibrary();
+//        this.eater = new FileEater();
         loadLibrary();
     }
 
-    // here we load the library from a folder of clipping jsons. TODO we'll probably also need an overall library JSON
     public void loadLibrary(){
+<<<<<<< HEAD
         File clippingData = new File(path + "/clippings/");
         System.out.println("LOADING DATA FROM " + clippingData.getName());
         File[] allData = tulpa.SOLE.listFiles(clippingData);
@@ -34,37 +32,39 @@ public class TulpaHeart {
         }
         library = new Library();
         library.add(brood);
+=======
+        library = new Library(getLibraryJSON());
+        File[] allData = PApplet.listFiles(new File(getClippingsPath()));
+        library.add(loadClippings(allData));
+        library.updateTags();
+>>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
     }
 
-    // here's the old way, for testing -- rebuilds the library each time from a folder.
-    public void constructLibrary(){
+    public void constructLibraryFromPath(String path){
         File data = new File(path);
         library = new Library();
-        library.add(ingestDirectory(data));
-        int num = 0;
+        FileEater eater = new FileEater(data);
+        eater.ingestDirectory();
         for (Clipping c : library.clippings){
-            String jsonPath = path + "/clippings/" + c.getId() + ".json";
             saveClippingData(c);
         }
     }
 
-    public Clipping createBlankClipping() {
-        Clipping larva = new Clipping();
-        larva.initializeMetaData();
-        return new Clipping();
-    }
-
-    public Clipping loadClipping(JSONObject json){
-        Clipping result = new Clipping();
-        result.setData(json);
-        result.loadData();
-        return result;
+    public ArrayList<Clipping> loadClippings(File[] jsons){
+        ArrayList<Clipping> brood = new ArrayList<Clipping>();
+        int num = 0;
+        for (File roe : jsons){
+            System.out.println("Loading clipping #" + num++ + ": " + roe);
+            brood.add(new Clipping(PApplet.loadJSONObject(roe)));
+        }
+        return brood;
     }
 
     public Library getLibrary(){
         return library;
     }
 
+<<<<<<< HEAD
     // takes a file, copies it to our data folder, and creates a clipping referring to it.
     // text will be copied directly into the json file.
     public Clipping ingestFile(File file) {
@@ -131,6 +131,8 @@ public class TulpaHeart {
         tulpa.SOLE.saveJSONObject(c.data, path + "/clippings/" + c.getId() + ".json");
     }
 
+=======
+>>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
     public void selectClipping(Clipping clipping){
         clearSelection();
         addToSelection(clipping);
@@ -191,4 +193,54 @@ public class TulpaHeart {
         selectClipping(clipping);
         return clipping;
     }
+<<<<<<< HEAD
+=======
+
+    public void tagClipping(Clipping clipping, String tagName){
+        if (!clipping.hasTag(tagName)){
+            clipping.data.getJSONArray("tags").append(tagName);
+        }
+        saveClippingData(clipping);
+
+        library.pigeonholer.addTag(library.libraryData, tagName);
+    }
+
+    public void tagClipping(Clipping clipping, ArrayList<String> tags){
+        for (String t : tags) {
+            tagClipping(clipping, t);
+        }
+    }
+
+    public JSONObject getLibraryJSON(){
+        return PApplet.loadJSONObject(new File(getDataPath() + "/librarydata.json"));
+    }
+
+    public void saveClippingData(Clipping c) {
+        tulpa.SOLE.saveJSONObject(c.data, getDataPath() + "/clippings/" + c.getId() + ".json");
+    }
+
+    public String getDataPath(){
+        return tulpa.SOLE.sketchPath() + "/data/";
+    }
+
+    public String getClippingsPath(){
+        return getDataPath() + "/clippings/";
+    }
+
+    public String getImagesPath(){
+        return getDataPath() + "/images/";
+    }
+
+    public void ingestFiles(File file){
+        FileEater eater = new FileEater(file);
+        if (eater.file.isFile()){
+            Clipping c = eater.ingestFile();
+            library.add(c);
+            c.loadData();
+        }
+        else if (eater.file.isDirectory()){
+            library.add(eater.ingestDirectory());
+        }
+    }
+>>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
 }

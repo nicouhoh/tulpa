@@ -9,7 +9,7 @@ public class Skrivsak extends Organelle implements Mousish{
     GapBuffer buffer;
 
     String palimpsest;
-    Scribe scribe;
+    Twombly scribe;
 
     int paperColor = 49;
     int textColor = 223;
@@ -20,7 +20,7 @@ public class Skrivsak extends Organelle implements Mousish{
     boolean focused;
 
     public Skrivsak(){
-        scribe = new Scribe();
+        scribe = new Twombly();
     }
 
     @Override

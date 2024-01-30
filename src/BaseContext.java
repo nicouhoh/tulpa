@@ -35,7 +35,7 @@ public class BaseContext {
         }
 
         if (e.getAction() == KeyEvent.PRESS) receiveKey(e);
-        else if (e.getAction() == KeyEvent.TYPE) receiveType(e.getKey());
+        else if (e.getAction() == KeyEvent.TYPE) receiveType(e);
     }
 
     public void receiveKey(KeyEvent e){
@@ -58,8 +58,9 @@ public class BaseContext {
         }
     }
 
-    public void receiveType(char c){
-        type(c);
+    public void receiveType(KeyEvent e){
+        if (e.getModifiers() == MouseEvent.CTRL) ctrlType(e.getKey());
+        else type(e.getKey());
     }
 
     public void receiveMouseEvent(Mouse mouse, Squeak squeak){}
@@ -89,4 +90,6 @@ public class BaseContext {
     public void minus() {}
     public void equals() {}
     public void type(char c) {}
+
+    public void ctrlType(char c){}
 }

@@ -1,7 +1,4 @@
 import processing.core.PApplet;
-import processing.core.PGraphics;
-
-import javax.swing.*;
 
 public class Scroller extends Organelle implements Mousish, Wheelish {
 
@@ -26,9 +23,9 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
     }
 
     @Override
-    public void updateChildren(){
-        host.performUpdate(x, y, w - scrollW, h);
-        rail.performUpdate(x, y, w, h);
+    public void resizeChildren(){
+        host.performResize(x, y, w - scrollW, h);
+        rail.performResize(x, y, w, h);
         grip.setGrip(h, host.h, host.latitude);
     }
 

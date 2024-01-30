@@ -11,7 +11,7 @@ public class ContactSheetView extends Organelle {
 
     boolean filtered = false;
 
-    public ContactSheetView(){
+    public ContactSheetView(TulpaHeart heart){
 
         nothing = new Nothing(49, 255);
         addChild(nothing);
@@ -19,7 +19,7 @@ public class ContactSheetView extends Organelle {
         scroller = new Scroller(contactSheet);
         nothing.addChild(scroller);
 
-        searchPanel = new SearchPanel();
+        searchPanel = new SearchPanel(heart);
         addChild(searchPanel);
     }
 

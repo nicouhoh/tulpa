@@ -19,6 +19,7 @@ public class Controller {
     public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
         visipalp = new Visipalp(g, this, heart);
+        updateTagList(visipalp.g);
         this.mouse = new Mouse(this);
         context = new ContactSheetContext(this);
     }
@@ -122,19 +123,27 @@ public class Controller {
         Clipping clipping = visipalp.examinerView.examiner.clipping;
         clipping.passage = new Passage(string);
 
-        if (string.isBlank()) return;
         clipping.data.setString("text", string);
         heart.saveClippingData(clipping);
 
+<<<<<<< HEAD
         ArrayList<Tag> tags = heart.library.parseTags(string);
         if (tags != null) heart.library.addTag(tags);
         clipping.addTag(tags);
+=======
+        if (string.isBlank()) return;
 
-        updateTagList();
+        ArrayList<String> tags = heart.library.findTagStrings(string);
+        if (tags != null) heart.library.pigeonholer.addTag(heart.library.libraryData, tags);
+        heart.tagClipping(clipping, tags);
+>>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
+
+        heart.library.findNewTags(clipping);
+        updateTagList(visipalp.g);
     }
 
-    public void updateTagList(){
-        visipalp.contactSheetView.searchPanel.tagList.setTags(heart.library.tags);
+    public void updateTagList(PGraphics g){
+        visipalp.contactSheetView.searchPanel.tagList.updateTagList(g, heart.getLibrary().pigeonholer.getTags(heart.library.libraryData));
     }
 
     public void displaySearchResults(String [] queryWords, String query){
@@ -146,24 +155,33 @@ public class Controller {
         visipalp.displayClippings(search(queryWords), query);
     }
 
+    public void displaySearchResults(String query){
+        displaySearchResults(query.trim().split(" +|\n+"), query);
+    }
+
     public ArrayList<Clipping> search(String[] query){ // "query" to sound professional and real
        // for now i'm only worrying about tags more to come later
 
         ArrayList<Clipping> results = new ArrayList<Clipping>();
 
         for (String term : query){
+<<<<<<< HEAD
             Tag tag = heart.library.getTagByName(term);
             if (tag != null) results.addAll(heart.library.getClippingsTagged(tag));
+=======
+            if (heart.library.pigeonholer.tagExists(heart.library.libraryData, term)){
+                results.addAll(heart.library.getClippingsWithTag(term));
+            }
+>>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
         }
         return results;
+    }
+
+    public ArrayList<Clipping> search(String query){
+        return search(query.trim().split(" +|\n+"));
     }
 
     public void clearSearch(){
         visipalp.displayAllClippings();
     }
-
-    public void setDisplayClippings(ArrayList<Clipping> clippings){
-
-    }
-
 }

@@ -6,12 +6,12 @@ public class SearchPanel extends Organelle {
     float openWidth = 300;
 
     SearchBar searchBar;
-    TagList tagList;
+    TagWall tagList;
 
-    public SearchPanel(){
+    public SearchPanel(TulpaHeart heart){
         searchBar = new SearchBar();
         searchBar.setMargin(2);
-        tagList = new TagList();
+        tagList = new TagWall(heart.library.pigeonholer);
         addChild(searchBar);
         addChild(tagList);
     }

@@ -36,8 +36,8 @@ public abstract class Symbiote extends Organelle {
     }
 
     @Override
-    public void updateChildren(){
-        host.updateChildren();
+    public void resizeChildren(){
+        host.resizeChildren();
     }
 
     @Override

@@ -1,6 +1,6 @@
 import processing.core.PGraphics;
 
-public class Scribe {
+public class Twombly {
 
     int[] textBreakStart;
     int[] textBreakStop;
@@ -15,7 +15,7 @@ public class Scribe {
 
         int wordBreak = 0;
         float x = 0;
-        int[] linebreaks = new int[input.length + 1];
+        int[] linebreaks = new int[input.length * 2]; //TODO this has to be figured out for real sooner or later
         linebreaks[0] = -1;
         int index = 1;
 
@@ -36,6 +36,7 @@ public class Scribe {
 
             // wrap lines
             if (x + g.textWidth(currentChar) > writeW){
+                if (textWidth(g, input, wordBreak, i) > writeW) return; // we were crashing when a single word was too wide for the writing box and so tried to wrap to the next line forever. now it simply won't display once there's no room.
                 linebreaks[index] = wordBreak;
                 x = textWidth(g, input, linebreaks[index], i);
                 index++;

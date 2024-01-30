@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import processing.core.PApplet; //FIXME TEMPORARY
+import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 public class Clipping {
@@ -15,7 +16,7 @@ public class Clipping {
 
     boolean isSelected;
 
-    ArrayList<Tag> tags = new ArrayList<Tag>();
+//    ArrayList<Tag> tags = new ArrayList<Tag>();
 
     public Clipping(){
         initializeMetaData();
@@ -24,20 +25,6 @@ public class Clipping {
     public Clipping(File file) {
 
         initializeMetaData();
-
-//        if (file.getName().contains(".jpg")) {
-//            String imgPath = file.getAbsolutePath();
-//            data.setString("imagePath", imgPath);
-//        } else if (file.getName().contains(".txt")){
-//            String textPath = file.getAbsolutePath();
-//            StringBuilder newText = new StringBuilder();
-//            for (String s : tulpa.SOLE.loadStrings(textPath)){
-//                newText.append(s);
-//                newText.append('\n');
-//            }
-//            data.setString("text", newText.toString());
-//        }
-//        loadData();
     }
 
     public Clipping(JSONObject json){
@@ -56,6 +43,7 @@ public class Clipping {
             System.out.println("...loaded text: " + text);
             passage = new Passage(text);
         }
+<<<<<<< HEAD
     }
 
     public void addTag(Tag t){
@@ -80,14 +68,22 @@ public class Clipping {
     public boolean taggedWith(Tag gubbe){
         for (Tag t : tags){
             if (t.name.equalsIgnoreCase(gubbe.name.toLowerCase())){
+=======
+    }
+
+    public boolean hasTag(String s){
+        for (String tag : getTags()){
+            if (s.equalsIgnoreCase(tag)){
+>>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
                 return true;
             }
         }
         return false;
     }
 
-    public ArrayList<Tag> getTags(){
-        return tags;
+    public String[] getTags(){
+        if (!data.hasKey("tags")) data.setJSONArray("tags", new JSONArray());
+        return data.getJSONArray("tags").toStringArray();
     }
 
     public boolean hasText(){
@@ -111,6 +107,7 @@ public class Clipping {
         newData.setString("dateEdited", date);
         newData.setString("author", "Gumby");
         newData.setString("source", "a most reputable source");
+        newData.setJSONArray("tags", new JSONArray());
         setData(newData);
     }
 
