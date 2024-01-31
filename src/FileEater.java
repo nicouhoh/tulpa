@@ -104,7 +104,6 @@ public class FileEater {
         return newName;
     }
 
-
     public Path filePath(){
         return Paths.get(file.getAbsolutePath());
     }

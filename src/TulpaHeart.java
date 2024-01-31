@@ -3,6 +3,7 @@ import processing.data.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.*;
 import java.util.ArrayList;
 
@@ -239,7 +240,9 @@ public class TulpaHeart {
             c.loadData();
         }
         else if (eater.file.isDirectory()){
-            library.add(eater.ingestDirectory());
+            ArrayList<Clipping> clippings = eater.ingestDirectory();
+            library.add(clippings);
+            for(Clipping c : clippings) c.loadData();
         }
     }
 >>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
