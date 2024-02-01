@@ -15,15 +15,22 @@ public class FileEater {
         this.file = file;
     }
 
+    public FileEater() {
+    }
+
     // takes a file, copies it to our data folder, and creates a clipping referring to it.
     // text will be copied directly into the json file.
-    public Clipping ingestFile() {
+    public Clipping hatchClippingFromFile() {
         System.out.println("INGESTING FILE: " + file.getName());
 
         Clipping clip = new Clipping();
-        importFile(clip);
+//        absorbFile(clip);
 
         return clip;
+    }
+
+    public ArrayList<Clipping> importAsClippings(){
+        throw new Error("Unknown filetype");
     }
 
     public ArrayList<Clipping> ingestDirectory() {
@@ -34,7 +41,7 @@ public class FileEater {
         for (File spawn : PApplet.listFiles(file)) {
             FileEater salmon = new FileEater(spawn);
             if (spawn.isFile()){
-                brood.add(salmon.ingestFile());
+                brood.add(salmon.hatchClippingFromFile());
             } else if (spawn.isDirectory()) {
                 brood.addAll(salmon.ingestDirectory());
             }
@@ -44,30 +51,6 @@ public class FileEater {
         return brood;
     }
 
-    public void importFile(Clipping clip){
-        if (isJPG()){
-            importJPG(clip);
-        }
-        else if (isText()){
-            clip.data.setString("text", importTXT());
-        }
-    }
-
-    // TODO refactor these two import functions some kinda way
-    public String importTXT() {
-        StringBuilder text = new StringBuilder();
-        for (String s : tulpa.SOLE.loadStrings(file.getAbsolutePath())){
-            text.append(s).append('\n');
-        }
-        return text.toString();
-    }
-
-    public void importJPG(Clipping clip) {
-        createDataDirectory("/images/");
-        Path importPath = getImportPath();
-        copyFile(filePath(), importPath);
-        clip.data.setString("imagePath", importPath.toString());
-    }
 
     public Path getImportPath(){
         String targetPathName = incrementDuplicateFilename(imagesPath() + file.getName());
@@ -108,22 +91,6 @@ public class FileEater {
         return Paths.get(file.getAbsolutePath());
     }
 
-    public boolean isJPG(){
-        return extensionIs(".jpg");
-    }
-
-    public boolean isText(){
-        return extensionIs(".txt");
-    }
-
-    public boolean extensionIs(String extension){
-        return file.getName().toLowerCase().endsWith(extension);
-    }
-
-    public boolean acceptableFile(){
-        return isJPG() || isText();
-    }
-
     // FIXME these are duplicated from tulpaheart
     public String getDataPath(){
         return tulpa.SOLE.sketchPath() + "/data/";
@@ -132,5 +99,10 @@ public class FileEater {
     public String imagesPath(){
         return getDataPath() + "/images/";
     }
+
+
+//    public Clipping brandClippingWithFilePath(Clipping clipping, String path){
+//        throw new Error("No file type");
+//    }
 
 }

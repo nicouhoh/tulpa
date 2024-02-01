@@ -12,13 +12,6 @@ public class TagWall extends Organelle implements IObserver {
     @Override
     public void resize(float parentX, float parentY, float parentW, float parentH){}
 
-    @Override
-    public void draw(PGraphics g){
-        g.stroke(255, 0, 255);
-        g.noFill();
-        g.rect(x, y, w, h);
-    }
-
     public void updateTagList(PGraphics g, String[] tags){
         children.clear();
 

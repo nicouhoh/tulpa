@@ -1,10 +1,14 @@
 import processing.core.PApplet;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import processing.data.JSONArray;
+=======
+>>>>>>> 14303b2 (refactoring)
 import processing.data.JSONObject;
 >>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Library {
@@ -26,15 +30,41 @@ public class Library {
     public Library(JSONObject json){
         clippings = new ArrayList<Clipping>();
         pigeonholer = new Pigeonholer();
-        loadLibraryData(json);
+        setLibraryData(json);
+        add(loadClippingDirectory(getClippingsPath()));
+        updateTags();
+    }
+
+    public ArrayList<Clipping> loadClippings(File[] jsons){
+        ArrayList<Clipping> brood = new ArrayList<Clipping>();
+        int num = 0;
+        for (File roe : jsons){
+            System.out.println("Loading clipping #" + num++ + ": " + roe);
+            brood.add(new Clipping(PApplet.loadJSONObject(roe)));
+        }
+        return brood;
+    }
+
+    public ArrayList<Clipping> loadClippingDirectory(File clippingPath){
+        return loadClippings(PApplet.listFiles(clippingPath));
     }
 
     public void add(Clipping clipping){
         clippings.add(clipping);
+        clipping.loadData(); // FIXME temporary
     }
 
     public void add(ArrayList<Clipping> clips){
         clippings.addAll(clips);
+        // FIXME temporary
+        for (Clipping c : clips){
+            c.loadData();
+        }
+    }
+
+    public void createEmptyClipping(){
+        Clipping beautifulBaby = new Clipping();
+        add(beautifulBaby);
     }
 
     public void remove(Clipping clipping){
@@ -116,6 +146,7 @@ public class Library {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void tagClipping(Clipping clipping, Tag tag){
         clipping.addTag(tag);
     }
@@ -136,6 +167,9 @@ public class Library {
     }
 
     public void loadLibraryData(JSONObject json){
+=======
+    public void setLibraryData(JSONObject json){
+>>>>>>> 14303b2 (refactoring)
         libraryData = json;
     }
 
@@ -152,5 +186,29 @@ public class Library {
     public boolean isTag(String word){
         return word.charAt(0) == '#';
     }
+<<<<<<< HEAD
 >>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
+=======
+
+    public String getDataPathName(){
+        return libraryData.getString("dataPath");
+    }
+
+    public File getDataPath(){
+        return new File(getDataPathName());
+    }
+
+    public File getClippingsPath(){
+        File clippingsDir = new File(getDataPathName() + "/clippings/");
+        if (!clippingsDir.exists()){
+            clippingsDir.mkdir();
+        }
+        return clippingsDir;
+    }
+
+    public File getImagesPath(){
+        return new File(getDataPathName() + "/images/");
+    }
+
+>>>>>>> 14303b2 (refactoring)
 }

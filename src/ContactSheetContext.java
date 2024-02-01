@@ -96,6 +96,10 @@ public class ContactSheetContext extends BaseContext {
                 contactSheetView.contactSheet.zoom(1);
                 contactSheetView.scroller.resizeChildren();
             }
+            case 'n', '\u000E' -> {
+                controller.heart.library.createEmptyClipping();
+                controller.visipalp.displayAllClippingsAndKeepLatitude();
+            }
         }
     }
 

@@ -2,9 +2,9 @@ import processing.core.PApplet;
 import processing.data.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Array;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class TulpaHeart {
@@ -14,6 +14,7 @@ public class TulpaHeart {
 //    FileEater eater;
 
     public TulpaHeart(){
+<<<<<<< HEAD
 //        this.eater = new FileEater();
         loadLibrary();
     }
@@ -39,26 +40,26 @@ public class TulpaHeart {
         library.add(loadClippings(allData));
         library.updateTags();
 >>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
+=======
+        library = new Library(getLibraryJSON());
+>>>>>>> 14303b2 (refactoring)
     }
 
-    public void constructLibraryFromPath(String path){
+    public void constructLibraryFromPath(String path, String newLibraryPath){
         File data = new File(path);
         library = new Library();
-        FileEater eater = new FileEater(data);
-        eater.ingestDirectory();
-        for (Clipping c : library.clippings){
-            saveClippingData(c);
-        }
+        ingestFiles(data);
     }
 
-    public ArrayList<Clipping> loadClippings(File[] jsons){
-        ArrayList<Clipping> brood = new ArrayList<Clipping>();
-        int num = 0;
-        for (File roe : jsons){
-            System.out.println("Loading clipping #" + num++ + ": " + roe);
-            brood.add(new Clipping(PApplet.loadJSONObject(roe)));
+    public void createNewLibrary(String desiredPath){
+        File root = new File(desiredPath + "/data/");
+        if (!root.exists()){
+            root.mkdir();
+            JSONObject newLibraryData = new JSONObject();
+            newLibraryData.setString("author", "Trazan Apansson");
+            newLibraryData.setString("dataPath", desiredPath + "/data/");
+            tulpa.SOLE.saveJSONObject(newLibraryData, root.getName());
         }
-        return brood;
     }
 
     public Library getLibrary(){
@@ -224,26 +225,34 @@ public class TulpaHeart {
         return tulpa.SOLE.sketchPath() + "/data/";
     }
 
-    public String getClippingsPath(){
-        return getDataPath() + "/clippings/";
-    }
-
-    public String getImagesPath(){
-        return getDataPath() + "/images/";
+    public FileEater createFileEater(File file){
+        if (file.isDirectory()) return new DirectoryEater(file);
+        else if (isJPG(file)) return new JPGEater(file);
+        else if (isText(file)) return new TXTEater(file);
+        else return null;
     }
 
     public void ingestFiles(File file){
-        FileEater eater = new FileEater(file);
-        if (eater.file.isFile()){
-            Clipping c = eater.ingestFile();
-            library.add(c);
-            c.loadData();
-        }
-        else if (eater.file.isDirectory()){
-            ArrayList<Clipping> clippings = eater.ingestDirectory();
-            library.add(clippings);
-            for(Clipping c : clippings) c.loadData();
+        ArrayList<Clipping> newClippings = createFileEater(file).importAsClippings();
+        library.add(newClippings);
+        for (Clipping c : newClippings){
+            saveClippingData(c);
         }
     }
+<<<<<<< HEAD
 >>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
+=======
+
+    public boolean extensionIs(File file, String extension){
+        return file.getName().toLowerCase().endsWith(extension);
+    }
+
+    public boolean isJPG(File file){
+        return extensionIs(file, ".jpg");
+    }
+
+    public boolean isText(File file){
+        return extensionIs(file, ".txt");
+    }
+>>>>>>> 14303b2 (refactoring)
 }
