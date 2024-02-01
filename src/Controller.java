@@ -119,24 +119,16 @@ public class Controller {
     }
 
     public void saveClippingText(){
-        String string = visipalp.examinerView.examiner.skrivbord.buffer.toString();
+        String bufferString = visipalp.examinerView.examiner.skrivbord.buffer.toString();
         Clipping clipping = visipalp.examinerView.examiner.clipping;
-        clipping.passage = new Passage(string);
+        clipping.passage = new Passage(bufferString);
 
-        clipping.data.setString("text", string);
+        clipping.data.setString("text", bufferString);
         heart.saveClippingData(clipping);
 
-<<<<<<< HEAD
-        ArrayList<Tag> tags = heart.library.parseTags(string);
-        if (tags != null) heart.library.addTag(tags);
-        clipping.addTag(tags);
-=======
-        if (string.isBlank()) return;
-
-        ArrayList<String> tags = heart.library.findTagStrings(string);
+        ArrayList<String> tags = heart.library.findTagStrings(bufferString);
         if (tags != null) heart.library.pigeonholer.addTag(heart.library.libraryData, tags);
         heart.tagClipping(clipping, tags);
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
 
         heart.library.findNewTags(clipping);
         updateTagList(visipalp.g);
@@ -165,14 +157,10 @@ public class Controller {
         ArrayList<Clipping> results = new ArrayList<Clipping>();
 
         for (String term : query){
-<<<<<<< HEAD
-            Tag tag = heart.library.getTagByName(term);
-            if (tag != null) results.addAll(heart.library.getClippingsTagged(tag));
-=======
+            if (term != null) results.addAll(heart.library.getClippingsTagged(term));
             if (heart.library.pigeonholer.tagExists(heart.library.libraryData, term)){
                 results.addAll(heart.library.getClippingsWithTag(term));
             }
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
         }
         return results;
     }

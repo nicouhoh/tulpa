@@ -11,20 +11,16 @@ public class TulpaHeart {
 
     Library library;
     ArrayList<Clipping> selectedClippings = new ArrayList<Clipping>();
-//    FileEater eater;
 
     public TulpaHeart(){
-<<<<<<< HEAD
-//        this.eater = new FileEater();
-        loadLibrary();
+        library = new Library(getLibraryJSON());
     }
 
     public void loadLibrary(){
-<<<<<<< HEAD
-        File clippingData = new File(path + "/clippings/");
+        File clippingData = new File(getDataPath() + "/clippings/");
         System.out.println("LOADING DATA FROM " + clippingData.getName());
-        File[] allData = tulpa.SOLE.listFiles(clippingData);
         ArrayList<Clipping> brood = new ArrayList<Clipping>();
+        File[] allData = PApplet.listFiles(library.getClippingsPath());
         int num = 0;
         for (File roe : allData){
             System.out.println("Loading clipping #" + num + ": " + roe);
@@ -34,15 +30,9 @@ public class TulpaHeart {
         }
         library = new Library();
         library.add(brood);
-=======
-        library = new Library(getLibraryJSON());
-        File[] allData = PApplet.listFiles(new File(getClippingsPath()));
-        library.add(loadClippings(allData));
+        library.add(library.loadClippings(allData));
         library.updateTags();
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
-=======
         library = new Library(getLibraryJSON());
->>>>>>> 14303b2 (refactoring)
     }
 
     public void constructLibraryFromPath(String path, String newLibraryPath){
@@ -66,75 +56,10 @@ public class TulpaHeart {
         return library;
     }
 
-<<<<<<< HEAD
-    // takes a file, copies it to our data folder, and creates a clipping referring to it.
-    // text will be copied directly into the json file.
-    public Clipping ingestFile(File file) {
-        String filename = file.getName();
-        System.out.println("INGESTING FILE: " + filename);
-        Path source = Paths.get(file.getAbsolutePath());
-        Clipping clip = new Clipping();
-
-
-        if (filename.toLowerCase().endsWith(".jpg")){
-//            Path target = Paths.get(path + "/images/" + filename);
-            String targetPath = path + "/images/" + filename;
-            String renamedPath = targetPath;
-
-            int num = 0;
-            while (new File(renamedPath).isFile()){
-                System.out.println("Duplicate filename, renaming");
-                num++;
-                int lastDotIndex = targetPath.lastIndexOf('.');
-                renamedPath = targetPath.substring(0, lastDotIndex) + PApplet.nf(num, 3) + targetPath.substring(lastDotIndex);
-            }
-            Path path = Paths.get(renamedPath);
-            try {
-                Files.copy(source, path);
-            } catch (IOException e) {
-                System.out.println("Error copying file.");
-                throw new RuntimeException(e);
-            }
-            clip.data.setString("imagePath", path.toString());
-        }
-        else if (filename.toLowerCase().endsWith(".txt")){
-            String textPath = file.getAbsolutePath();
-            StringBuilder text = new StringBuilder();
-            for (String s : tulpa.SOLE.loadStrings(textPath)){
-                text.append(s);
-                text.append('\n');
-            }
-            clip.data.setString("text", text.toString());
-        }
-        saveClippingData(clip);
-        clip.loadData();
-        return clip;
+    public void saveClippingData(Clipping c) {
+        tulpa.SOLE.saveJSONObject(c.data, getDataPath() + "/clippings/" + c.getId() + ".json");
     }
 
-    public ArrayList<Clipping> ingestDirectory(File dir) {
-        System.out.println("INCUBATE DIR");
-        File[] files = tulpa.SOLE.listFiles(dir);
-        ArrayList<Clipping> brood = new ArrayList<Clipping>();
-        if (files != null) {
-            for (File file : files) {
-                String filename = file.getName();
-                if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".txt")) {
-                    brood.add(ingestFile(file));
-                } else if (file.isDirectory()) {
-                    brood.addAll(ingestDirectory(file));
-                }
-            }
-        }
-        System.out.println("BROOD: " + brood);
-        return brood;
-    }
-
-    public void saveClippingData(Clipping c){
-        tulpa.SOLE.saveJSONObject(c.data, path + "/clippings/" + c.getId() + ".json");
-    }
-
-=======
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
     public void selectClipping(Clipping clipping){
         clearSelection();
         addToSelection(clipping);
@@ -195,8 +120,6 @@ public class TulpaHeart {
         selectClipping(clipping);
         return clipping;
     }
-<<<<<<< HEAD
-=======
 
     public void tagClipping(Clipping clipping, String tagName){
         if (!clipping.hasTag(tagName)){
@@ -208,6 +131,7 @@ public class TulpaHeart {
     }
 
     public void tagClipping(Clipping clipping, ArrayList<String> tags){
+        if (tags == null) return;
         for (String t : tags) {
             tagClipping(clipping, t);
         }
@@ -217,9 +141,6 @@ public class TulpaHeart {
         return PApplet.loadJSONObject(new File(getDataPath() + "/librarydata.json"));
     }
 
-    public void saveClippingData(Clipping c) {
-        tulpa.SOLE.saveJSONObject(c.data, getDataPath() + "/clippings/" + c.getId() + ".json");
-    }
 
     public String getDataPath(){
         return tulpa.SOLE.sketchPath() + "/data/";
@@ -239,9 +160,6 @@ public class TulpaHeart {
             saveClippingData(c);
         }
     }
-<<<<<<< HEAD
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
-=======
 
     public boolean extensionIs(File file, String extension){
         return file.getName().toLowerCase().endsWith(extension);
@@ -254,5 +172,4 @@ public class TulpaHeart {
     public boolean isText(File file){
         return extensionIs(file, ".txt");
     }
->>>>>>> 14303b2 (refactoring)
 }

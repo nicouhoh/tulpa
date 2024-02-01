@@ -1,12 +1,6 @@
 import processing.core.PApplet;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import processing.data.JSONArray;
-=======
->>>>>>> 14303b2 (refactoring)
 import processing.data.JSONObject;
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,12 +9,9 @@ public class Library {
     // TODO ermm can't this just extend ArrayList instead of having a reference to one
 
     ArrayList<Clipping> clippings;
-<<<<<<< HEAD
     ArrayList<Tag> tags = new ArrayList<Tag>();
-=======
     JSONObject libraryData;
     Pigeonholer pigeonholer;
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
 
     public Library(){
         clippings = new ArrayList<Clipping>();
@@ -28,9 +19,9 @@ public class Library {
     }
 
     public Library(JSONObject json){
+        setLibraryData(json);
         clippings = new ArrayList<Clipping>();
         pigeonholer = new Pigeonholer();
-        setLibraryData(json);
         add(loadClippingDirectory(getClippingsPath()));
         updateTags();
     }
@@ -75,19 +66,8 @@ public class Library {
         return clippings.indexOf(clipping);
     }
 
-<<<<<<< HEAD
-    public void addTag(Tag newTag){
-        if (getTagByName(newTag.name) == null) tags.add(newTag);
-    }
-
     public void addTag(String string){
         if (getTagByName(string) == null) tags.add(new Tag(string));
-    }
-
-    public void addTag(ArrayList<Tag> tags){
-        for (Tag t : tags){
-            addTag(t);
-        }
     }
 
     public Tag getTagByName(String tagName){
@@ -105,8 +85,6 @@ public class Library {
         return result;
     }
 
-=======
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
     public ArrayList<String> findTagStrings(String string){
         if (string.isBlank()) return null;
         // this just finds strings that look like tags and separates them out.
@@ -120,39 +98,28 @@ public class Library {
         return result;
     }
 
-<<<<<<< HEAD
-    public ArrayList<Tag> parseTags(String string){
-        // this separates a string out and returns a list of tags, creating new tags as necessary
-        ArrayList<Tag> foundTags = new ArrayList<Tag>();
-        ArrayList<String> strings = findTagStrings(string);
-        for (String word : strings){
-            foundTags.add(stringToTag(word));
-        }
-        return foundTags;
-    }
-
-    public ArrayList<Clipping> getClippingsTagged(Tag tag){
+    public ArrayList<Clipping> getClippingsTagged(String tag) {
         ArrayList<Clipping> basket = new ArrayList<Clipping>();
-        for (Clipping berry : clippings){
+        for (Clipping berry : clippings) {
             if (berry.taggedWith(tag)) basket.add(berry);
-=======
-    public ArrayList<Clipping> getClippingsWithTag(String tag){
-        ArrayList<Clipping> basket = new ArrayList<Clipping>();
-        for (Clipping berry : clippings){
-            if (berry.hasTag(tag)) basket.add(berry);
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
         }
         return basket;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public void tagClipping(Clipping clipping, Tag tag){
+    public ArrayList<Clipping> getClippingsWithTag(String tag){
+        ArrayList<Clipping> basket = new ArrayList<Clipping>();
+        for (Clipping berry : clippings){
+            if (berry.hasTag(tag)) basket.add(berry);
+        }
+        return basket;
+    }
+
+    public void tagClipping(Clipping clipping, String tag){
         clipping.addTag(tag);
     }
 
-    public void tagClipping(Clipping clipping, ArrayList<Tag> tags){
-        for (Tag t : tags){
+    public void tagClipping(Clipping clipping, ArrayList<String> tags){
+        for (String t : tags){
             clipping.addTag(t);
         }
     }
@@ -161,15 +128,12 @@ public class Library {
     public String getID(){
         return "id" + PApplet.year() + PApplet.month() + PApplet.day() + PApplet.hour() + PApplet.minute() + PApplet.second();
     }
-=======
-    public String getID(){
-        return "id" + PApplet.year() + PApplet.month() + PApplet.day() + PApplet.hour() + PApplet.minute() + PApplet.second();
-    }
 
     public void loadLibraryData(JSONObject json){
-=======
+
+    }
+
     public void setLibraryData(JSONObject json){
->>>>>>> 14303b2 (refactoring)
         libraryData = json;
     }
 
@@ -186,9 +150,6 @@ public class Library {
     public boolean isTag(String word){
         return word.charAt(0) == '#';
     }
-<<<<<<< HEAD
->>>>>>> 63ff47c (i've embarked on a big refactoring expedition. importing directories may be broken right now. from here on better refactoring practices.)
-=======
 
     public String getDataPathName(){
         return libraryData.getString("dataPath");
@@ -210,5 +171,4 @@ public class Library {
         return new File(getDataPathName() + "/images/");
     }
 
->>>>>>> 14303b2 (refactoring)
 }
