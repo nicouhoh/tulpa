@@ -2,9 +2,6 @@ import processing.core.PApplet;
 import processing.data.JSONObject;
 
 import java.io.File;
-import java.lang.reflect.Array;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class TulpaHeart {
@@ -16,40 +13,19 @@ public class TulpaHeart {
         library = new Library(getLibraryJSON());
     }
 
-    public void loadLibrary(){
-        File clippingData = new File(getDataPath() + "/clippings/");
-        System.out.println("LOADING DATA FROM " + clippingData.getName());
-        ArrayList<Clipping> brood = new ArrayList<Clipping>();
-        File[] allData = PApplet.listFiles(library.getClippingsPath());
-        int num = 0;
-        for (File roe : allData){
-            System.out.println("Loading clipping #" + num + ": " + roe);
-            num++;
-            Clipping salmon = new Clipping(PApplet.loadJSONObject(roe));
-            brood.add(salmon);
-        }
-        library = new Library();
-        library.add(brood);
-        library.add(library.loadClippings(allData));
-        library.updateTags();
-        library = new Library(getLibraryJSON());
-    }
-
-    public void constructLibraryFromPath(String path, String newLibraryPath){
-        File data = new File(path);
-        library = new Library();
-        ingestFiles(data);
-    }
-
     public void createNewLibrary(String desiredPath){
         File root = new File(desiredPath + "/data/");
-        if (!root.exists()){
+        if (!root.exists()) {
             root.mkdir();
-            JSONObject newLibraryData = new JSONObject();
-            newLibraryData.setString("author", "Trazan Apansson");
-            newLibraryData.setString("dataPath", desiredPath + "/data/");
-            tulpa.SOLE.saveJSONObject(newLibraryData, root.getName());
         }
+        JSONObject newLibraryData = new JSONObject();
+        newLibraryData.setString("author", "Trazan Apansson");
+        newLibraryData.setString("dataPath", desiredPath + "/data/");
+        tulpa.SOLE.saveJSONObject(newLibraryData, root.getName() + "librarydata.json");
+        library = new Library();
+        library.setLibraryData(newLibraryData);
+        File tempDir = new File("/home/nico/Pictures/images/");
+        ingestFiles(tempDir);
     }
 
     public Library getLibrary(){
@@ -57,7 +33,7 @@ public class TulpaHeart {
     }
 
     public void saveClippingData(Clipping c) {
-        tulpa.SOLE.saveJSONObject(c.data, getDataPath() + "/clippings/" + c.getId() + ".json");
+        tulpa.SOLE.saveJSONObject(c.data, getDataPath() + "clippings/" + c.getId() + ".json");
     }
 
     public void selectClipping(Clipping clipping){
@@ -109,8 +85,8 @@ public class TulpaHeart {
 
     public Clipping stepClipping(Clipping clipping, int step){
         int index = library.indexOf(clipping);
-        index = PApplet.constrain(index + step, 0, library.clippings.size() - 1);
-        return library.clippings.get(index);
+        index = PApplet.constrain(index + step, 0, library.getClippings().size() - 1);
+        return library.getClippings().get(index);
     }
 
     public Clipping stepSelection(int amount){
@@ -138,9 +114,8 @@ public class TulpaHeart {
     }
 
     public JSONObject getLibraryJSON(){
-        return PApplet.loadJSONObject(new File(getDataPath() + "/librarydata.json"));
+        return PApplet.loadJSONObject(new File(getDataPath() + "librarydata.json"));
     }
-
 
     public String getDataPath(){
         return tulpa.SOLE.sketchPath() + "/data/";

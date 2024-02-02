@@ -70,7 +70,7 @@ public class tulpa extends PApplet {
     }
 
     public PFont getSkrivBordFont(){
-        String fontPath = sketchPath() + "/data/iA Writer Duo/Variable/iAWriterDuoV.ttf";
+        String fontPath = sketchPath() + "/data/fonts/iA Writer Duo/Variable/iAWriterDuoV.ttf";
         PFont font = createFont(fontPath, 22, false);
         return font;
     }

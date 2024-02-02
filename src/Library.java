@@ -1,9 +1,10 @@
 import processing.core.PApplet;
-import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Library {
     // TODO ermm can't this just extend ArrayList instead of having a reference to one
@@ -167,8 +168,31 @@ public class Library {
         return clippingsDir;
     }
 
+    public ArrayList<Clipping> getClippings(){
+        return clippings;
+    }
+
+    public ArrayList<Clipping> getSortedClippings(){
+        ArrayList<Clipping> result = getClippings();
+        result.sort(idComparator());
+        return result;
+    }
+
+    public void sortClippings(){
+        clippings.sort(idComparator());
+    }
+
     public File getImagesPath(){
         return new File(getDataPathName() + "/images/");
+    }
+
+    public Comparator<Clipping> idComparator(){
+        return new Comparator<Clipping>(){
+            public int compare(Clipping i, Clipping j){
+                if (i.getIdInt() > j.getIdInt()) return -1;
+                else return 1;
+            }
+        };
     }
 
 }

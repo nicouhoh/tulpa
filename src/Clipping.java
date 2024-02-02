@@ -107,6 +107,10 @@ public class Clipping {
             return data.getString("clippingId");
         }
 
+        public int getIdInt(){
+            return PApplet.parseInt(getId());
+        }
+
         public String getDateCreated () {
             return data.getString("dateCreated");
         }
