@@ -3,6 +3,7 @@ import processing.data.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class TulpaHeart {
 
@@ -130,10 +131,17 @@ public class TulpaHeart {
 
     public void ingestFiles(File file){
         ArrayList<Clipping> newClippings = createFileEater(file).importAsClippings();
-        library.add(newClippings);
         for (Clipping c : newClippings){
-            saveClippingData(c);
+            introduceClipping(c);
         }
+    }
+
+    public void introduceClipping(Clipping c){
+        Date dateAdded = new Date();
+        c.data.setLong("dateAdded", dateAdded.getTime());
+
+        saveClippingData(c);
+        library.add(c);
     }
 
     public boolean extensionIs(File file, String extension){

@@ -60,7 +60,7 @@ public class Visipalp {
     public void displayAllClippings(float latitude){
         contactSheetView.clearContactSheet();
         contactSheetView.clearSearchHeader();
-        contactSheetView.setup(manifestClippings(controller.heart.getLibrary().getSortedClippings()));
+        contactSheetView.setup(manifestClippings(controller.heart.getLibrary().getClippings()));
         contactSheetView.filtered = false;
         update();
         contactSheetView.scroller.setHostLatitude(latitude);

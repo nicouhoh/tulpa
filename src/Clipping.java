@@ -2,6 +2,7 @@ import processing.core.PImage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 import processing.core.PApplet; //FIXME TEMPORARY
 import processing.data.JSONArray;
@@ -93,37 +94,36 @@ public class Clipping {
         // all the metadata that doesn't involve any external information should go in here. Everything that's an assumed given.
         public void initializeMetaData () {
             JSONObject newData = new JSONObject();
-            String date = PApplet.str(PApplet.year()) + PApplet.nf(PApplet.month(), 2) + PApplet.nf(PApplet.day(), 2) + PApplet.nf(PApplet.hour(), 2) + PApplet.nf(PApplet.minute(), 2);
-            newData.setString("clippingId", date + System.identityHashCode(this));
-            newData.setString("dateCreated", date);
-            newData.setString("dateEdited", date);
+            Date dateCreated = new Date();
+            newData.setLong("dateCreated", dateCreated.getTime());
+            newData.setLong("dateEdited", dateCreated.getTime());
             newData.setString("author", "Gumby");
             newData.setString("source", "a most reputable source");
             newData.setJSONArray("tags", new JSONArray());
             setData(newData);
         }
 
-        public String getId () {
-            return data.getString("clippingId");
+        public Long getId () {
+            return data.getLong("dateCreated");
         }
 
-        public int getIdInt(){
-            return PApplet.parseInt(getId());
+        public Date getDateCreated () {
+            return new Date(data.getLong("dateCreated"));
         }
 
-        public String getDateCreated () {
-            return data.getString("dateCreated");
+        public void setDateCreated (Date date){
+            data.setLong("dateCreated", date.getTime());
         }
 
-        public void setDateCreated (String date){
-            data.setString("dateCreated", date);
+        public Date getDateAdded(){
+            return new Date(data.getLong("dateAdded"));
         }
 
-        public String getDateEdited () {
-            return data.getString("dateEdited");
+        public Date getDateEdited () {
+            return new Date(data.getLong("dateEdited"));
         }
 
-        public void setDateEdited (String date){
-            data.setString("dateEdited", date);
+        public void setDateEdited (Date date){
+            data.setLong("dateEdited", date.getTime());
         }
     }

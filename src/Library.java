@@ -7,12 +7,13 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class Library {
-    // TODO ermm can't this just extend ArrayList instead of having a reference to one
 
     ArrayList<Clipping> clippings;
     ArrayList<Tag> tags = new ArrayList<Tag>();
     JSONObject libraryData;
     Pigeonholer pigeonholer;
+
+    private static int idCounter = 0;
 
     public Library(){
         clippings = new ArrayList<Clipping>();
@@ -125,11 +126,6 @@ public class Library {
         }
     }
 
-
-    public String getID(){
-        return "id" + PApplet.year() + PApplet.month() + PApplet.day() + PApplet.hour() + PApplet.minute() + PApplet.second();
-    }
-
     public void loadLibraryData(JSONObject json){
 
     }
@@ -169,6 +165,7 @@ public class Library {
     }
 
     public ArrayList<Clipping> getClippings(){
+        clippings.sort(idComparator());
         return clippings;
     }
 
@@ -189,10 +186,15 @@ public class Library {
     public Comparator<Clipping> idComparator(){
         return new Comparator<Clipping>(){
             public int compare(Clipping i, Clipping j){
-                if (i.getIdInt() > j.getIdInt()) return -1;
+                if (i.getDateAdded().compareTo(j.getDateAdded()) > 0){
+                    return -1;
+                }
                 else return 1;
             }
         };
     }
 
+    public static synchronized String createID(String date){
+        return date + PApplet.nf(idCounter, 4);
+    }
 }
