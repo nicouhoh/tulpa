@@ -2,8 +2,11 @@ import processing.core.PApplet;
 import processing.data.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 public class Library {
@@ -12,8 +15,6 @@ public class Library {
     ArrayList<Tag> tags = new ArrayList<Tag>();
     JSONObject libraryData;
     Pigeonholer pigeonholer;
-
-    private static int idCounter = 0;
 
     public Library(){
         clippings = new ArrayList<Clipping>();
@@ -62,6 +63,35 @@ public class Library {
 
     public void remove(Clipping clipping){
         clippings.remove(clipping);
+    }
+
+    public void trashClipping(Clipping clipping){
+        try {
+            Files.createDirectories(Paths.get(getDataPathName() + "trash/images/"));
+            Files.createDirectories(Paths.get(getDataPathName() + "trash/clippings/"));
+        } catch (IOException e){
+            System.out.println("Error creating trash folder");
+            throw new RuntimeException(e);
+        }
+
+        try {
+            Files.move(Paths.get(getDataPathName() + "clippings/" + clipping.getId() + ".json"),
+                    Paths.get(getDataPathName() + "trash/clippings/" + clipping.getId() + ".json"));
+        } catch (IOException e){
+            System.out.println("Error moving clipping to trash folder");
+            throw new RuntimeException(e);
+        }
+
+        try {
+            Path source = Paths.get(clipping.getImagePath());
+            Files.move(source,
+                    Paths.get(getDataPathName() + "trash/images/" + source.getFileName()));
+        } catch (IOException e){
+            System.out.println("Error moving image to trash folder");
+            throw new RuntimeException(e);
+        }
+
+        remove(clipping);
     }
 
     public int indexOf(Clipping clipping){
@@ -192,9 +222,5 @@ public class Library {
                 else return 1;
             }
         };
-    }
-
-    public static synchronized String createID(String date){
-        return date + PApplet.nf(idCounter, 4);
     }
 }

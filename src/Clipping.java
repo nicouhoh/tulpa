@@ -97,6 +97,7 @@ public class Clipping {
             Date dateCreated = new Date();
             newData.setLong("dateCreated", dateCreated.getTime());
             newData.setLong("dateEdited", dateCreated.getTime());
+            newData.setLong("dateAdded", dateCreated.getTime());
             newData.setString("author", "Gumby");
             newData.setString("source", "a most reputable source");
             newData.setJSONArray("tags", new JSONArray());
@@ -126,4 +127,9 @@ public class Clipping {
         public void setDateEdited (Date date){
             data.setLong("dateEdited", date.getTime());
         }
+
+        public String getImagePath(){
+            return data.getString("imagePath");
+        }
+
     }

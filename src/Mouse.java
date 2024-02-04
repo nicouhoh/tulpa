@@ -57,7 +57,7 @@ public class Mouse {
             }
             case MouseEvent.WHEEL -> {
                 Organelle target = captureAndBubble(root, squeak);
-                if (target.wheelish == null) return;
+                if (target == null || target.wheelish == null) return;
                 target.wheelish.wheel(controller, squeak.getCount());
             }
             case MouseEvent.DRAG -> {

@@ -74,12 +74,12 @@ public class TulpaHeart {
 
     public void deleteClipping(Clipping clipping){
         removeFromSelection(clipping);
-        library.remove(clipping);
+        library.trashClipping(clipping);
     }
 
     public void deleteSelectedClippings(){
         for (Clipping clipping : selectedClippings){
-            library.remove(clipping);
+            library.trashClipping(clipping);
         }
         clearSelection();
     }
