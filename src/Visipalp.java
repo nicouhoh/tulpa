@@ -31,7 +31,7 @@ public class Visipalp {
     }
 
     public void drawClippingView(){
-        if (heart.selectedClippings.size() == 1) {
+        if (heart.selection.size() == 1) {
             examinerView.performDraw(g, 0, tulpa.SOLE.height);
         }
     }

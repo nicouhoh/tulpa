@@ -2,9 +2,9 @@ import processing.core.PGraphics;
 
 public class TagWall extends Organelle implements IObserver {
 
-    Pigeonholer pigeonholer;
+    TagList pigeonholer;
 
-    public TagWall(Pigeonholer pigeonholer){
+    public TagWall(TagList pigeonholer){
         this.pigeonholer = pigeonholer;
         pigeonholer.registerObserver(this);
     }

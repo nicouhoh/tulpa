@@ -12,21 +12,20 @@ import java.util.Comparator;
 public class Library {
 
     ArrayList<Clipping> clippings;
-    ArrayList<Tag> tags = new ArrayList<Tag>();
     JSONObject libraryData;
-    Pigeonholer pigeonholer;
+    TagList tagList;
 
     public Library(){
         clippings = new ArrayList<Clipping>();
-        pigeonholer = new Pigeonholer();
+        tagList = new TagList();
     }
 
     public Library(JSONObject json){
         setLibraryData(json);
         clippings = new ArrayList<Clipping>();
-        pigeonholer = new Pigeonholer();
+        tagList = new TagList();
         add(loadClippingDirectory(getClippingsPath()));
-        updateTags();
+        tagList.updateTags(clippings, libraryData);
     }
 
     public ArrayList<Clipping> loadClippings(File[] jsons){
@@ -82,13 +81,15 @@ public class Library {
             throw new RuntimeException(e);
         }
 
-        try {
-            Path source = Paths.get(clipping.getImagePath());
-            Files.move(source,
-                    Paths.get(getDataPathName() + "trash/images/" + source.getFileName()));
-        } catch (IOException e){
-            System.out.println("Error moving image to trash folder");
-            throw new RuntimeException(e);
+        if (clipping.getImagePath() != null) {
+            try {
+                Path source = Paths.get(clipping.getImagePath());
+                Files.move(source,
+                        Paths.get(getDataPathName() + "trash/images/" + source.getFileName()));
+            } catch (IOException e) {
+                System.out.println("Error moving image to trash folder");
+                throw new RuntimeException(e);
+            }
         }
 
         remove(clipping);
@@ -96,25 +97,6 @@ public class Library {
 
     public int indexOf(Clipping clipping){
         return clippings.indexOf(clipping);
-    }
-
-    public void addTag(String string){
-        if (getTagByName(string) == null) tags.add(new Tag(string));
-    }
-
-    public Tag getTagByName(String tagName){
-        // returns a tag from the library that matches the string, if it exists. otherwise returns null
-        for (Tag t : tags){
-            if (t.name.equals(tagName.toLowerCase())) return t;
-        }
-        return null;
-    }
-
-    public Tag stringToTag(String string){
-        // returns either an existing tag that matches the string or creates one if it doesn't exist in the library
-        Tag result = getTagByName(string);
-        if (result == null) result = new Tag(string);
-        return result;
     }
 
     public ArrayList<String> findTagStrings(String string){
@@ -130,48 +112,8 @@ public class Library {
         return result;
     }
 
-    public ArrayList<Clipping> getClippingsTagged(String tag) {
-        ArrayList<Clipping> basket = new ArrayList<Clipping>();
-        for (Clipping berry : clippings) {
-            if (berry.taggedWith(tag)) basket.add(berry);
-        }
-        return basket;
-    }
-
-    public ArrayList<Clipping> getClippingsWithTag(String tag){
-        ArrayList<Clipping> basket = new ArrayList<Clipping>();
-        for (Clipping berry : clippings){
-            if (berry.hasTag(tag)) basket.add(berry);
-        }
-        return basket;
-    }
-
-    public void tagClipping(Clipping clipping, String tag){
-        clipping.addTag(tag);
-    }
-
-    public void tagClipping(Clipping clipping, ArrayList<String> tags){
-        for (String t : tags){
-            clipping.addTag(t);
-        }
-    }
-
-    public void loadLibraryData(JSONObject json){
-
-    }
-
     public void setLibraryData(JSONObject json){
         libraryData = json;
-    }
-
-    public void findNewTags(Clipping c){
-        pigeonholer.addTag(libraryData, c.getTags());
-    }
-
-    public void updateTags(){
-        for (Clipping c : clippings){
-            findNewTags(c);
-        }
     }
 
     public boolean isTag(String word){

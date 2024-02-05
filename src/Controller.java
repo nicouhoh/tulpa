@@ -46,20 +46,16 @@ public class Controller {
     }
 
     public void selectClipping(Clipping clipping){
-        heart.selectClipping(clipping);
+        heart.selection.select(clipping);
         setUpClippingView();
     }
 
-    public void toggleSelection(Clipping clipping){
-        heart.toggleSelection(clipping);
-    }
-
     public void addSelection(Clipping clipping){
-        heart.addToSelection(clipping);
+        heart.selection.add(clipping);
     }
 
     public void removeSelection(Clipping clipping){
-        heart.removeFromSelection(clipping);
+        heart.selection.remove(clipping);
     }
 
     public Thumbnail findThumbnail(Clipping clipping){
@@ -70,7 +66,7 @@ public class Controller {
     }
 
     public void horizontalStepSelect(int direction){
-        if (heart.selectedClippings.size() != 1) return;
+        if (heart.selection.size() != 1) return;
         Clipping clip = heart.stepSelection(direction);
         Thumbnail thumb = findThumbnail(clip);
         visipalp.contactSheetView.scroller.jumpToOrganelle(thumb, visipalp.contactSheetView.contactSheet.getGutter());
@@ -78,10 +74,10 @@ public class Controller {
     }
 
     public void verticalStepSelect(int direction){
-        if (heart.selectedClippings.size() != 1) return;
-        Thumbnail selectedThumb = findThumbnail(heart.selectedClippings.get(0));
+        if (heart.selection.size() != 1) return;
+        Thumbnail selectedThumb = findThumbnail(heart.selection.get(0));
         Thumbnail targetThumb = visipalp.verticalStep(selectedThumb, direction);
-        heart.selectClipping(targetThumb.clipping);
+        heart.selection.select(targetThumb.clipping);
         visipalp.contactSheetView.scroller.jumpToOrganelle(targetThumb, visipalp.contactSheetView.contactSheet.getGutter());
         visipalp.examinerView.setup(targetThumb.clipping);
         setUpClippingView();
@@ -99,12 +95,12 @@ public class Controller {
     }
 
     public void openExaminer(){
-        if(heart.selectedClippings.size() != 1) return;
+        if(heart.selection.size() != 1) return;
         changeContext(new ExaminerContext(this, visipalp.examinerView.examiner));
     }
 
     public void openExaminer(char c){
-        if(heart.selectedClippings.size() != 1) return;
+        if(heart.selection.size() != 1) return;
         changeContext(new ExaminerContext(this, visipalp.examinerView.examiner));
         context.type(c);
     }
@@ -114,7 +110,7 @@ public class Controller {
     }
 
     public void setUpClippingView(){
-        visipalp.examinerView.setup(heart.getSelectedClippings().get(0));
+        visipalp.examinerView.setup(heart.selection.get(0));
         visipalp.update();
     }
 
@@ -127,15 +123,15 @@ public class Controller {
         heart.saveClippingData(clipping);
 
         ArrayList<String> tags = heart.library.findTagStrings(bufferString);
-        if (tags != null) heart.library.pigeonholer.addTag(heart.library.libraryData, tags);
+        if (tags != null) heart.library.tagList.addTag(heart.library.libraryData, tags);
         heart.tagClipping(clipping, tags);
 
-        heart.library.findNewTags(clipping);
+        heart.library.tagList.addTag(heart.library.libraryData, clipping.getTags());
         updateTagList(visipalp.g);
     }
 
     public void updateTagList(PGraphics g){
-        visipalp.contactSheetView.searchPanel.tagList.updateTagList(g, heart.getLibrary().pigeonholer.getTags(heart.library.libraryData));
+        visipalp.contactSheetView.searchPanel.tagList.updateTagList(g, heart.getLibrary().tagList.getTags(heart.library.libraryData));
     }
 
     public void displaySearchResults(String [] queryWords, String query){
@@ -157,9 +153,9 @@ public class Controller {
         ArrayList<Clipping> results = new ArrayList<Clipping>();
 
         for (String term : query){
-            if (term != null) results.addAll(heart.library.getClippingsTagged(term));
-            if (heart.library.pigeonholer.tagExists(heart.library.libraryData, term)){
-                results.addAll(heart.library.getClippingsWithTag(term));
+            if (term != null) results.addAll(heart.library.tagList.getClippingsTagged(heart.library.getClippings(), term));
+            if (heart.library.tagList.tagExists(heart.library.libraryData, term)){
+                results.addAll(heart.library.tagList.getClippingsTagged(heart.library.getClippings(), term));
             }
         }
         return results;

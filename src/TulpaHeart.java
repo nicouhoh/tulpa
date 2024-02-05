@@ -8,10 +8,11 @@ import java.util.Date;
 public class TulpaHeart {
 
     Library library;
-    ArrayList<Clipping> selectedClippings = new ArrayList<Clipping>();
+    Selection selection;
 
     public TulpaHeart(){
         library = new Library(getLibraryJSON());
+        selection = new Selection();
     }
 
     public void createNewLibrary(String desiredPath){
@@ -37,51 +38,16 @@ public class TulpaHeart {
         tulpa.SOLE.saveJSONObject(c.data, getDataPath() + "clippings/" + c.getId() + ".json");
     }
 
-    public void selectClipping(Clipping clipping){
-        clearSelection();
-        addToSelection(clipping);
-    }
-
-    public void clearSelection(){
-        for (Clipping c : selectedClippings){
-            c.isSelected = false;
-        }
-        selectedClippings.clear();
-    }
-
-    public void addToSelection(Clipping c){
-        if (selectedClippings.contains(c)) return;
-        c.isSelected = true;
-        selectedClippings.add(c);
-    }
-
-    public void removeFromSelection(Clipping c){
-        if (!selectedClippings.contains(c)) return;
-        c.isSelected = false;
-        selectedClippings.remove(c);
-    }
-
-    public void toggleSelection(Clipping c){
-        if (selectedClippings.contains(c)){
-            removeFromSelection(c);
-        }
-        else addToSelection(c);
-    }
-
-    public ArrayList<Clipping> getSelectedClippings(){
-        return selectedClippings;
-    }
-
     public void deleteClipping(Clipping clipping){
-        removeFromSelection(clipping);
+        selection.remove(clipping);
         library.trashClipping(clipping);
     }
 
     public void deleteSelectedClippings(){
-        for (Clipping clipping : selectedClippings){
+        for (Clipping clipping : selection.getClippings()){
             library.trashClipping(clipping);
         }
-        clearSelection();
+        selection.clear();
     }
 
     public Clipping stepClipping(Clipping clipping, int step){
@@ -92,9 +58,9 @@ public class TulpaHeart {
 
     public Clipping stepSelection(int amount){
         // steps the selection forward or back by amount; returns the newly selected clipping if successful
-        if (selectedClippings.size() != 1) return null;
-        Clipping clipping = stepClipping(selectedClippings.get(0), amount);
-        selectClipping(clipping);
+        if (selection.getClippings().size() != 1) return null;
+        Clipping clipping = stepClipping(selection.get(0), amount);
+        selection.select(clipping);
         return clipping;
     }
 
@@ -104,7 +70,7 @@ public class TulpaHeart {
         }
         saveClippingData(clipping);
 
-        library.pigeonholer.addTag(library.libraryData, tagName);
+        library.tagList.addTag(library.libraryData, tagName);
     }
 
     public void tagClipping(Clipping clipping, ArrayList<String> tags){

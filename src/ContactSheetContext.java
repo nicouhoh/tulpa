@@ -60,7 +60,7 @@ public class ContactSheetContext extends BaseContext {
 
     @Override
     public void esc(){
-        if (!controller.heart.selectedClippings.isEmpty()) controller.heart.clearSelection();
+        if (!controller.heart.selection.isEmpty()) controller.heart.selection.clear();
         else if (contactSheetView.filtered){
             controller.visipalp.displayAllClippings();
             contactSheetView.searchPanel.searchBar.clear();

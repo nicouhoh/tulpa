@@ -11,7 +11,7 @@ public class SearchPanel extends Organelle {
     public SearchPanel(TulpaHeart heart){
         searchBar = new SearchBar();
         searchBar.setMargin(2);
-        tagList = new TagWall(heart.library.pigeonholer);
+        tagList = new TagWall(heart.library.tagList);
         addChild(searchBar);
         addChild(tagList);
     }
