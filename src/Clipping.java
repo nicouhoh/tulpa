@@ -118,4 +118,18 @@ public class Clipping {
     public void setSource(String source){
         data.setString("source", source);
     }
+
+    public void removeTag(String tag){
+        if (!hasTag(tag)) return;
+        data.getJSONArray("tags").remove(getTagIndex(tag));
+    }
+
+    public int getTagIndex(String tag){
+        for (int i = 0; i < getTags().length; i++){
+            if (getTags()[i].equalsIgnoreCase(tag)){
+                return i;
+            }
+        }
+        throw new Error("tag not found");
+    }
 }

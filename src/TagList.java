@@ -58,9 +58,29 @@ public class TagList implements ISubject {
     }
 
     public void purgeEmptyTags(JSONObject data, ArrayList<Clipping> clippings){
-        for (String tag : getTags(data)){
-            if (count(clippings, tag) == 0) removeTag(data.getJSONArray("tags"), tag);
+        for (String tag : findDeadTags(data, clippings)){
+            if (tag.equalsIgnoreCase("test")){
+                System.out.println("Stop!");
+            }
+            removeTag(data.getJSONArray("tags"), tag);
         }
+    }
+
+    public ArrayList<String> findDeadTags(JSONObject data, ArrayList<Clipping> clippings){
+        ArrayList<String> result = new ArrayList<>();
+        for (String tag : getTags(data)){
+            if (tag.equalsIgnoreCase("test")){
+                System.out.println("Stop!");
+            }
+            if (isDead(tag, clippings)){
+                result.add(tag);
+            }
+        }
+        return result;
+    }
+
+    public boolean isDead(String tag, ArrayList<Clipping> clippings){
+        return count(clippings, tag) == 0;
     }
 
     public void updateTags(ArrayList<Clipping> clippings, JSONObject libraryData){

@@ -6,14 +6,14 @@ public class SearchPanel extends Organelle {
     float openWidth = 300;
 
     SearchBar searchBar;
-    TagWall tagList;
+    TagWall tagWall;
 
     public SearchPanel(TulpaHeart heart){
         searchBar = new SearchBar();
         searchBar.setMargin(2);
-        tagList = new TagWall(heart.library.tagList);
+        tagWall = new TagWall(heart.library.tagList);
         addChild(searchBar);
-        addChild(tagList);
+        addChild(tagWall);
     }
 
     @Override
@@ -22,7 +22,7 @@ public class SearchPanel extends Organelle {
         panel.divideTop(50);
         searchBar.setBounds(panel.divideTop(30).shrink(10, 0));
         panel.divideTop(50);
-        tagList.setBounds(panel.shrink(10, 10));
+        tagWall.setBounds(panel.shrink(10, 10));
     }
 
     @Override

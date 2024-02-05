@@ -19,7 +19,7 @@ public class Controller {
     public Controller(TulpaHeart heart, PGraphics g){
         this.heart = heart;
         visipalp = new Visipalp(g, this, heart);
-        updateTagList(visipalp.g);
+        updateTagWall(visipalp.g);
         this.mouse = new Mouse(this);
         context = new ContactSheetContext(this);
     }
@@ -126,12 +126,19 @@ public class Controller {
         if (tags != null) heart.library.tagList.addTag(heart.library.libraryData, tags);
         heart.tagClipping(clipping, tags);
 
+        for (String tag : clipping.getTags()){
+            if (!heart.library.findTagStrings(bufferString).contains(tag)){
+                clipping.removeTag(tag);
+            }
+        }
+
         heart.library.tagList.addTag(heart.library.libraryData, clipping.getTags());
-        updateTagList(visipalp.g);
+        heart.library.tagList.updateTags(heart.library.getClippings(), heart.library.libraryData);
+        updateTagWall(visipalp.g);
     }
 
-    public void updateTagList(PGraphics g){
-        visipalp.contactSheetView.searchPanel.tagList.updateTagList(g, heart.getLibrary().tagList.getTags(heart.library.libraryData));
+    public void updateTagWall(PGraphics g){
+        visipalp.contactSheetView.searchPanel.tagWall.updateTagList(g, heart.getLibrary().tagList.getTags(heart.library.libraryData));
     }
 
     public void displaySearchResults(String [] queryWords, String query){
