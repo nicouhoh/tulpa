@@ -1,12 +1,15 @@
 import processing.data.JSONArray;
 import processing.data.JSONObject;
+import processing.data.StringList;
 
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class TagList implements ISubject {
 
-
     ArrayList<IObserver> observers;
+
     public TagList(){
         observers = new ArrayList<IObserver>();
     }
@@ -88,6 +91,7 @@ public class TagList implements ISubject {
             addTag(libraryData, c.getTags());
         }
         purgeEmptyTags(libraryData, clippings);
+        sortTags(libraryData);
     }
 
     public int count(ArrayList<Clipping> clippings, String tag){
@@ -97,6 +101,13 @@ public class TagList implements ISubject {
         }
         return result;
     }
+
+    public void sortTags(JSONObject data){
+        StringList sorted = data.getJSONArray("tags").toStringList();
+        sorted.sort();
+        data.setJSONArray("tags", new JSONArray(sorted));
+    }
+
 
     // ----------------------------------------------------
 

@@ -129,6 +129,7 @@ public class Controller {
         for (String tag : clipping.getTags()){
             if (!heart.library.findTagStrings(bufferString).contains(tag)){
                 clipping.removeTag(tag);
+                heart.saveClippingData(clipping);
             }
         }
 
@@ -160,7 +161,6 @@ public class Controller {
         ArrayList<Clipping> results = new ArrayList<Clipping>();
 
         for (String term : query){
-            if (term != null) results.addAll(heart.library.tagList.getClippingsTagged(heart.library.getClippings(), term));
             if (heart.library.tagList.tagExists(heart.library.libraryData, term)){
                 results.addAll(heart.library.tagList.getClippingsTagged(heart.library.getClippings(), term));
             }
