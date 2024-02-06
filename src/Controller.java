@@ -143,33 +143,17 @@ public class Controller {
     }
 
     public void displaySearchResults(String [] queryWords, String query){
-        ArrayList<Clipping> searchResults = search(queryWords);
-        if (searchResults.isEmpty()){
-            System.out.println("NO RESULTS");
-            return;
-        }
-        visipalp.displayClippings(search(queryWords), query);
+        ArrayList<Clipping> searchResults = heart.library.search(queryWords, heart.library.getClippings());
+        if (searchResults.isEmpty()) System.out.println("NO RESULTS");
+        else visipalp.displayClippings(heart.library.search(queryWords, heart.library.getClippings()), query);
     }
 
     public void displaySearchResults(String query){
         displaySearchResults(query.trim().split(" +|\n+"), query);
     }
 
-    public ArrayList<Clipping> search(String[] query){ // "query" to sound professional and real
-       // for now i'm only worrying about tags more to come later
-
-        ArrayList<Clipping> results = new ArrayList<Clipping>();
-
-        for (String term : query){
-            if (heart.library.tagList.tagExists(heart.library.libraryData, term)){
-                results.addAll(heart.library.tagList.getClippingsTagged(heart.library.getClippings(), term));
-            }
-        }
-        return results;
-    }
-
     public ArrayList<Clipping> search(String query){
-        return search(query.trim().split(" +|\n+"));
+        return heart.library.search(query.trim().split(" +|\n+"), heart.library.getClippings());
     }
 
     public void clearSearch(){

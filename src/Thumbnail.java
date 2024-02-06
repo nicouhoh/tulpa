@@ -54,10 +54,10 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
                 // TODO caption bg
                 Twombly scribe = new Twombly();
                 drawThumbnail(g, x, y, w, h);
-                captionBG(g, x, y + h, w, h);
                 scribe.setGravity("bottom");
                 g.fill(233);
                 g.textFont(font);
+                g.textSize(18);
                 scribe.text(g, clipping.passage.text, -1, x, y, w, h);
             }
             // long text with image
@@ -67,16 +67,6 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
                 g.tint(255);
                 drawText(g, x, y, w, h);
             }
-        }
-    }
-
-    public void captionBG(PGraphics g, float x, float y, float w, float h){
-        g.noFill();
-        for (int i = (int)y; i <= y+h; i++){
-            float inter = PApplet.map(i, y, y+h, 0, 1);
-            float c = PApplet.lerp(0, 255, inter);
-            g.stroke(0, c);
-            g.line(x, i, x+w, i);
         }
     }
 

@@ -165,4 +165,17 @@ public class Library {
             }
         };
     }
+
+    public ArrayList<Clipping> search(String[] query, ArrayList<Clipping> clippings){ // "query" to sound professional and real
+        // for now i'm only worrying about tags, more to come later
+
+        ArrayList<Clipping> results = new ArrayList<Clipping>();
+
+        for (String term : query){
+            if (tagList.tagExists(libraryData, term)){
+                results.addAll(tagList.getClippingsTagged(clippings, term));
+            }
+        }
+        return results;
+    }
 }
