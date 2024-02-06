@@ -42,19 +42,18 @@ public class Visipalp {
     }
 
     public ArrayList<Organelle> manifestClippings(ArrayList<Clipping> clippings){
-        ArrayList<Organelle> thumbs = new ArrayList<Organelle>();
-        for (Clipping clip : clippings){
-            thumbs.add(new Thumbnail(g, clip));
-        }
-        return thumbs;
+        ThumbManifestory manifestory = new ThumbManifestory(clippings);
+        return manifestory.manifestThumbnails(g);
     }
 
     public void displayAllClippings(ArrayList<Clipping> clippings){
         displayAllClippings(clippings, 0);
+        update();
     }
 
     public void displayAllClippingsAndKeepLatitude(ArrayList<Clipping> clippings){
         displayAllClippings(clippings, contactSheetView.scroller.host.getLatitude());
+        update();
     }
 
     public void displayAllClippings(ArrayList<Clipping> clippings, float latitude){
