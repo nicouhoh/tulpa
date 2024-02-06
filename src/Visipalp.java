@@ -21,7 +21,7 @@ public class Visipalp {
         contactSheetView = new ContactSheetView(heart);
         examinerView = new ExaminerView();
 
-        displayAllClippings();
+        displayAllClippings(controller.heart.library.getClippings());
 
         update();
     }
@@ -49,29 +49,21 @@ public class Visipalp {
         return thumbs;
     }
 
-    public void displayAllClippings(){
-        displayAllClippings(0);
+    public void displayAllClippings(ArrayList<Clipping> clippings){
+        displayAllClippings(clippings, 0);
     }
 
-    public void displayAllClippingsAndKeepLatitude(){
-        displayAllClippings(contactSheetView.scroller.host.getLatitude());
+    public void displayAllClippingsAndKeepLatitude(ArrayList<Clipping> clippings){
+        displayAllClippings(clippings, contactSheetView.scroller.host.getLatitude());
     }
 
-    public void displayAllClippings(float latitude){
-        contactSheetView.clearContactSheet();
-        contactSheetView.clearSearchHeader();
-        contactSheetView.setup(manifestClippings(controller.heart.getLibrary().getClippings()));
-        contactSheetView.filtered = false;
+    public void displayAllClippings(ArrayList<Clipping> clippings, float latitude){
+        contactSheetView.displayAllThumbnails(manifestClippings(clippings), latitude);
         update();
-        contactSheetView.scroller.setHostLatitude(latitude);
     }
-
 
     public void displayClippings(ArrayList<Clipping> clippings, String query){
-        contactSheetView.clearContactSheet();
-        contactSheetView.setupSearchHeader(query);
-        contactSheetView.setup(manifestClippings(clippings));
-        contactSheetView.filtered = true;
+        contactSheetView.displayThumbnails(manifestClippings(clippings), query);
         update();
     }
 

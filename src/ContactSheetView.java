@@ -54,4 +54,19 @@ public class ContactSheetView extends Organelle {
         removeChild(searchHeader);
         searchHeader = null;
     }
+
+    public void displayThumbnails(ArrayList<Organelle> thumbs, String query){
+        clearContactSheet();
+        setupSearchHeader(query);
+        setup(thumbs);
+        filtered = true;
+    }
+
+    public void displayAllThumbnails(ArrayList<Organelle> thumbs, float latitude){
+        clearContactSheet();
+        clearSearchHeader();
+        setup(thumbs);
+        filtered = false;
+        scroller.setHostLatitude(latitude);
+    }
 }

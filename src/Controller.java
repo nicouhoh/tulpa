@@ -155,8 +155,4 @@ public class Controller {
     public ArrayList<Clipping> search(String query){
         return heart.library.search(query.trim().split(" +|\n+"), heart.library.getClippings());
     }
-
-    public void clearSearch(){
-        visipalp.displayAllClippings();
-    }
 }

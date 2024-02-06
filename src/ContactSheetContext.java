@@ -29,13 +29,13 @@ public class ContactSheetContext extends BaseContext {
     @Override
     public void receiveDropEvent(DropEvent e){
         controller.heart.ingestFiles(e.file());
-        controller.visipalp.displayAllClippingsAndKeepLatitude();
+        controller.visipalp.displayAllClippingsAndKeepLatitude(controller.heart.library.getClippings());
     }
 
     @Override
     public void backspace(){
         controller.heart.deleteSelectedClippings();
-        controller.visipalp.displayAllClippings(controller.visipalp.contactSheetView.scroller.host.getLatitude());
+        controller.visipalp.displayAllClippings(controller.heart.library.getClippings(), controller.visipalp.contactSheetView.scroller.host.getLatitude());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ContactSheetContext extends BaseContext {
     public void esc(){
         if (!controller.heart.selection.isEmpty()) controller.heart.selection.clear();
         else if (contactSheetView.filtered){
-            controller.visipalp.displayAllClippings();
+            controller.visipalp.displayAllClippings(controller.heart.library.getClippings());
             contactSheetView.searchPanel.searchBar.clear();
         }
     }
@@ -98,7 +98,7 @@ public class ContactSheetContext extends BaseContext {
             }
             case 'n', '\u000E' -> {
                 controller.heart.library.createEmptyClipping();
-                controller.visipalp.displayAllClippingsAndKeepLatitude();
+                controller.visipalp.displayAllClippingsAndKeepLatitude(controller.heart.library.getClippings());
             }
         }
     }
