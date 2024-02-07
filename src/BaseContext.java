@@ -40,7 +40,6 @@ public class BaseContext {
 
     public void receiveKey(KeyEvent e){
         switch (e.getKey()){
-
             case PConstants.CODED -> {
                 switch(e.getKeyCode()){
                     case PConstants.LEFT -> left();
