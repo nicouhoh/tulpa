@@ -54,4 +54,9 @@ public class Jigsaw implements Virgo{
     public float getGutter(){
         return gutter;
     }
+
+    @Override
+    public Virgo toggle() {
+        return new Agnes();
+    }
 }

@@ -8,4 +8,6 @@ public interface Virgo {
 
     float getGutter();
 
+    Virgo toggle();
+
 }

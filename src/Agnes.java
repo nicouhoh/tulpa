@@ -47,4 +47,9 @@ public class Agnes implements Virgo {
     public float findThumbY(int index, float thumbSize, int columns, float originY){
         return originY + (index / columns) * thumbSize + (index / columns + 1) * gutter;
     }
+
+    @Override
+    public Virgo toggle() {
+        return new Jigsaw();
+    }
 }

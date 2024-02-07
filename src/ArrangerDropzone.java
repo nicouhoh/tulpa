@@ -1,11 +1,11 @@
 import processing.core.PGraphics;
 
-public class ThumbArrangeDropZone extends Dropzone {
+public class ArrangerDropzone extends Dropzone {
 
     Thumbnail thumb;
     float lineX;
 
-    public ThumbArrangeDropZone(Droppish droppish, float x, float y, float w, float h, float lineX){
+    public ArrangerDropzone(Droppish droppish, float x, float y, float w, float h, float lineX){
         super(droppish, x, y, w, h);
         this.lineX = lineX;
         thumb = (Thumbnail)droppish;

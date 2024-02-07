@@ -25,15 +25,19 @@ public class Clipping {
     }
 
     public void loadData(){
+        loadImage();
+        loadText();
+    }
+
+    public void loadImage(){
         if (data.hasKey("imagePath")){
-            String path = data.getString("imagePath");
-            System.out.println("...loaded image: " + path);
-            img = tulpa.SOLE.loadImage(path);
+            img = tulpa.SOLE.loadImage(data.getString("imagePath"));
         }
+    }
+
+    public void loadText(){
         if (data.hasKey("text")) {
-            String text = data.getString("text");
-            System.out.println("...loaded text: " + text);
-            passage = new Passage(text);
+            passage = new Passage(data.getString("text"));
         }
     }
 
