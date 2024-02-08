@@ -16,7 +16,6 @@ public class ArrangerDropzoneFactory {
     public ArrayList<Dropzone> produceAllZones() {
         ArrayList<Dropzone> result = new ArrayList<>();
         result.add(firstArranger(thumbnails.get(0), thumbnails.get(1), allowance));
-
         for (int i = 1; i < thumbnails.size() - 1; i++){
             Thumbnail left = thumbnails.get(i);
             Thumbnail right = thumbnails.get(i + 1);
@@ -31,7 +30,9 @@ public class ArrangerDropzoneFactory {
 
     private ArrayList<ArrangerDropzone> createThumbnailDropZones(Thumbnail left, Thumbnail right) {
         ArrayList<ArrangerDropzone> result = new ArrayList<>();
-        if (rowBreak(left, right)) result.addAll(startAndEndOfRowDropZones(left, right));
+        if (rowBreak(left, right)){
+            result.addAll(startAndEndOfRowDropZones(left, right));
+        }
         else result.add(createDropZoneBetweenThumbnails(left, right));
         return result;
     }
@@ -44,15 +45,9 @@ public class ArrangerDropzoneFactory {
         return result;
     }
 
-    //FIXME this ain't actually working
     private ArrangerDropzone rowEndArranger(Thumbnail left, Thumbnail right){
         return new ArrangerDropzone(right,
-                left.x + left.w - allowance,
-                left.y,
-                x + w - (left.x + left.w) + allowance,
-                left.h,
-                left.x + left.w);
-
+                getDropZoneX(left), left.y, allowance, left.h, left.x + left.w);
     }
 
     private ArrangerDropzone rowStartArranger(Thumbnail right){
@@ -65,10 +60,32 @@ public class ArrangerDropzoneFactory {
 
     public ArrangerDropzone createDropZoneBetweenThumbnails(Thumbnail left, Thumbnail right){
                 return new ArrangerDropzone(right,
-                        left.x + left.w - allowance,
-                        PApplet.min(left.y, right.y),
-                        right.x - (left.x + left.w) + 2 * allowance,
-                        PApplet.max(left.h, right.h), (left.x + left.w + right.x)/2
+                        getDropZoneX(left),
+                        getDropZoneY(left, right),
+                        getDropZoneW(left, right),
+                        getDropZoneH(left, right),
+                        getLineX(left, right)
                 );
+    }
+
+    private float getDropZoneX(Thumbnail left) {
+        return left.x + left.w - allowance;
+    }
+
+    private float getDropZoneY(Thumbnail left, Thumbnail right) {
+        return PApplet.min(left.y, right.y);
+    }
+
+    private float getDropZoneW(Thumbnail left, Thumbnail right) {
+        return right.x - (left.x + left.w) + 2 * allowance;
+    }
+
+    private float getDropZoneH(Thumbnail left, Thumbnail right) {
+        return PApplet.max(left.h, right.h);
+    }
+
+
+    private float getLineX(Thumbnail left, Thumbnail right) {
+        return (left.x + left.w + right.x) / 2;
     }
 }

@@ -16,23 +16,19 @@ public class ContactSheet extends Organelle {
 
     @Override
     public void resize(float parentX, float parentY, float parentW, float parentH){
-        virgo.arrangeThumbnails(getChildren(), x, y, w, getColumns());
-        h = virgo.getFoot(getChildren(), w, getColumns());
+        virgo.arrangeThumbnails(getChildren(), x, y, w, columns);
+        h = virgo.getFoot(getChildren(), w, columns);
         refreshDropZones();
         createThumbnailDropzones();
         resizeChildren();
     }
 
     private void createThumbnailDropzones() {
-        for (Thumbnail t : getThumbnails()){
-            t.createDropZones();
-        }
+        for (Thumbnail t : getThumbnails()) t.createDropZones();
     }
 
     public void drawAfter(PGraphics g){
-        for (Dropzone z : getDropzones()){
-            z.draw(g);
-        }
+        for (Dropzone z : getDropzones()) z.draw(g);
     }
 
     public int getColumns(){

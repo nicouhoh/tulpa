@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class GapBuffer {
 
     // TODO Can we also think about lines and possibly even words in this data structure?
@@ -24,7 +22,7 @@ public class GapBuffer {
     }
 
     public void insert(char c){
-        if (gapStart == gapEnd) resizeBuffer(5);
+        if (gapIsClosed()) growBuffer(5);
         buffer[gapStart] = c;
         gapStart++;
     }
@@ -58,7 +56,7 @@ public class GapBuffer {
     }
 
     public void cursorRight() {
-        if (gapEnd < buffer.length - 1) {
+        if (!gapIsAtEnd()) {
             gapStart++;
             gapEnd++;
             buffer[gapStart - 1] = buffer[gapEnd];
@@ -71,20 +69,39 @@ public class GapBuffer {
         if (position > gapStart) cursorRight(position);
     }
 
-    public void resizeBuffer(int newGap){
-        char[] newBuffer = new char[buffer.length + newGap];
-        System.arraycopy(buffer, 0, newBuffer, 0, gapStart);
-        if (gapEnd < buffer.length - 1) {
-            System.arraycopy(buffer, gapEnd + 1, newBuffer, gapEnd + newGap + 1, buffer.length - gapEnd - 1);
-        }
+    public void growBuffer(int newGap){
+        buffer = copyToLargerBuffer(newGap);
         gapEnd += newGap;
-        buffer = newBuffer;
+    }
+
+    private char[] copyToLargerBuffer(int newGap) {
+        char[] newBuffer = new char[buffer.length + newGap];
+        copyBufferBeforeGap(newBuffer);
+        if (!gapIsAtEnd()) copyBufferAfterGap(newBuffer, newGap);
+        return newBuffer;
+    }
+
+    private void copyBufferBeforeGap(char[] newBuffer){
+        System.arraycopy(buffer, 0, newBuffer, 0, gapStart);
+    }
+
+    private void copyBufferAfterGap(char[] newBuffer, int newGap){
+        System.arraycopy(buffer, gapEnd + 1, newBuffer, gapEnd + newGap + 1, buffer.length - gapEnd - 1);
     }
 
     public String debugString(){
         String string = new String(buffer);
         return string;
     }
+
+    public boolean gapIsAtEnd(){
+        return gapEnd >= buffer.length - 1;
+    }
+
+    public boolean gapIsClosed(){
+        return gapStart == gapEnd;
+    }
+
 
     @Override
     public String toString(){
@@ -93,13 +110,16 @@ public class GapBuffer {
     }
 
     public char[] removeGap(){
-        int gapSize = (gapEnd - gapStart) + 1;
-        char[] chars = new char[buffer.length - gapSize];
-        System.arraycopy(buffer, 0, chars, 0, gapStart);
-        if (gapEnd < buffer.length - 1) {
+        char[] chars = new char[buffer.length - gapSize()];
+        copyBufferBeforeGap(chars);
+        if (!gapIsAtEnd()) {
             System.arraycopy(buffer, gapEnd + 1, chars, gapStart, buffer.length - gapEnd - 1);
         }
         return chars;
+    }
+
+    public int gapSize(){
+        return gapEnd - gapStart + 1;
     }
 
     public String[] toWords(){
@@ -107,8 +127,7 @@ public class GapBuffer {
     }
 
     public boolean isEmpty(){
-        if (gapEnd - gapStart >= buffer.length - 1) return true;
-        return false;
+        return gapEnd - gapStart >= buffer.length - 1;
     }
 
     public void clear() {
@@ -116,15 +135,4 @@ public class GapBuffer {
         gapStart = 0;
         gapEnd = 49;
     }
-
-//    public String toString(){
-//        int gapSize = gapEnd - gapStart;
-//        char[] chars = new char[buffer.length - gapSize];
-//        System.arraycopy(buffer, 0, chars, 0, gapStart);
-//        chars[gapStart] = '_';
-//        if (gapEnd < buffer.length - 1) {
-//            System.arraycopy(buffer, gapEnd + 1, chars, gapStart + 1, buffer.length - 1);
-//        }
-//        return new String(chars);
-//    }
 }

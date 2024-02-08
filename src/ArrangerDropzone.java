@@ -17,7 +17,7 @@ public class ArrangerDropzone extends Dropzone {
         if (hovered){
             g.stroke(255, 192, 0);
             g.noFill();
-            g.strokeWeight(2);
+            g.strokeWeight(3);
             g.line(lineX, y, lineX, y + h);
         }
     }
