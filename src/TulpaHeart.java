@@ -8,11 +8,11 @@ import java.util.Date;
 public class TulpaHeart {
 
     Library library;
-    Selection selection;
+    ISelection selection;
 
     public TulpaHeart(){
         library = new Library(getLibraryJSON());
-        selection = new Selection();
+        selection = new EmptySelection();
     }
 
     public void createNewLibrary(String desiredPath){
@@ -39,15 +39,15 @@ public class TulpaHeart {
     }
 
     public void deleteClipping(Clipping clipping){
-        selection.remove(clipping);
+        selection = selection.remove(clipping);
         library.trashClipping(clipping);
     }
 
     public void deleteSelectedClippings(){
-        for (Clipping clipping : selection.getClippings()){
+        for (Clipping clipping : selection.getSelectedClippings()){
             library.trashClipping(clipping);
         }
-        selection.clear();
+        selection = selection.clear();
     }
 
     public Clipping stepClipping(Clipping clipping, int step){
@@ -58,9 +58,9 @@ public class TulpaHeart {
 
     public Clipping stepSelection(int amount){
         // steps the selection forward or back by amount; returns the newly selected clipping if successful
-        if (selection.getClippings().size() != 1) return null;
+        if (selection.size() != 1) return null;
         Clipping clipping = stepClipping(selection.get(0), amount);
-        selection.select(clipping);
+        selection = selection.select(clipping);
         return clipping;
     }
 

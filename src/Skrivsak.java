@@ -12,8 +12,10 @@ public class Skrivsak extends Organelle implements Mousish{
     Twombly scribe;
 
     int paperColor = 49;
+    int paperAlpha = 255;
     int textColor = 223;
     int palimpsestColor = 96;
+    int textAlpha = 255;
 
     int margin = 10;
 
@@ -25,7 +27,7 @@ public class Skrivsak extends Organelle implements Mousish{
 
     @Override
     public void draw(PGraphics g){
-        g.fill(paperColor);
+        g.fill(paperColor, paperAlpha);
         g.noStroke();
         g.rect(x, y, w, h, 8);
         g.textFont(font);
@@ -34,12 +36,12 @@ public class Skrivsak extends Organelle implements Mousish{
         float textW  = w - margin * 2;
         float textH = h - margin * 2;
         if (buffer != null && !buffer.isEmpty()){
-            g.fill(textColor);
+            g.fill(textColor, textAlpha);
             int cursorPos = focused ? buffer.gapStart : -1;
             drawText(g, buffer.toString(), cursorPos, textX, textY, textW, textH);
         }
         else if (palimpsest != null){
-            g.fill(palimpsestColor);
+            g.fill(palimpsestColor, textAlpha);
             int cursorPos = focused ? 0 : -1;
             drawText(g, palimpsest, cursorPos, textX, textY, textW, textH);
         }

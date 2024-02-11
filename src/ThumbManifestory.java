@@ -19,7 +19,7 @@ public class ThumbManifestory {
     public ArrayList<Organelle> manifestThumbnails(PGraphics g){
         ArrayList<Organelle> thumbs = new ArrayList<Organelle>();
         for (Clipping clip : clippings){
-            thumbs.add(new Thumbnail(g, clip));
+            thumbs.add(new Thumbnail(clip));
         }
         return thumbs;
     }

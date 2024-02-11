@@ -18,8 +18,10 @@ public class ContactSheet extends Organelle {
     public void resize(float parentX, float parentY, float parentW, float parentH){
         virgo.arrangeThumbnails(getChildren(), x, y, w, columns);
         h = virgo.getFoot(getChildren(), w, columns);
-        refreshDropZones();
-        createThumbnailDropzones();
+        if (getChildren().size() > 1) {
+            refreshDropZones();
+            createThumbnailDropzones();
+        }
         resizeChildren();
     }
 

@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 public class Controller {
 
-    // NOTICE: Controller itself implements Keyish and can recognize keyboard commands (FOR NOW)
-
     TulpaHeart heart;
     Visipalp visipalp;
 
@@ -46,16 +44,16 @@ public class Controller {
     }
 
     public void selectClipping(Clipping clipping){
-        heart.selection.select(clipping);
+        heart.selection = heart.selection.select(clipping);
         setUpClippingView();
     }
 
     public void addSelection(Clipping clipping){
-        heart.selection.add(clipping);
+        heart.selection = heart.selection.add(clipping);
     }
 
     public void removeSelection(Clipping clipping){
-        heart.selection.remove(clipping);
+        heart.selection = heart.selection.remove(clipping);
     }
 
     public Thumbnail findThumbnail(Clipping clipping){
@@ -77,7 +75,7 @@ public class Controller {
         if (heart.selection.size() != 1) return;
         Thumbnail selectedThumb = findThumbnail(heart.selection.get(0));
         Thumbnail targetThumb = visipalp.verticalStep(selectedThumb, direction);
-        heart.selection.select(targetThumb.clipping);
+        heart.selection = heart.selection.select(targetThumb.clipping);
         visipalp.contactSheetView.scroller.jumpToOrganelle(targetThumb, visipalp.contactSheetView.contactSheet.getGutter());
         visipalp.examinerView.setup(targetThumb.clipping);
         setUpClippingView();
@@ -103,6 +101,13 @@ public class Controller {
         if(heart.selection.size() != 1) return;
         changeContext(new ExaminerContext(this, visipalp.examinerView.examiner));
         context.type(c);
+    }
+
+    public void openTagBubble(){
+        if (heart.selection.size() != 1) return;
+        Thumbnail selectedThumb = findThumbnail(heart.selection.get(0));
+        TagBubble bubble = selectedThumb.openTagBubble();
+        focusSkrivsak(bubble);
     }
 
     public void focusSkrivsak(Skrivsak skrivsak){
@@ -155,4 +160,5 @@ public class Controller {
     public ArrayList<Clipping> search(String query){
         return heart.library.search(query.trim().split(" +|\n+"), heart.library.getClippings());
     }
+
 }

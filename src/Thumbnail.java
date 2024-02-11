@@ -1,4 +1,3 @@
-import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -11,7 +10,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     PVector offset = new PVector(0,0);
     PFont font;
 
-    public Thumbnail(PGraphics g, Clipping clipping){
+    public Thumbnail(Clipping clipping){
         this.clipping = clipping;
         font = tulpa.SOLE.getSkrivBordFont();
         addMousish(this);
@@ -106,7 +105,6 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     public void setPos(float newX, float newY){
-
         x = newX + offset.x;
         y = newY + offset.y;
     }
@@ -193,5 +191,11 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
 
     public void clearDropZones(){
         dropZones.clear();
+    }
+
+    public TagBubble openTagBubble(){
+        TagBubble bubble = new TagBubble(this);
+        addChild(bubble);
+        return bubble;
     }
 }

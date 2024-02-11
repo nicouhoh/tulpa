@@ -3,7 +3,7 @@ import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Picture extends Organelle {
+public class ExaminerImage extends Organelle {
 
     PImage image;
     float margin = 50;

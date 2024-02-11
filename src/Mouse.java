@@ -25,7 +25,6 @@ public class Mouse {
         Squeak squeak = new Squeak(e);
         lastSqueak = squeak;
 
-        // TODO it works, now clean it up
         switch (e.getAction()){
 
             case MouseEvent.MOVE -> {
@@ -83,7 +82,7 @@ public class Mouse {
     // Returns the deepest organelle under the mouse that accepts this kind of squeak
     public Organelle captureAndBubble(Organelle root, Squeak squeak){
         if (squeak.consumed) return null;
-        if (!mouseOver(root, squeak.getX(), squeak.getY() + squeak.getLatitude())){
+        if (!mouseOver(root, squeak)){
             return null;
         }
         squeak.addLatitude(root.getLatitude());

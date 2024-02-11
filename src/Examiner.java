@@ -3,7 +3,7 @@ import processing.core.PVector;
 
 public class Examiner extends Organelle implements Mousish {
 
-    Picture picture;
+    ExaminerImage examinerImage;
     Skrivbord skrivbord;
 
     Clipping clipping;
@@ -12,9 +12,9 @@ public class Examiner extends Organelle implements Mousish {
     float minSkrivAllowance = 100;
 
     public Examiner(){
-        picture = new Picture();
+        examinerImage = new ExaminerImage();
         skrivbord = new Skrivbord();
-        addChild(picture);
+        addChild(examinerImage);
         addChild(skrivbord);
         addMousish(this);
     }
@@ -27,7 +27,7 @@ public class Examiner extends Organelle implements Mousish {
     }
 
     private void arrangeExaminer(Cell exam) {
-        if (picture.image != null){
+        if (examinerImage.image != null){
             arrangeImageAndText(exam);
         }
         else {
@@ -36,14 +36,14 @@ public class Examiner extends Organelle implements Mousish {
     }
 
     private void arrangeImageAndText(Cell exam) {
-        PVector size = picture.fitImage(exam.w - margin * 2, PApplet.min(tulpa.SOLE.height - margin * 2 - minSkrivAllowance, clipping.img.height));
-        picture.setBounds(exam.divideTop(size.y).shrink((exam.w - size.x) / 2, 0));
+        PVector size = examinerImage.fitImage(exam.w - margin * 2, PApplet.min(tulpa.SOLE.height - margin * 2 - minSkrivAllowance, clipping.img.height));
+        examinerImage.setBounds(exam.divideTop(size.y).shrink((exam.w - size.x) / 2, 0));
         exam.divideTop(margin);
-        skrivbord.setBounds(exam.fit(PApplet.constrain(picture.w, skrivbord.minW, skrivbord.maxW), exam.h));
+        skrivbord.setBounds(exam.fit(PApplet.constrain(examinerImage.w, skrivbord.minW, skrivbord.maxW), exam.h));
     }
 
     private void arrangeTextOnly(Cell exam) {
-        picture.setBounds(0, 0, 0, 0);
+        examinerImage.setBounds(0, 0, 0, 0);
         skrivbord.setBounds(
                 exam.fit(
                         PApplet.constrain(
@@ -61,8 +61,8 @@ public class Examiner extends Organelle implements Mousish {
     }
 
     public void setUp(){
-        if (clipping.img != null) picture.setUp(clipping.img);
-        else picture.noImage();
+        if (clipping.img != null) examinerImage.setUp(clipping.img);
+        else examinerImage.noImage();
         skrivbord.setBuffer(clipping);
     }
 

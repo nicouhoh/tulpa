@@ -78,6 +78,7 @@ public class ContactSheetContext extends BaseContext {
         switch (c){
             case '.' -> controller.visipalp.update();
             case ' ' -> controller.openExaminer(); // if we hit space, open the clipping
+            case '#' -> controller.openTagBubble();
             case PConstants.ESC -> {}
             default -> {
                 controller.openExaminer(c); // if we start typing, open it and start typing immediately TODO only really feels right when it's empty. or adding tags?
