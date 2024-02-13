@@ -7,12 +7,20 @@ public class SqueakMouseDown extends Squeak {
         this.status = status;
     }
 
-    public void squeak(Controller controller, Mouse mouse){
+    @Override
+    public void squeak(Controller controller){
         if(status.getHotItem() == null) return;
         status.setActiveItem(status.getHotItem());
         for (Mousish mousish : status.getHotItem().mousishes) {
-            mousish.mouseDown(controller, mouse, getModifiers());
+            mousish.mouseDown(controller, this);
             System.out.println("Clicked " + mousish);
         }
+        status.setActiveItem(status.getHotItem());
+    }
+
+    @Override
+    public void consume(Organelle organelle){
+        if (organelle.mousishes.isEmpty()) return;
+        consume();
     }
 }

@@ -70,7 +70,7 @@ public class BaseContext {
     public void checkForUnfocus(Mouse mouse, Squeak squeak){
         if (squeak.getAction() == 1 &&
                 focusedSkrivsak != null &&
-                !mouse.mouseOver(focusedSkrivsak, squeak))
+                !squeak.mouseOver((Organelle)focusedSkrivsak))
             clearFocusedSkrivsak();
     }
 

@@ -144,12 +144,12 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     @Override
-    public void mouseDown(Controller controller, Mouse mouse, int mod) {
-        switch (mod){
+    public void mouseDown(Controller controller, Squeak squeak) {
+        switch (squeak.getModifiers()){
             case 2, 4 -> {
                 if (!clipping.isSelected){
                     controller.addSelection(clipping);
-                    mouse.status.setPreventUnclick(this);
+                    squeak.status.setPreventUnclick(this);
                 }
             }
             default -> controller.selectClipping(clipping);

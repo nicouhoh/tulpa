@@ -1,5 +1,4 @@
 import processing.core.PGraphics;
-import processing.core.PApplet;
 
 public class ScrollerGrip extends Organelle implements Mousish, Draggish {
 
@@ -54,7 +53,7 @@ public class ScrollerGrip extends Organelle implements Mousish, Draggish {
     }
 
     @Override
-    public void mouseDown(Controller controller, Mouse mouse, int mod) {
+    public void mouseDown(Controller controller, Squeak squeak) {
         System.out.println("clicked " + this);
     }
 

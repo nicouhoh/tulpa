@@ -6,7 +6,7 @@ public class Squeak {
     float latitude;
     boolean consumed = false;
     ClawMachine claw;
-
+    Organelle root;
     MouseStatus status;
 
     public Squeak(MouseEvent e){
@@ -32,23 +32,8 @@ public class Squeak {
     // consumes only if the organelle has a Palpable for this type of Squeak
     // TODO I think there's a more elegant way, and if so I would be happy
     public void consume(Organelle organelle){
-        switch (e.getAction()){
-            case MouseEvent.MOVE -> {
-                consume();
-            }
-            case MouseEvent.KEY -> {
-                if (organelle.mousishes.isEmpty()) return;
-                consume();
-            }
-            case MouseEvent.WHEEL -> {
-                if (organelle.wheelish == null) return;
-                consume();
-            }
-            case MouseEvent.DRAG -> {
-                if (organelle.draggish == null) return;
-                consume();
-            }
-        }
+        // overridden in subclasses of Squeak that need particular attention (a lot of them!)
+        consume();
     }
 
     public boolean mouseOver(Organelle o){
@@ -85,6 +70,28 @@ public class Squeak {
 
     public int getAction(){
         return e.getAction();
+    }
+
+    // Returns the deepest organelle under the mouse that accepts this kind of squeak
+    public Organelle captureAndBubble(Organelle root){
+        if (consumed) return null;
+        if (!mouseOver(root)){
+            return null;
+        }
+        addLatitude(root.getLatitude());
+
+        for (Organelle child : root.getChildren()){
+            Organelle result = captureAndBubble(child);
+            if (consumed) return result;
+        }
+        this.consume(root); // in here is where we check whether the organelle accepts this kind of squeak and make sure if it does we don't trigger additional squeaks up the chain.
+        return root;
+    }
+
+    public Organelle findHotItem(Organelle root){
+        Organelle result = captureAndBubble(root);
+        if (result != status.getHotItem()) status.setHotItem(result);
+        return result;
     }
 
 }

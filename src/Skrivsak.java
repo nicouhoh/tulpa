@@ -93,7 +93,7 @@ public class Skrivsak extends Organelle implements Mousish{
     }
 
     @Override
-    public void mouseDown(Controller controller, Mouse mouse, int mod) {
+    public void mouseDown(Controller controller, Squeak squeak) {
         controller.focusSkrivsak(this);
     }
 

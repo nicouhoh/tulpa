@@ -8,6 +8,7 @@ public class SqueakRelease extends Squeak {
         this.status = status;
     }
 
+    @Override
     public void squeak(Controller controller){
         if (!claw.isEmpty()) {
             if (status.getHoveredZone() != null){

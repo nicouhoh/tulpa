@@ -73,7 +73,7 @@ public class Scroller extends Organelle implements Mousish, Wheelish {
     }
 
     @Override
-    public void mouseDown(Controller controller, Mouse mouse, int mod) {
+    public void mouseDown(Controller controller, Squeak squeak) {
     }
 
     @Override
