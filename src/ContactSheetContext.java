@@ -1,5 +1,6 @@
 import processing.core.PConstants;
 import drop.DropEvent;
+import processing.event.MouseEvent;
 
 public class ContactSheetContext extends BaseContext {
 
@@ -22,8 +23,8 @@ public class ContactSheetContext extends BaseContext {
     }
 
     @Override
-    public void receiveMouseEvent(Mouse mouse, Squeak squeak){
-        mouse.interpretSqueak(squeak.e, contactSheetView);
+    public void receiveMouseEvent(Mouse mouse, MouseEvent e){
+        mouse.interpretSqueak(e, contactSheetView);
     }
 
     @Override

@@ -1,3 +1,5 @@
+import processing.event.MouseEvent;
+
 public class ExaminerContext extends BaseContext {
 
     Examiner examiner;
@@ -21,8 +23,8 @@ public class ExaminerContext extends BaseContext {
     }
 
     @Override
-    public void receiveMouseEvent(Mouse mouse, Squeak squeak){
-        mouse.interpretSqueak(squeak.e, controller.visipalp.examinerView);
+    public void receiveMouseEvent(Mouse mouse, MouseEvent e){
+        mouse.interpretSqueak(e, controller.visipalp.examinerView);
     }
 
     @Override

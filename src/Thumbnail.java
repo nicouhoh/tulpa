@@ -23,10 +23,10 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
     }
 
     public void draw(PGraphics g, float x, float y, float w, float h){
-        if (clipping.isSelected) {
+        textThing(g, x, y, w, h);
+        if (clipping.isSelected) { // TODO actually we should draw this at the end, after all thumbnails
             drawSelect(g, x, y);
         }
-        textThing(g, x, y, w, h);
         for (Dropzone d : dropZones){
             d.draw(g);
         }

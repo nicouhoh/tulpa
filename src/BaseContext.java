@@ -2,7 +2,7 @@ import drop.DropEvent;
 import processing.core.PConstants;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
-import drop.DropEvent;
+
 public class BaseContext {
 
     Controller controller;
@@ -62,7 +62,7 @@ public class BaseContext {
         else type(e.getKey());
     }
 
-    public void receiveMouseEvent(Mouse mouse, Squeak squeak){}
+    public void receiveMouseEvent(Mouse mouse, MouseEvent e){}
     public void receiveDropEvent(DropEvent e){}
     public void draw(Visipalp visipalp, Mouse mouse) {}
     public void resize(Visipalp visipalp) {}

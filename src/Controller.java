@@ -34,10 +34,7 @@ public class Controller {
     public void receiveMouseEvent(MouseEvent e){
         Squeak squeak = new Squeak(e);
         context.checkForUnfocus(mouse, squeak);
-        if (squeak.getAction() == 1){
-            System.out.println("Stop");
-        }
-        context.receiveMouseEvent(mouse, squeak);
+        context.receiveMouseEvent(mouse, e);
     }
 
     public void receiveKeyEvent(KeyEvent e){

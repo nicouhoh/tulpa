@@ -11,7 +11,7 @@ public class SqueakMouseDown extends Squeak {
     public void squeak(Controller controller){
         if(status.getHotItem() == null) return;
         status.setActiveItem(status.getHotItem());
-        for (Mousish mousish : status.getHotItem().mousishes) {
+        for (Mousish mousish : status.getActiveItem().mousishes) {
             mousish.mouseDown(controller, this);
             System.out.println("Clicked " + mousish);
         }

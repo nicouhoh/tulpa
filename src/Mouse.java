@@ -15,8 +15,8 @@ public class Mouse {
 
     public void interpretSqueak(MouseEvent e, Organelle root){
         Squeak squeak = emitSqueak(e, root);
-        status.setLastSqueak(squeak);
         squeak.squeak(controller);
+        status.setLastSqueak(squeak);
     }
 
     public Squeak emitSqueak(MouseEvent e, Organelle root){

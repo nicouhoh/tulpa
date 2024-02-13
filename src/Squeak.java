@@ -3,7 +3,7 @@ import processing.event.MouseEvent;
 public class Squeak {
 
     MouseEvent e;
-    float latitude;
+    private float latitude;
     boolean consumed = false;
     ClawMachine claw;
     Organelle root;
@@ -23,7 +23,9 @@ public class Squeak {
         latitude = lat;
     }
 
-    public void addLatitude(float lat) { latitude += lat; }
+    public void addLatitude(float lat) {
+        latitude += lat;
+    }
 
     public void consume(){
         consumed = true;
@@ -85,6 +87,7 @@ public class Squeak {
             if (consumed) return result;
         }
         this.consume(root); // in here is where we check whether the organelle accepts this kind of squeak and make sure if it does we don't trigger additional squeaks up the chain.
+        System.out.println(root);
         return root;
     }
 

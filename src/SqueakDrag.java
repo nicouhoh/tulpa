@@ -28,7 +28,6 @@ public class SqueakDrag extends Squeak {
     }
 
     public Dropzone captureDropzone(Organelle root){
-        addLatitude(root.getLatitude());
         Dropzone zone = findDropZone(root);
 
         for (Organelle child : root.getChildren()){
