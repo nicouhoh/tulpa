@@ -22,7 +22,7 @@ public class ExaminerContext extends BaseContext {
 
     @Override
     public void receiveMouseEvent(Mouse mouse, Squeak squeak){
-        mouse.interpretSqueak(squeak, controller.visipalp.examinerView);
+        mouse.interpretSqueak(squeak.e, controller.visipalp.examinerView);
     }
 
     @Override

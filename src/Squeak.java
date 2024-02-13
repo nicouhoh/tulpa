@@ -1,27 +1,19 @@
 import processing.event.MouseEvent;
 
-public class Squeak extends MouseEvent{
+public class Squeak {
 
+    MouseEvent e;
     float latitude;
     boolean consumed = false;
-    ClawMachine katla;
+    ClawMachine claw;
 
-    public Squeak(Object nativeObject, long millis, int action, int modifiers, int x, int y, int button, int count) {
-        super(nativeObject, millis, action, modifiers, x, y, button, count);
-    }
+    MouseStatus status;
 
     public Squeak(MouseEvent e){
-        super(e.getNative(), e.getMillis(), e.getAction(), e.getModifiers(), e.getX(), e.getY(), e.getButton(), e.getCount());
+        this.e = e;
     }
 
-    public Squeak(MouseEvent e, ClawMachine k){
-        super(e.getNative(), e.getMillis(), e.getAction(), e.getModifiers(), e.getX(), e.getY(), e.getButton(), e.getCount());
-        this.katla = k;
-    }
-
-    public Squeak(Squeak s, float latitude){
-        super(s.getNative(), s.getMillis(), s.getAction(), s.getModifiers(), s.getX(), s.getY() + (int)latitude, s. getButton(), s.getCount());
-    }
+    public void squeak(Controller controller){}
 
     public float getLatitude(){
         return latitude;
@@ -40,24 +32,59 @@ public class Squeak extends MouseEvent{
     // consumes only if the organelle has a Palpable for this type of Squeak
     // TODO I think there's a more elegant way, and if so I would be happy
     public void consume(Organelle organelle){
-        switch (getAction()){
-            case Squeak.MOVE -> {
+        switch (e.getAction()){
+            case MouseEvent.MOVE -> {
                 consume();
             }
-            case Squeak.KEY -> {
+            case MouseEvent.KEY -> {
                 if (organelle.mousishes.isEmpty()) return;
                 consume();
             }
-            case Squeak.WHEEL -> {
+            case MouseEvent.WHEEL -> {
                 if (organelle.wheelish == null) return;
                 consume();
             }
-            case Squeak.DRAG -> {
+            case MouseEvent.DRAG -> {
                 if (organelle.draggish == null) return;
                 consume();
             }
         }
     }
 
+    public boolean mouseOver(Organelle o){
+        return mouseOver(o.x, o.y, o.w, o.h, getX(), getY() + getLatitude());
+    }
+
+    public boolean mouseOver(float boxX, float boxY, float boxW, float boxH, float mouseX, float mouseY){
+        return (mouseX > boxX) && (mouseX < boxX + boxW) && (mouseY > boxY) && (mouseY < boxY + boxH);
+    }
+
+    public boolean mouseOver(Dropzone z, float mouseX, float mouseY){
+        return mouseOver(z.x, z.y, z.w, z.h, mouseX, mouseY);
+    }
+
+    public boolean mouseOver(Dropzone z, Squeak squeak){
+        return mouseOver(z, squeak.getX(), squeak.getY() + squeak.getLatitude());
+    }
+
+    public int getX(){
+        return e.getX();
+    }
+
+    public int getY(){
+        return e.getY();
+    }
+
+    public int getModifiers(){
+        return e.getModifiers();
+    }
+
+    public int getCount(){
+        return e.getCount();
+    }
+
+    public int getAction(){
+        return e.getAction();
+    }
 
 }

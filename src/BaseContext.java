@@ -66,13 +66,14 @@ public class BaseContext {
     public void receiveDropEvent(DropEvent e){}
     public void draw(Visipalp visipalp, Mouse mouse) {}
     public void resize(Visipalp visipalp) {}
+
     public void checkForUnfocus(Mouse mouse, Squeak squeak){
         if (squeak.getAction() == 1 &&
                 focusedSkrivsak != null &&
                 !mouse.mouseOver(focusedSkrivsak, squeak))
             clearFocusedSkrivsak();
-        receiveMouseEvent(mouse, squeak);
     }
+
     public void exitContext(){
         clearFocusedSkrivsak();
     }

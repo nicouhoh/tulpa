@@ -149,7 +149,7 @@ public class Thumbnail extends Organelle implements Mousish, Draggish, Droppish 
             case 2, 4 -> {
                 if (!clipping.isSelected){
                     controller.addSelection(clipping);
-                    mouse.setPreventUnclick(this);
+                    mouse.status.setPreventUnclick(this);
                 }
             }
             default -> controller.selectClipping(clipping);

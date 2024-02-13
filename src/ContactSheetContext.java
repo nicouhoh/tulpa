@@ -23,7 +23,7 @@ public class ContactSheetContext extends BaseContext {
 
     @Override
     public void receiveMouseEvent(Mouse mouse, Squeak squeak){
-        mouse.interpretSqueak(squeak, contactSheetView);
+        mouse.interpretSqueak(squeak.e, contactSheetView);
     }
 
     @Override

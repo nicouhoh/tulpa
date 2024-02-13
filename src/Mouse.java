@@ -5,25 +5,18 @@ public class Mouse {
 
     Controller controller;
     ClawMachine claw;
-
-    Organelle hotItem;
-    Organelle activeItem;
-
-    Organelle preventUnclick; // use in special cases to prevent a buttonPress afer mouseDown. see ctrl/cmd click on Thumbnails
-
-    Squeak lastSqueak;
-
-    Dropzone hoveredZone;
+    MouseStatus status;
 
     public Mouse(Controller controller){
         this.controller = controller;
         claw = new ClawMachine(controller);
+        status = new MouseStatus();
     }
 
     public void interpretSqueak(MouseEvent e, Organelle root){
 
         Squeak squeak = new Squeak(e);
-        lastSqueak = squeak;
+        status.setLastSqueak(squeak);
 
         switch (e.getAction()){
 
@@ -31,51 +24,26 @@ public class Mouse {
                 findHotItem(root, squeak);
             }
             case MouseEvent.KEY -> {
-                if(hotItem == null) return;
-                setActiveItem(hotItem);
-                for (Mousish mousish : hotItem.mousishes) {
-                    mousish.mouseDown(controller, this, squeak.getModifiers());
-                    System.out.println("Clicked " + mousish);
-                }
+                SqueakMouseDown s = new SqueakMouseDown(e, status);
+                s.squeak(controller, this);
+                status.setActiveItem(status.getActiveItem());
             }
             case MouseEvent.RELEASE -> {
-                if (!claw.isEmpty()) {
-                    if (hoveredZone != null){
-                        System.out.println("Dropped " + claw.heldItem + " onto " + hoveredZone);
-                        hoveredZone.drop(controller, claw.heldItem);
-                    }
-                    claw.release(); // if you're holding something drop it
-                }
-                else if (activeItem == hotItem && activeItem != preventUnclick){
-                    for (Mousish mousish : activeItem.mousishes){
-                        mousish.buttonPress(controller, squeak.getModifiers());
-                    }
-                }
-                clearActiveItem();
-                clearPreventUnclick();
+                SqueakRelease s = new SqueakRelease(e, status, claw);
+                s.squeak(controller);
             }
             case MouseEvent.WHEEL -> {
+                SqueakWheel s = new SqueakWheel(e, status);
                 Organelle target = captureAndBubble(root, squeak);
-                if (target == null || target.wheelish == null) return;
-                target.wheelish.wheel(controller, squeak.getCount());
+                s.squeak(controller, target);
             }
             case MouseEvent.DRAG -> {
-                if (activeItem != null && claw.isEmpty()) {
-                    findHotItem(root, squeak);
-                    Organelle target = activeItem;
-                    claw.setDragOffset(squeak.getX() - target.x, squeak.getY() - target.y + squeak.getLatitude());
-                    claw.grab(target.draggish, squeak.getX(), squeak.getY() + squeak.getLatitude());
-                }
-                else if (!claw.isEmpty()){
-                    // TODO show loud dropzones
-                    Dropzone zone = captureDropzone(root, squeak);
-                    if (zone != hoveredZone) {
-                        setHoveredZone(zone);
-                    }
-                    claw.drag(squeak.getX(), squeak.getY()); // moving the mouse while holding something
-                }
+                findHotItem(root, squeak);
+                SqueakDrag s = new SqueakDrag(e, status, claw);
+                Dropzone zone = captureDropzone(root, squeak);
+                s.squeak(this, zone);
             }
-            case MouseEvent.EXIT -> clearHotItem();
+            case MouseEvent.EXIT -> status.clearHotItem();
         }
     }
 
@@ -116,31 +84,9 @@ public class Mouse {
         return null;
     }
 
-    public void setHoveredZone(Dropzone zone){
-            clearHoveredZone();
-            hoveredZone = zone;
-            if (zone != null){
-                hoveredZone.setHovered(true);
-                hoveredZone.onHovered();
-            }
-    }
-
-    public void clearHoveredZone(){
-        if (hoveredZone != null) hoveredZone.setHovered(false);
-        hoveredZone = null;
-    }
-
     public void findHotItem(Organelle root, Squeak squeak){
         Organelle target = captureAndBubble(root, squeak);
-        if (target != hotItem) setHotItem(target);
-    }
-
-    public void setHotItem(Organelle organelle){
-        if (hotItem != null && hotItem != organelle){
-            clearHotItem();
-        }
-        hotItem = organelle;
-        if (hotItem != null) hotItem.setHot(true);
+        if (target != status.getHotItem()) status.setHotItem(target);
     }
 
     public boolean mouseOver(float boxX, float boxY, float boxW, float boxH, float mouseX, float mouseY){
@@ -166,39 +112,10 @@ public class Mouse {
     public boolean mouseOver(Cell c, Squeak squeak){
         return mouseOver(c.x, c.y, c.w, c.h, squeak.getX(), squeak.getY() + squeak.getLatitude());
     }
-
-    public void clearHotItem(){
-        if (hotItem == null) return;
-        hotItem.setHot(false);
-        hotItem = null;
-    }
-
-    public void setActiveItem(Organelle organelle){
-        if (activeItem != null && activeItem != organelle){
-            clearActiveItem();
-        }
-        activeItem = organelle;
-        activeItem.setHot(true);
-    }
-
-    public void clearActiveItem(){
-        if (activeItem == null) return;
-        activeItem.setActive(false);
-        activeItem = null;
-    }
-
-    public void setPreventUnclick(Organelle organelle){
-        preventUnclick = organelle;
-    }
-
-    public void clearPreventUnclick(){
-        preventUnclick = null;
-    }
-
     public void drawHeldItem(PGraphics g){
         if (claw.heldItem != null){
             Organelle o = (Organelle)claw.heldItem;
-            o.mirage(g, lastSqueak.getX() - claw.dragOffset.x, lastSqueak.getY() - claw.dragOffset.y, 0, 0);
+            o.mirage(g, status.getLastSqueak().getX() - claw.dragOffset.x, status.getLastSqueak().getY() - claw.dragOffset.y, 0, 0);
         }
     }
 
@@ -206,8 +123,8 @@ public class Mouse {
         g.fill(255,0, 255, 200);
         g.textSize(24);
         g.text("mouse: " + state.getX() + ", " + state.getY() + '\n' +
-                "hot item: " + hotItem + '\n' +
-                "active item: " + activeItem + '\n' // +
+                "hot item: " + status.getHotItem() + '\n' +
+                "active item: " + status.getActiveItem() + '\n' // +
                 , 50, 50    );
     }
 
