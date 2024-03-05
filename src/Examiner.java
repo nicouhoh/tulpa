@@ -1,9 +1,10 @@
 import processing.core.PApplet;
 import processing.core.PVector;
+import processing.core.PImage;
 
 public class Examiner extends Organelle implements Mousish {
 
-    ExaminerImage examinerImage;
+    Porthole porthole;
     Skrivbord skrivbord;
 
     Clipping clipping;
@@ -12,38 +13,39 @@ public class Examiner extends Organelle implements Mousish {
     float minSkrivAllowance = 100;
 
     public Examiner(){
-        examinerImage = new ExaminerImage();
+        porthole = new Porthole();
         skrivbord = new Skrivbord();
-        addChild(examinerImage);
-        addChild(skrivbord);
+        Virgo stack = new Vertigo(getBounds(), porthole, skrivbord);
+        addChild(stack);
         addMousish(this);
     }
 
     @Override
     public void resize(float parentX, float parentY, float parentW, float parentH){
-        Cell exam = getBounds();
-        exam.divideTop(margin);
-        arrangeExaminer(exam);
+        setBounds(new Cell(parentX, parentY, parentW, parentH).shrink(margin));
+//        if (clipping == null) return;
+//        porthole.setSize(fitImageToExaminer(porthole.image, getBounds().w));
+//        if (clipping != null) arrangeExaminer(getBounds());
     }
 
-    private void arrangeExaminer(Cell exam) {
-        if (examinerImage.image != null){
-            arrangeImageAndText(exam);
-        }
-        else {
-            arrangeTextOnly(exam);
-        }
-    }
+//    private void arrangeExaminer(Cell exam) {
+//        if (clipping.hasImage()){
+////            arrangeImageAndText(exam);
+//        }
+//        else {
+//            arrangeTextOnly(exam);
+//        }
+//    }
 
-    private void arrangeImageAndText(Cell exam) {
-        PVector size = examinerImage.fitImage(exam.w - margin * 2, PApplet.min(tulpa.SOLE.height - margin * 2 - minSkrivAllowance, clipping.img.height));
-        examinerImage.setBounds(exam.divideTop(size.y).shrink((exam.w - size.x) / 2, 0));
-        exam.divideTop(margin);
-        skrivbord.setBounds(exam.fit(PApplet.constrain(examinerImage.w, skrivbord.minW, skrivbord.maxW), exam.h));
-    }
+//     TODO we gotta refactor to get this sorted
+//    private void arrangeImageAndText(Cell exam) {
+//        porthole.setBounds(exam.divideTop(size.y).shrink((exam.w - size.x) / 2, 0));
+//        exam.divideTop(margin);
+//        skrivbord.setBounds(exam.fit(PApplet.constrain(porthole.w, skrivbord.minW, skrivbord.maxW), exam.h));
+//    }
 
     private void arrangeTextOnly(Cell exam) {
-        examinerImage.setBounds(0, 0, 0, 0);
+        porthole.setBounds(0, 0, 0, 0);
         skrivbord.setBounds(
                 exam.fit(
                         PApplet.constrain(
@@ -55,14 +57,12 @@ public class Examiner extends Organelle implements Mousish {
         );
     }
 
-    public void setClipping(Clipping c){
+    public void setUp(Clipping c){
         clipping = c;
-        setUp();
-    }
-
-    public void setUp(){
-        if (clipping.img != null) examinerImage.setUp(clipping.img);
-        else examinerImage.noImage();
+        if (clipping.hasImage()){
+            porthole.setImage(clipping.img);
+        }
+        else porthole.noImage();
         skrivbord.setBuffer(clipping);
     }
 

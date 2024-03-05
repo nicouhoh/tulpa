@@ -64,7 +64,7 @@ public class ContactSheetContext extends BaseContext {
         if (!controller.heart.selection.isEmpty()) controller.heart.selection.clear();
         else if (contactSheetView.filtered){
             controller.visipalp.displayAllClippings(controller.heart.library.getClippings());
-            contactSheetView.searchPanel.searchBar.clear();
+            contactSheetView.sidePanel.searchBar.clear();
         }
     }
 

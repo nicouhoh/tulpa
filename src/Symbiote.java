@@ -16,8 +16,8 @@ public abstract class Symbiote extends Organelle {
     }
 
     @Override
-    public void removeChild(Organelle organelle){
-        host.removeChild(organelle);
+    public void removeChild(Organelle ... organelles){
+        host.removeChild(organelles);
     }
 
     @Override

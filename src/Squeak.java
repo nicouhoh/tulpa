@@ -31,8 +31,6 @@ public class Squeak {
         consumed = true;
     }
 
-    // consumes only if the organelle has a Palpable for this type of Squeak
-    // TODO I think there's a more elegant way, and if so I would be happy
     public void consume(Organelle organelle){
         // overridden in subclasses of Squeak that need particular attention (a lot of them!)
         consume();
@@ -87,7 +85,6 @@ public class Squeak {
             if (consumed) return result;
         }
         this.consume(root); // in here is where we check whether the organelle accepts this kind of squeak and make sure if it does we don't trigger additional squeaks up the chain.
-        System.out.println(root);
         return root;
     }
 

@@ -1,7 +1,6 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class Jigsaw implements Virgo{
+public class Jigsaw implements ThumbnailGrid {
 
     float gutter = 2;
 
@@ -89,7 +88,7 @@ public class Jigsaw implements Virgo{
     }
 
     @Override
-    public Virgo toggle() {
+    public ThumbnailGrid toggle() {
         return new Agnes();
     }
 

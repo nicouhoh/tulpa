@@ -146,7 +146,7 @@ public class Controller {
     }
 
     public void updateTagWall(PGraphics g){
-        visipalp.contactSheetView.searchPanel.tagWall.updateTagList(g, heart.getLibrary().tagList.getTags(heart.library.libraryData));
+        visipalp.contactSheetView.sidePanel.tagWall.updateTagList(g, heart.getLibrary().tagList.getTags(heart.library.libraryData));
     }
 
     public void displaySearchResults(String [] queryWords, String query){

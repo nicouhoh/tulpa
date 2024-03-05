@@ -2,6 +2,7 @@ public class SearchBar extends Skrivsak {
 
     public SearchBar(){
         super();
+        h = 30;
         setFont(tulpa.SOLE.getSkrivBordFont());
         setMargin(2);
         this.palimpsest = "WIP search bar";

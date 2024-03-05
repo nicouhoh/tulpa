@@ -7,6 +7,7 @@ public class TagWall extends Organelle implements IObserver {
     public TagWall(TagList pigeonholer){
         this.pigeonholer = pigeonholer;
         pigeonholer.registerObserver(this);
+        h = 500;
     }
 
     @Override

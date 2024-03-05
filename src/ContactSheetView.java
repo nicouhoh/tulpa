@@ -2,25 +2,25 @@ import java.util.ArrayList;
 
 public class ContactSheetView extends Organelle {
 
-    Nothing nothing;
+    Atmosphere atmosphere;
     ContactSheet contactSheet;
     Scroller scroller;
 
-    SearchPanel searchPanel;
+    SidePanel sidePanel;
     SearchHeader searchHeader;
 
     boolean filtered = false;
 
     public ContactSheetView(TulpaHeart heart){
 
-        nothing = new Nothing(49, 255);
-        addChild(nothing);
+        atmosphere = new Atmosphere(49, 255);
+        addChild(atmosphere);
         contactSheet = new ContactSheet();
         scroller = new Scroller(contactSheet);
-        nothing.addChild(scroller);
+        atmosphere.addChild(scroller);
 
-        searchPanel = new SearchPanel(heart);
-        addChild(searchPanel);
+        sidePanel = new SidePanel(heart);
+        addChild(sidePanel);
     }
 
     public void setup(ArrayList<Organelle> thumbs){
@@ -32,11 +32,11 @@ public class ContactSheetView extends Organelle {
         setBounds(windowX, windowY, windowW, windowH);
 
         Cell main = getBounds();
-        Cell sidePanel = main.divideLeft(searchPanel.openWidth);
+        Cell side = main.divideLeft(this.sidePanel.openWidth);
         if (searchHeader != null) searchHeader.setBounds(main.divideTop(40));
-        nothing.setBounds(main);
+        atmosphere.setBounds(main);
         scroller.setBounds(main);
-        searchPanel.setBounds(sidePanel);
+        sidePanel.setBounds(side);
         main.divideRight(scroller.scrollW);
         contactSheet.setBounds(main);
     }

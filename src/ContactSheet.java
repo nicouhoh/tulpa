@@ -8,16 +8,16 @@ public class ContactSheet extends Organelle {
 
     private int columns = 5;
 
-    Virgo virgo;
+    ThumbnailGrid thumbnailGrid;
 
     public ContactSheet(){
-        virgo = new Jigsaw();
+        thumbnailGrid = new Jigsaw();
     }
 
     @Override
     public void resize(float parentX, float parentY, float parentW, float parentH){
-        virgo.arrangeThumbnails(getChildren(), x, y, w, columns);
-        h = virgo.getFoot(getChildren(), w, columns);
+        thumbnailGrid.arrangeThumbnails(getChildren(), x, y, w, columns);
+        h = thumbnailGrid.getFoot(getChildren(), w, columns);
         if (getChildren().size() > 1) {
             refreshDropZones();
             createThumbnailDropzones();
@@ -39,8 +39,8 @@ public class ContactSheet extends Organelle {
 
     public void zoom(int amount){
         columns = PApplet.constrain(columns + amount, 2, 30);
-        virgo.arrangeThumbnails(getChildren(), x, y, w, columns);
-        h = virgo.getFoot(getChildren(), w, columns);
+        thumbnailGrid.arrangeThumbnails(getChildren(), x, y, w, columns);
+        h = thumbnailGrid.getFoot(getChildren(), w, columns);
     }
 
     public ArrayList<Thumbnail> getThumbnails(){
@@ -52,11 +52,11 @@ public class ContactSheet extends Organelle {
     }
 
     public void toggleViewMode(){
-        virgo = virgo.toggle();
+        thumbnailGrid = thumbnailGrid.toggle();
     }
 
     public float getGutter(){
-        return virgo.getGutter();
+        return thumbnailGrid.getGutter();
     }
 
     public void refreshDropZones(){

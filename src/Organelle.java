@@ -31,8 +31,16 @@ public abstract class Organelle {
         children.addAll(organelles);
     }
 
-    public void removeChild(Organelle organelle){
-        children.remove(organelle);
+    public void addChildren(Organelle[] organelles){
+        for (Organelle o : organelles){
+            addChild(o);
+        }
+    }
+
+    public void removeChild(Organelle ... organelles){
+        for (Organelle o : organelles){
+            children.remove(o);
+        }
     }
 
     public Organelle getChild(int index){
@@ -49,12 +57,16 @@ public abstract class Organelle {
         resizeChildren();
     }
 
+    public void performResize(Cell parentBounds){
+
+    }
+
     public void resize(float parentX, float parentY, float parentW, float parentH){
         // Override this for update behavior specific to an Organelle. Actually gets called in performUpdate().
-        // The default behavior is to fill the parent Organelle.
-        // TODO ^^ actually might not be true! I might be in the middle of changing this
-//        setPos(parentX, parentY);
-//        setSize(parentW, parentH);
+    }
+
+    public void resize(Cell parentBounds){
+        setBounds(parentBounds);
     }
 
     public void resizeChildren(){

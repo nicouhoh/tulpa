@@ -43,6 +43,10 @@ public class Cell {
         return new Cell(x + shrinkX, y + shrinkY, w - 2 * shrinkX, h - 2 * shrinkY);
     }
 
+    public Cell shrink(float margin){
+        return shrink(margin, margin);
+    }
+
     public Cell fit(float fitW, float fitH){
         float resultW = w;
         float resultH = h;

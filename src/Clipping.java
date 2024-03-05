@@ -53,8 +53,13 @@ public class Clipping {
         return data.getJSONArray("tags").toStringArray();
     }
 
+
     public boolean hasText () {
         return passage != null && !passage.text.isBlank();
+    }
+
+    public boolean hasImage(){
+        return img != null;
     }
 
     public void setData (JSONObject data){

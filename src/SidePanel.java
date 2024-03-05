@@ -1,6 +1,6 @@
 import processing.core.PGraphics;
 
-public class SearchPanel extends Organelle {
+public class SidePanel extends Organelle {
 
     int color = 32;
     float openWidth = 300;
@@ -8,21 +8,19 @@ public class SearchPanel extends Organelle {
     SearchBar searchBar;
     TagWall tagWall;
 
-    public SearchPanel(TulpaHeart heart){
+    public SidePanel(TulpaHeart heart){
         searchBar = new SearchBar();
         searchBar.setMargin(2);
         tagWall = new TagWall(heart.library.tagList);
-        addChild(searchBar);
-        addChild(tagWall);
+        Virgo stack = new Vertigo(getBounds(), searchBar, tagWall);
+        stack.setPadding(10, 30);
+        addChild(stack);
     }
 
     @Override
     public void resize(float parentX, float parentY, float parentW, float parentH){
-        Cell panel = new Cell(x, y, w, h);
-        panel.divideTop(50);
-        searchBar.setBounds(panel.divideTop(30).shrink(10, 0));
-        panel.divideTop(50);
-        tagWall.setBounds(panel.shrink(10, 10));
+        Cell cell = new Cell(parentX, parentY, parentW, parentH);
+        setBounds(cell.divideLeft(openWidth));
     }
 
     @Override
